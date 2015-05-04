@@ -1,8 +1,9 @@
 # Caustic-Design
 
-## 1. Image->Singularities //Cam
+### 1. Image->Singularities //Cam
 <b>Input</b>
  *  Image (PNG)
+
 <b>Output</b>
  *  Singularities (SVG-File) [1]
 
