@@ -1,7 +1,6 @@
 # Caustic-Design
 
 
-
 1. Image->Singularities //Cam
 2. Iradiance-> Vornoi diagramm Python or CGAL //Patrick
 3. OTM -> implementation in http://www.geometry.caltech.edu/BlueNoise/ + CGAL //Patrick
