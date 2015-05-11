@@ -35,11 +35,12 @@ Debian dependencies as one-liner:<br>
 <br>
 <br>
 Do following steps to build voronoi-creator:<br>
-`cd voronoi-creator\
-mkdir build\
-cd build\
-qmake ..\
-make`<br>
+
+    cd voronoi-creator
+    mkdir build
+    cd build
+    qmake ..
+    make
 <br>
 <b>Import in QT-Creator</b>
  *  Open QT-Creator
