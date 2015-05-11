@@ -35,10 +35,10 @@ Debian dependencies as one-liner:<br>
 <br>
 <br>
 Do following steps to build voronoi-creator:<br>
-`cd voronoi-creator<br>
-mkdir build<br>
-cd build<br>
-qmake ..<br>
+`cd voronoi-creator\
+mkdir build\
+cd build\
+qmake ..\
 make`<br>
 <br>
 <b>Import in QT-Creator</b>
@@ -54,7 +54,7 @@ Voronoi-Creator expects three arguments:<br>
  1.  Path to image to create voronoi-diagram from
  2.  Output File to write voronoi-diagram to (e.g. voronoi.dat)
  3.  Sites to create (i.e. amount of voronoi-cells)
-<br>
+
 Example usage:<br>
 `./voronoi-creator ~/Pictures/source_irradiance.png voronoi.dat 20000`
 
