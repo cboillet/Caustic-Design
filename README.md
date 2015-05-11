@@ -53,13 +53,14 @@ Do following steps to build voronoi-creator:<br>
 <br>
 
 <b>Usage</b><br>
-Voronoi-Creator expects three arguments:<br>
+Voronoi-Creator expects four arguments:<br>
  1.  Path to image to create voronoi-diagram from
  2.  Output File to write voronoi-diagram to (e.g. voronoi.dat)
  3.  Sites to create (i.e. amount of voronoi-cells)
+ 4.  Amount of Lloyd Optimization Loops executed
 
 Example usage:<br>
-`./voronoi-creator ~/Pictures/source_irradiance.png voronoi.dat 20000`
+`./voronoi-creator ~/Pictures/source_irradiance.png voronoi.dat 20000 5`
 
 ------
 

@@ -23,7 +23,7 @@ void VoronoiCreator::load_image(QString filename){
 
 void VoronoiCreator::apply_lloyd_optimization(){
     std::cout << "running lloyd optimization... ";
-    m_scene->optimize_positions_via_lloyd(false);
+    m_scene->optimize_positions_via_lloyd(true);
     std::cout << "done" << std::endl;
 }
 
