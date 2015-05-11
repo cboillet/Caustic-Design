@@ -16,8 +16,8 @@
 
 <b>Output</b>
  *  Voronoi Diagram [2]<br>
-<br>
-<b>Building Voronoi-Creator</b><br>
+
+<b>Building Voronoi-Creator</b><br />
 The Voronoi Diagram creator is located in the voronoi-creator.<br>
 Prerequisits:<br>
  *  cmake
@@ -29,7 +29,7 @@ Prerequisits:<br>
  *  libtbb-dev
  *  libmetis-dev
  *  suitesparse: http://www.cise.ufl.edu/research/sparse/SuiteSparse/
-<br>
+
 Debian dependencies as one-liner:<br>
 `sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev`
 <br>
