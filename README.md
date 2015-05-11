@@ -8,6 +8,8 @@
 <b>Output</b>
  *  Singularities (SVG-File) [1]
 
+-------
+
 ### 2. Irradiance-> Vornoi diagramm Python or CGAL 
 // Assigned to: Patrick<br>
 <b>Input</b>
@@ -59,6 +61,7 @@ Voronoi-Creator expects three arguments:<br>
 Example usage:<br>
 `./voronoi-creator ~/Pictures/source_irradiance.png voronoi.dat 20000`
 
+------
 
 ### 3. OTM (CGAL)
 // Assigned to: Patrick<br>
@@ -71,6 +74,8 @@ Example usage:<br>
 <b>Output</b>
  *  Power Diagram [3]
 
+------
+
 ### 4. Interpolation-> Natural Neigbors CGAL 
 // Assigned to: Cam<br>
 <b>Input</b>
@@ -78,6 +83,9 @@ Example usage:<br>
 
 <b>Output</b>
  *  Coordinates (xR) [4]
+
+------
+
 
 ### 5. Target Surface -> C++ (3D part) 
 // Assigned to: Cam<br>
