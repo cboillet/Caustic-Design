@@ -17,9 +17,9 @@
 <b>Output</b>
  *  Voronoi Diagram [2]<br>
 <br>
-<b>Building Voronoi-Creator</b>
+<b>Building Voronoi-Creator</b><br>
 The Voronoi Diagram creator is located in the voronoi-creator.<br>
-Prerequisits:
+Prerequisits:<br>
  *  cmake
  *  libqt4-dev (needs to be tested)
  *  libcgal-dev
@@ -32,15 +32,15 @@ Prerequisits:
 <br>
 Debian dependencies as one-liner:<br>
 `sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev`
-
-
+<br>
+<br>
 Do following steps to build voronoi-creator:<br>
 `cd voronoi-creator<br>
 mkdir build<br>
 cd build<br>
 qmake ..<br>
 make`<br>
-
+<br>
 <b>Import in QT-Creator</b>
  *  Open QT-Creator
  *  Choose File > Open File or Project 
@@ -50,11 +50,12 @@ make`<br>
 <br>
 
 <b>Usage</b><br>
-Voronoi-Creator expects three arguments:
+Voronoi-Creator expects three arguments:<br>
  1.  Path to image to create voronoi-diagram from
  2.  Output File to write voronoi-diagram to (e.g. voronoi.dat)
  3.  Sites to create (i.e. amount of voronoi-cells)
-Example usage:
+<br>
+Example usage:<br>
 `./voronoi-creator ~/Pictures/source_irradiance.png voronoi.dat 20000`
 
 
