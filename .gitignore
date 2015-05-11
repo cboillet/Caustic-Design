@@ -1,0 +1,5 @@
+# ignore build folder
+**/build/
+
+# ignore pro.user files from qt-creator
+**/*.pro.user*
