@@ -36,11 +36,7 @@ int main(int argc, char *argv[])
     vc.load_image(filename);
     vc.init_points(npoints);
     for (uint i=0; i<iteration_loops; i++){
-        std::cout << "(";
-        std::cout << (i+1);
-        std::cout << "/";
-        std::cout << iteration_loops;
-        std::cout << "): ";
+        std::cout << "(" << (i+1) << "/" << iteration_loops << "): ";
         vc.apply_lloyd_optimization();
     }
     vc.write_dat_file(output_file);
