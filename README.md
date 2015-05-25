@@ -1,7 +1,14 @@
 # Caustic-Design
 
+<b>Import in QT-Creator</b>
+ *  Open QT-Creator
+ *  Choose File > Open File or Project 
+ *  Navigate to Caustic_Design folder
+ *  Choose Caustic_Design.pro and confirm Dialog with 'Open'
+<br>
+
 ### 1. Image->Singularities 
-// Assigned to: Cam<br>
+// Assigned to: Cam not required so far<br>
 <b>Input</b>
  *  Image (PNG)
 
