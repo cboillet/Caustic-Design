@@ -35,7 +35,7 @@
      <x>0</x>
      <y>0</y>
      <width>676</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,6 +74,7 @@
     <addaction name="actionBreak_Regularity"/>
     <addaction name="separator"/>
     <addaction name="actionCountSitesPerBin"/>
+    <addaction name="actionComputeInterpolation"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -504,6 +505,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+R</string>
+   </property>
+  </action>
+  <action name="actionComputeInterpolation">
+   <property name="text">
+    <string>Compute Interpolation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

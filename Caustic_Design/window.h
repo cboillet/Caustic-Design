@@ -117,9 +117,11 @@ protected slots:
 
     void on_actionToggleTimer_toggled();
     void on_actionToggleFixedConnectivity_toggled();
+    void on_actionComputeInterpolation();
     
 signals:
     void openRecentFile(QString filename);
+
 };
 
 #endif // _WINDOW_

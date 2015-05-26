@@ -11,7 +11,10 @@
 // local
 #include "matrix/sparse_matrix.h"
 #include "types.h"
+#include "interpolation.h"
 
+
+class Interpolation;
 class Scene
 {
 public:
@@ -29,6 +32,7 @@ private:
     bool m_timer_on;
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
+    Interpolation* interpolation;
     
 public:
     Scene()
@@ -42,6 +46,7 @@ public:
     ~Scene()
     {
         clear();
+        delete interpolation;
     }    
     
     double get_tau() const { return m_tau; }

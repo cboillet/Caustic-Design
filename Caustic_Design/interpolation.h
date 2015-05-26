@@ -12,6 +12,7 @@
 #include "types.h"
 #include "scene.h"
 
+class Scene;
 class Interpolation{
 
 private:
@@ -19,18 +20,18 @@ private:
     std::vector<double> c_weights;
     std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
-    Scene* sc;
+//    Scene* sc;
 
 public:
-    Interpolation();
-    ~Interpolation(){delete sc;}
+    Interpolation(Scene* sc);
+    ~Interpolation(){}
 
-    Scene getSceneCp();
-    Scene& getScene();
+//    Scene getSceneCp();
+//    Scene& getScene();
 
-    std::vector<Point> findNaturalNeighbor(Point oP);
-    std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP){}
-    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices){}
+    std::vector<Point> findNaturalNeighbor(Point oP,Scene* sc);
+    std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP,Scene* sc){}
+    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices,Scene* sc){}
 
 
 

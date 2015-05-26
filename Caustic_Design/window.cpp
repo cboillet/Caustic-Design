@@ -663,3 +663,8 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
     if (!ok) return;
     m_scene->count_sites_per_bin(nb);
 }
+
+void MainWindow::on_actionComputeInterpolation(){
+}
+
+

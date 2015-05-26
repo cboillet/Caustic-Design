@@ -1,8 +1,8 @@
 #include "interpolation.h"
 #include "random.h"
 
-Interpolation::Interpolation(){
-    sc = new Scene();
+Interpolation::Interpolation(Scene* sc){
+//    sc = new Scene();
     if (!sc->getDomain().is_valid()) return;
     double dx = sc->getDomain().get_dx();
     double dy = sc->getDomain().get_dy();
@@ -14,8 +14,8 @@ Interpolation::Interpolation(){
     }
 }
 
-Scene Interpolation::getSceneCp(){return *sc;}
-Scene& Interpolation::getScene(){return (*sc);}
+//Scene Interpolation::getSceneCp(){return *sc;}
+//Scene& Interpolation::getScene(){return (*sc);}
 
 /*
 Method 1:
@@ -35,10 +35,10 @@ Method 3:
 Current: method 1
 */
 
-std::vector<Point> Interpolation::findNaturalNeighbor(Point oP){
+std::vector<Point> Interpolation::findNaturalNeighbor(Point oP,Scene* sc){
     /*Centroid instertion*/
-    Scene modifiedScene = this->getSceneCp();
-    Scene& originScene = this->getScene();
+    Scene modifiedScene = *sc;
+    Scene& originScene = (*sc);
     std::vector<Point> points;
     points.push_back(oP);
     std::vector<Point> neighbors;

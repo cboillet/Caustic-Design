@@ -65,3 +65,4 @@ FORMS += \
     caustic.ui \
     dialog.ui
 QT += opengl
+CONFIG += c++11
