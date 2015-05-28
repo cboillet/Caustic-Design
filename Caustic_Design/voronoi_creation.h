@@ -1,0 +1,4 @@
+#ifndef VORONOI_CREATION_H
+#define VORONOI_CREATION_H
+
+#endif // VORONOI_CREATION_H
