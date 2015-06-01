@@ -46,10 +46,7 @@ public:
     ~Scene()
     {
         clear();
-<<<<<<< Updated upstream:voronoi-creator/scene.h
-=======
         //delete interpolation;
->>>>>>> Stashed changes:Caustic_Design/scene.h
     }    
     
     double get_tau() const { return m_tau; }
