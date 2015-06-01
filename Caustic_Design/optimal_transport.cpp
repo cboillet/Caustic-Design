@@ -37,6 +37,9 @@ void OptimalTransport::runOptimalTransport()
         evaluate() and progress() when necessary.
      */
     ret = lbfgs(n, x, &fx, evaluate, progress, this, &param);
+
+    evaluate_results(ret, x, n);
+
     /* Report the result. */
     printf("L-BFGS optimization terminated with status code = %d\n", ret);
     printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
@@ -44,30 +47,129 @@ void OptimalTransport::runOptimalTransport()
 
     std::cout << "done" << std::endl;
 
-/*
-    std::cout << "running optimal transport" << std::endl;
+}
 
-    std::vector<FT> weights;
-    m_scene->collect_visible_weights(weights);
-    std::vector<FT>::iterator iterator;
+void OptimalTransport::evaluate_results(int ret, lbfgsfloatval_t *x, int n){
 
-    int i=0;
-
-    for(iterator = weights.begin();
-        iterator != weights.end();
-        iterator++)
-    {
-        if(i == 100)
-        {
-            weights[i] = 0.005;
-        }
-        i++;
+    std::string resultString = "unknown";
+    switch(ret){
+    case LBFGS_SUCCESS:
+        resultString = "LBFGS_SUCCESS";
+        break;
+    case LBFGS_ALREADY_MINIMIZED:
+        resultString = "LBFGS_ALREADY_MINIMIZED";
+        break;
+    case LBFGSERR_UNKNOWNERROR:
+        resultString = "LBFGSERR_UNKNOWNERROR";
+        break;
+    case LBFGSERR_LOGICERROR:
+        resultString = "LBFGSERR_LOGICERROR";
+        break;
+    case LBFGSERR_OUTOFMEMORY:
+        resultString = "LBFGSERR_OUTOFMEMORY";
+        break;
+    case LBFGSERR_CANCELED:
+        resultString = "LBFGSERR_CANCELED";
+        break;
+    case LBFGSERR_INVALID_N:
+        resultString = "LBFGSERR_INVALID_N";
+        break;
+    case LBFGSERR_INVALID_N_SSE:
+        resultString = "LBFGSERR_INVALID_N_SSE";
+        break;
+    case LBFGSERR_INVALID_X_SSE:
+        resultString = "LBFGSERR_INVALID_X_SSE";
+        break;
+    case LBFGSERR_INVALID_EPSILON:
+        resultString = "LBFGSERR_INVALID_EPSILON";
+        break;
+    case LBFGSERR_INVALID_TESTPERIOD:
+        resultString = "LBFGSERR_INVALID_TESTPERIOD";
+        break;
+    case LBFGSERR_INVALID_DELTA:
+        resultString = "LBFGSERR_INVALID_DELTA";
+        break;
+    case LBFGSERR_INVALID_LINESEARCH:
+        resultString = "LBFGSERR_INVALID_LINESEARCH";
+        break;
+    case LBFGSERR_INVALID_MINSTEP:
+        resultString = "LBFGSERR_INVALID_MINSTEP";
+        break;
+    case LBFGSERR_INVALID_MAXSTEP:
+        resultString = "LBFGSERR_INVALID_MAXSTEP";
+        break;
+    case LBFGSERR_INVALID_FTOL:
+        resultString = "LBFGSERR_INVALID_FTOL";
+        break;
+    case LBFGSERR_INVALID_WOLFE:
+        resultString = "LBFGSERR_INVALID_WOLFE";
+        break;
+    case LBFGSERR_INVALID_GTOL:
+        resultString = "LBFGSERR_INVALID_GTOL";
+        break;
+    case LBFGSERR_INVALID_XTOL :
+        resultString = "LBFGSERR_INVALID_XTOL";
+        break;
+    case LBFGSERR_INVALID_MAXLINESEARCH:
+        resultString = "LBFGSERR_INVALID_MAXLINESEARCH";
+        break;
+    case LBFGSERR_INVALID_ORTHANTWISE:
+        resultString = "LBFGSERR_INVALID_ORTHANTWISE";
+        break;
+    case LBFGSERR_INVALID_ORTHANTWISE_START:
+        resultString = "LBFGSERR_INVALID_ORTHANTWISE_START";
+        break;
+    case LBFGSERR_INVALID_ORTHANTWISE_END:
+        resultString = "LBFGSERR_INVALID_ORTHANTWISE_END";
+        break;
+    case LBFGSERR_OUTOFINTERVAL:
+        resultString = "LBFGSERR_OUTOFINTERVAL";
+        break;
+    case LBFGSERR_INCORRECT_TMINMAX:
+        resultString = "LBFGSERR_INCORRECT_TMINMAX";
+        break;
+    case LBFGSERR_ROUNDING_ERROR:
+        resultString = "LBFGSERR_ROUNDING_ERROR";
+        break;
+    case LBFGSERR_MINIMUMSTEP:
+        resultString = "LBFGSERR_MINIMUMSTEP";
+        break;
+    case LBFGSERR_MAXIMUMSTEP:
+        resultString = "LBFGSERR_MAXIMUMSTEP";
+        break;
+    case LBFGSERR_MAXIMUMLINESEARCH:
+        resultString = "LBFGSERR_MAXIMUMLINESEARCH";
+        break;
+    case LBFGSERR_MAXIMUMITERATION:
+        resultString = "LBFGSERR_MAXIMUMITERATION";
+        break;
+    case LBFGSERR_WIDTHTOOSMALL:
+        resultString = "LBFGSERR_WIDTHTOOSMALL";
+        break;
+    case LBFGSERR_INVALIDPARAMETERS:
+        resultString = "LBFGSERR_INVALIDPARAMETERS";
+        break;
+    case LBFGSERR_INCREASEGRADIENT:
+        resultString = "LBFGSERR_INCREASEGRADIENT";
+        break;
     }
 
 
+    std::vector<FT> weights = std::vector<FT>(n);
+    for (int i=0; i<n; i++){
+        weights[i] = x[i];
+        if(weights[i] != 0.0){
+            std::cout << "weights[" << i << "] = " << weights[i] << std::endl;
+        }
+    }
+
+    std::cout << "Finished solving, exit status: " << resultString << std::endl;
+
+    std::vector<Point> points = std::vector<Point>();
+    target_scene->collect_visible_points(points);
+    m_scene->update_positions(points);
     m_scene->update_weights(weights);
     m_scene->update_triangulation();
-*/
 }
 
 lbfgsfloatval_t OptimalTransport::evaluate(
@@ -82,9 +184,8 @@ lbfgsfloatval_t OptimalTransport::evaluate(
         std::cerr << "target scene not available!" << std::endl;
         return 0;
     }
-    std::vector<Vertex_handle> vertices = target_scene->getVertices();
 
-    std::cout << "Eval.. n= " << n << std::endl;
+    std::cout << "Eval.. step = " << step << std::endl;
     std::vector<FT> weights = std::vector<FT>(n);
     int i;
     for(i=0; i<n; i++){
@@ -94,31 +195,26 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     target_scene->update_weights(weights);
     target_scene->update_triangulation();
 
-    std::vector<FT> weight_gradients;
-    target_scene->compute_weight_gradient(weight_gradients, 1.0);
+    std::vector<Vertex_handle> target_vertices = target_scene->getVertices();
 
-    for (i=0; i<n; i++){
-        g[i] = weight_gradients[i];
-    }
 
-    for (i=0; i<n; i++){
-        FT area = vertices[i]->compute_area();
-    }
-
-    //fx = 0;
-
-    return 0;
-    /*
-    int i;
+    // fx = f(w)
     lbfgsfloatval_t fx = 0.0;
-    for (i = 0;i < n;i += 2) {
-        lbfgsfloatval_t t1 = 1.0 - x[i];
-        lbfgsfloatval_t t2 = 10.0 * (x[i+1] - x[i] * x[i]);
-        g[i+1] = 20.0 * t2;
-        g[i] = -2.0 * (x[i] * g[i+1] + t1);
-        fx += t1 * t1 + t2 * t2;
+
+    // f(w) = --- the convex function to be minimized
+    // TODO: compute_area is probably not sufficient. we need to integrate over each cell instead
+    for(int i=0; i<n; i++){
+        FT integration_term = target_vertices[i]->compute_area() - x[i];
+        fx += x[i]*capacities[i] - integration_term;
     }
-    return fx;*/
+
+    // df/dwi = --- The derivate of the convex function
+    // TODO: I think the area is not sufficient here as well
+    for (i=0; i<n; i++){
+        g[i] = capacities[i] - target_vertices[i]->compute_area();
+    }
+
+    return fx;
 }
 
 int OptimalTransport::progress(
@@ -133,6 +229,10 @@ int OptimalTransport::progress(
         int ls
         )
 {
+    if(k > 5){
+        return 1;
+    }
+
     printf("Iteration %d:\n", k);
     printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
     printf("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step);
@@ -159,6 +259,10 @@ bool OptimalTransport::prepare_data()
 
     source_vertices = m_scene->getVertices();
     target_vertices = target_scene->getVertices();
+
+    for (int i=0; i<source_vertices.size(); i++){
+        capacities.push_back(source_vertices[i]->compute_area());
+    }
 
     // --- ensure they are of same dimension
     //if(target_points.size() != source_points.size()) return false;

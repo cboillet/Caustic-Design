@@ -3,16 +3,18 @@
 
 // System
 #include "lbfgs.h"
+#include <string>
 
 // Local
 #include "scene.h"
-
+#include "random.h"
 
 class OptimalTransport
 {
 public:
     OptimalTransport(Scene* sc, Scene* tc);
     void runOptimalTransport();
+    void evaluate_results(int ret, lbfgsfloatval_t *x, int n);
 
     Scene* m_scene;
     Scene* target_scene;
@@ -88,6 +90,7 @@ private:
 
     std::vector<Vertex_handle> source_vertices;
     std::vector<Point> source_points;
+    std::vector<FT> capacities;
 
     lbfgsfloatval_t probability_per_cell;
 
