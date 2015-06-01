@@ -122,6 +122,7 @@ protected slots:
     void on_actionToggleFixedConnectivity_toggled();
     void on_actionComputeInterpolation_triggered();
     void on_actionCalculateOptimalTransport_triggered();
+    void on_actionVoronoiCreation_triggered();
     
 signals:
     void openRecentFile(QString filename, bool open_target);

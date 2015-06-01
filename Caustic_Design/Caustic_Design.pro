@@ -1,30 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-05-11T11:38:48
-#
-#-------------------------------------------------
-
-QT       += core
-QT       += gui
-
-TARGET = voronoi-creation
-CONFIG   += console
-CONFIG   -= app_bundle
-
-TEMPLATE = app
-
-
-SOURCES += main.cpp \
-    sites.cpp \
-    matrix/sparse_array.cpp \
-    matrix/sparse_matrix.cpp \
-    init.cpp \
-    assign.cpp \
-    voronoicreator.cpp \
-    io.cpp \
-    optimizer.cpp \
-    energy.cpp
-
 INCLUDEPATH +=   /usr/include/
 LIBS        += -L/usr/include/
 LIBS        += -lCGAL
@@ -72,7 +45,8 @@ HEADERS += \
     util.h \
     window.h \
     interpolation.h \
-	optimal_transport.h
+	optimal_transport.h \
+	voronoi_creation.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -90,7 +64,8 @@ SOURCES += \
     sites.cpp \
     window.cpp \
     interpolation.cpp \
-    optimal_transport.cpp
+    optimal_transport.cpp \
+	voronoi_creation.cpp
 
 
 FORMS += \

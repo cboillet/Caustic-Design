@@ -105,7 +105,7 @@ lbfgsfloatval_t OptimalTransport::evaluate(
         FT area = vertices[i]->compute_area();
     }
 
-    fx = 0;
+    //fx = 0;
 
     return 0;
     /*

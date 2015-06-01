@@ -12,9 +12,12 @@
 #include "matrix/sparse_matrix.h"
 #include "types.h"
 #include "interpolation.h"
+#include "voronoi_creation.h"
 
 
 class Interpolation;
+class VoronoiCreator;
+
 class Scene
 {
 public:
@@ -33,6 +36,7 @@ private:
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
     Interpolation* interpolation;
+    VoronoiCreator* voronoicreator;
     
 public:
     Scene()
@@ -46,16 +50,16 @@ public:
     ~Scene()
     {
         clear();
-        //delete interpolation;
-    }    
+        delete interpolation;
+    }
+    Scene(const Scene& sc);
+
     
     double get_tau() const { return m_tau; }
     void set_tau(double tau) { m_tau = tau; }
 
     void toggle_invert() { m_domain.toggle_invert(); }
-    
-    void toggle_timer() { m_timer_on = !m_timer_on; }
-    
+    void toggle_timer() { m_timer_on = !m_timer_on; }   
     void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }
     
     bool connectivity_fixed() const { return m_fixed_connectivity; }
@@ -64,6 +68,11 @@ public:
     {
         clear_triangulation();
     }
+
+    Domain& getDomain(){return m_domain;} //vieux getteur
+    RT& getRT(){return m_rt;}
+    std::vector<Vertex_handle>& getVertices(){return m_vertices;}
+
 
     // IO //
 
@@ -191,7 +200,7 @@ public:
     FT compute_mean_capacity() const;
     
     unsigned count_visible_sites() const;
-    
+
     void collect_visible_points(std::vector<Point>& points) const;
     
     void collect_visible_weights(std::vector<FT>& weights) const;

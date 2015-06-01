@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Image BN-OT</string>
+   <string>Caustic Light Designer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout">
@@ -35,17 +35,19 @@
      <x>0</x>
      <y>0</y>
      <width>676</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpenImage"/>
     <addaction name="actionToggleInvert"/>
+    <addaction name="actionOpenImage"/>
+    <addaction name="actionLoadTargetImage"/>
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
+    <addaction name="actionOpenTargetDAT"/>
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
     <addaction name="separator"/>
@@ -74,7 +76,9 @@
     <addaction name="actionBreak_Regularity"/>
     <addaction name="separator"/>
     <addaction name="actionCountSitesPerBin"/>
+    <addaction name="actionVoronoiCreation"/>
     <addaction name="actionComputeInterpolation"/>
+    <addaction name="actionCalculateOptimalTransport"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -513,6 +517,29 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionVoronoiCreation">
+   <property name="text">
+    <string>Generate Voronoi</string>
+   </property>
+  </action>
+  <action name="actionOpenTargetDAT">
+   <property name="text">
+    <string>Open Target DAT</string>
+   </property>
+  </action>
+  <action name="actionLoadTargetImage">
+   <property name="text">
+    <string>Load Target Image</string>
+   </property>
+  </action>
+  <action name="actionCalculateOptimalTransport">
+   <property name="text">
+    <string>Compute Optimal Transport</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+O</string>
    </property>
   </action>
  </widget>
