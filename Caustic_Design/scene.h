@@ -46,7 +46,10 @@ public:
     ~Scene()
     {
         clear();
-        delete interpolation;
+<<<<<<< Updated upstream:voronoi-creator/scene.h
+=======
+        //delete interpolation;
+>>>>>>> Stashed changes:Caustic_Design/scene.h
     }    
     
     double get_tau() const { return m_tau; }
@@ -64,11 +67,6 @@ public:
     {
         clear_triangulation();
     }
-
-    Domain& getDomain(){return m_domain;} //vieux getteur
-    RT& getRT(){return m_rt;}
-    std::vector<Vertex_handle>& getVertices(){return m_vertices;}
-
 
     // IO //
 
@@ -196,7 +194,7 @@ public:
     FT compute_mean_capacity() const;
     
     unsigned count_visible_sites() const;
-
+    
     void collect_visible_points(std::vector<Point>& points) const;
     
     void collect_visible_weights(std::vector<FT>& weights) const;

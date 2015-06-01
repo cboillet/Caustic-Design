@@ -1,3 +1,30 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2015-05-11T11:38:48
+#
+#-------------------------------------------------
+
+QT       += core
+QT       += gui
+
+TARGET = voronoi-creation
+CONFIG   += console
+CONFIG   -= app_bundle
+
+TEMPLATE = app
+
+
+SOURCES += main.cpp \
+    sites.cpp \
+    matrix/sparse_array.cpp \
+    matrix/sparse_matrix.cpp \
+    init.cpp \
+    assign.cpp \
+    voronoicreator.cpp \
+    io.cpp \
+    optimizer.cpp \
+    energy.cpp
+
 INCLUDEPATH +=   /usr/include/
 LIBS        += -L/usr/include/
 LIBS        += -lCGAL
@@ -16,6 +43,8 @@ LIBS        += -ltbb
 LIBS        += -lmetis
 LIBS        += -lblas
 LIBS        += -llapack
+# L-BFGS
+LIBS        += -llbfgs
 QMAKE_CXXFLAGS += -frounding-math -O3
 
 HEADERS += \
@@ -42,7 +71,8 @@ HEADERS += \
     types.h \
     util.h \
     window.h \
-    interpolation.h
+    interpolation.h \
+	optimal_transport.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -59,7 +89,9 @@ SOURCES += \
     render.cpp \
     sites.cpp \
     window.cpp \
-    interpolation.cpp
+    interpolation.cpp \
+    optimal_transport.cpp
+
 
 FORMS += \
     caustic.ui \
