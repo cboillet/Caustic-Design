@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow, public Ui_MainWindow
     
 private:
     Scene* m_scene;
+    Scene* target_scene;
 
     double m_stepX;
     double m_stepW;
@@ -66,7 +67,7 @@ protected slots:
 
     // 
     void update();
-    void open(const QString& filename);
+    void open(const QString& filename, const bool open_target);
     void save(const QString& filename) const;
     bool is_image(const QString& filename) const;
     
@@ -74,6 +75,8 @@ protected slots:
     void on_actionClear_triggered();
     void on_actionSnapshot_triggered();
     void on_actionOpenImage_triggered();
+    void on_actionLoadTargetImage_triggered();
+    void on_actionOpenTargetDAT_triggered();
     void on_actionOpenPoints_triggered();
     void on_actionSavePoints_triggered();
     void on_actionSaveEPS_triggered();
@@ -117,10 +120,11 @@ protected slots:
 
     void on_actionToggleTimer_toggled();
     void on_actionToggleFixedConnectivity_toggled();
-    void on_actionComputeInterpolation();
+    void on_actionComputeInterpolation_triggered();
+    void on_actionCalculateOptimalTransport_triggered();
     
 signals:
-    void openRecentFile(QString filename);
+    void openRecentFile(QString filename, bool open_target);
 
 };
 
