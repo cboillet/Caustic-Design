@@ -42,7 +42,8 @@ HEADERS += \
     types.h \
     util.h \
     window.h \
-    interpolation.h
+    interpolation.h \
+    voronoi_creation.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -59,7 +60,8 @@ SOURCES += \
     render.cpp \
     sites.cpp \
     window.cpp \
-    interpolation.cpp
+    interpolation.cpp \
+    voronoi_creation.cpp
 
 FORMS += \
     caustic.ui \

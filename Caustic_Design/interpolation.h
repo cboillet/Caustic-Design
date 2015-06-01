@@ -20,14 +20,12 @@ private:
     std::vector<double> c_weights;
     std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
-//    Scene* sc;
 
 public:
     Interpolation(Scene* sc);
     ~Interpolation(){}
 
-//    Scene getSceneCp();
-//    Scene& getScene();
+    std::vector<Point>& getXo(){return Xo;}
 
     std::vector<Point> findNaturalNeighbor(Point oP,Scene* sc);
     std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP,Scene* sc){}

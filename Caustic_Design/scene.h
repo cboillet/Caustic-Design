@@ -12,9 +12,12 @@
 #include "matrix/sparse_matrix.h"
 #include "types.h"
 #include "interpolation.h"
+#include "voronoi_creation.h"
 
 
 class Interpolation;
+class VoronoiCreator;
+
 class Scene
 {
 public:
@@ -33,6 +36,7 @@ private:
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
     Interpolation* interpolation;
+    VoronoiCreator* voronoicreator;
     
 public:
     Scene()
@@ -47,19 +51,16 @@ public:
     {
         clear();
         delete interpolation;
-    }    
+    }
+    Scene(const Scene& sc);
+
     
     double get_tau() const { return m_tau; }
     void set_tau(double tau) { m_tau = tau; }
-
     void toggle_invert() { m_domain.toggle_invert(); }
-    
-    void toggle_timer() { m_timer_on = !m_timer_on; }
-    
+    void toggle_timer() { m_timer_on = !m_timer_on; }   
     void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }
-    
     bool connectivity_fixed() const { return m_fixed_connectivity; }
-
     void clear()
     {
         clear_triangulation();
@@ -73,33 +74,24 @@ public:
     // IO //
 
     void load_image(const QString& filename);
-    
     void load_points(const QString& filename);
-    
     void load_dat(const QString& filename, std::vector<Point>& points) const;
-    
     void save_points(const QString& filename) const;
-    
     void save_dat(const QString& filename, const std::vector<Point>& points) const;
-    
     void save_txt(const QString& filename, const std::vector<Point>& points) const;
-    
     void save_eps(const QString& filename) const;
 
     // SITES //
     
     void generate_random_sites(const unsigned nb);
-
     void generate_random_sites_based_on_image(const unsigned nb);
-
     void generate_regular_grid(const unsigned nx, const unsigned ny);
-    
     void init_colors(const unsigned nb);
     
     // RENDER //
     
     void draw_point(const Point& a) const; 
-    
+
     void draw_segment(const Point& a, const Point& b) const;    
     
     void draw_triangle(const Point& a, const Point& b, const Point& c) const;    

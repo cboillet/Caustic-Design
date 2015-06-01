@@ -117,7 +117,10 @@ protected slots:
 
     void on_actionToggleTimer_toggled();
     void on_actionToggleFixedConnectivity_toggled();
-    void on_actionComputeInterpolation();
+
+    //From here is our code
+    void on_actionComputeInterpolation_triggered();
+    void on_actionVoronoiCreation_triggered();
     
 signals:
     void openRecentFile(QString filename);

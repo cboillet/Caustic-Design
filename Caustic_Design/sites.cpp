@@ -1,6 +1,22 @@
 #include "scene.h"
 #include "random.h"
 
+Scene::Scene(const Scene& sc){
+    srand(0);
+    m_tau = 1.0;
+    m_timer_on = false;
+    m_fixed_connectivity = false;
+    m_rt = sc.m_rt;
+    m_domain = sc.m_domain;
+    m_capacities = sc.m_capacities;
+    m_tau = sc.m_tau;
+    m_ratio = sc.m_ratio;
+    m_r = sc.m_r; m_g=sc.m_g; m_b=sc.m_b;
+    m_vertices= sc.m_vertices;
+    interpolation = NULL;
+    voronoicreator = NULL;
+}
+
 void Scene::generate_random_sites(const unsigned nb)
 {
     if (!m_domain.is_valid()) return;

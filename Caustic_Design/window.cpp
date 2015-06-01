@@ -16,6 +16,9 @@
 #include "window.h"
 #include "dialog.h"
 #include "scene.h"
+#include "voronoi_creation.h"
+
+int nbpoints; //nb of centroids
 
 MainWindow::MainWindow() : 
 QMainWindow(), Ui_MainWindow(), 
@@ -664,7 +667,30 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
     m_scene->count_sites_per_bin(nb);
 }
 
-void MainWindow::on_actionComputeInterpolation(){
+void MainWindow::on_actionVoronoiCreation_triggered(){
+    bool ok;
+    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 5000, 100, &ok);
+    if (!ok) return;
+    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 10, 1, &ok);
+    if (!ok) return;
+    VoronoiCreator vc = VoronoiCreator(m_scene);
+    vc.init_points(nbpoints,m_scene);
+    for (uint i=0; i<nbiter; i++){
+        std::cout << "(" << (i+1) << "/" << nbiter << "): ";
+        vc.apply_lloyd_optimization(m_scene);
+    }
+    this->on_actionSavePoints_triggered();
 }
+
+void MainWindow::on_actionComputeInterpolation_triggered(){
+    Interpolation inter = Interpolation(m_scene);
+    int i;
+    std::vector<Point> neighboors;
+    for (i=0; i<500; i++)
+    {
+        neighboors = inter.findNaturalNeighbor(inter.getXo()[i],m_scene);
+    }
+}
+
 
 

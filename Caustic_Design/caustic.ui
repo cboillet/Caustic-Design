@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Image BN-OT</string>
+   <string>Caustic Light Designer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout">
@@ -74,6 +74,7 @@
     <addaction name="actionBreak_Regularity"/>
     <addaction name="separator"/>
     <addaction name="actionCountSitesPerBin"/>
+    <addaction name="actionVoronoiCreation"/>
     <addaction name="actionComputeInterpolation"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -513,6 +514,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionVoronoiCreation">
+   <property name="text">
+    <string>Generate Voronoi</string>
    </property>
   </action>
  </widget>
