@@ -18,6 +18,7 @@
 #include "scene.h"
 #include "voronoi_creation.h"
 #include "optimal_transport.h"
+#include "interpolation.h"
 
 int nbpoints; // nb of centroids
 
@@ -722,10 +723,53 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
-    std::cout << "onActionComputeInterpolation" << std::endl;
+    std::cout << "onActionComputeOptimalTransport" << std::endl;
+
+    // -- following part randomizes the weights with input from user (for debugging)
+    /*bool ok;
+    double min = QInputDialog::getDouble(this, tr("Min"), tr("Minimum weight:"), 0, -10.0, 10.0, 1, &ok);
+    if(!ok) return;
+    double max = QInputDialog::getDouble(this, tr("Max"), tr("Maximum weight:"), 0, -10.0, 10.0, 1, &ok);
+    if(!ok) return;
+
+    min /= 1000.0;
+    max /= 1000.0;
+
+    std::cout << "min = " << min << ", max = " << max << std::endl;
+
+    std::vector<FT> weights = std::vector<FT>(m_scene->getVertices().size());
+    for(int i=0; i<m_scene->getVertices().size(); i++){
+        weights[i] = random_double(min, max);
+    }
+    m_scene->update_weights(weights);
+    m_scene->update_triangulation();
+    update();
+
+    std::vector<Point> points = std::vector<Point>();
+    m_scene->collect_visible_points(points);
+
+    std::cout << "visible points = " << points.size() << ", vertices.size = " << m_scene->getVertices().size() << std::endl;
+
+    if(true) return;
+    */
+
+    // -- following parts automatically opens all relevant data (from absolute paths for my laptop)
+    /*
+    // open einstein as source
+    open(QString("/home/p/Pictures/einstein.png"), false);
+    // and corresponding dat file
+    open(QString("/home/p/Documents/Uni/cg-proj/Caustic-Design/build-Caustic_Design-Desktop-Release/einstein_2000.dat"), false);
+
+    // open render as target
+    open(QString("/home/p/Pictures/render.png"), true);
+    // and corresponding dat file
+    open(QString("/home/p/Documents/Uni/cg-proj/Caustic-Design/build-Caustic_Design-Desktop-Release/render_2000.dat"), true);
+
+    // show image
+    update();*/
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, target_scene);
+    OptimalTransport ot = OptimalTransport(m_scene, target_scene, this);
     ot.runOptimalTransport();
     QApplication::restoreOverrideCursor();
     update();

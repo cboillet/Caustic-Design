@@ -13,8 +13,6 @@ Scene::Scene(const Scene& sc){
     m_ratio = sc.m_ratio;
     m_r = sc.m_r; m_g=sc.m_g; m_b=sc.m_b;
     m_vertices= sc.m_vertices;
-    interpolation = NULL;
-    voronoicreator = NULL;
 }
 
 void Scene::generate_random_sites(const unsigned nb)

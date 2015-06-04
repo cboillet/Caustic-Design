@@ -7,17 +7,21 @@
 
 // Local
 #include "scene.h"
+#include "window.h"
+#include "domain.h"
 #include "random.h"
 
 class OptimalTransport
 {
 public:
-    OptimalTransport(Scene* sc, Scene* tc);
+    OptimalTransport(Scene* sc, Scene* tc, MainWindow* win);
     void runOptimalTransport();
     void evaluate_results(int ret, lbfgsfloatval_t *x, int n);
 
     Scene* m_scene;
     Scene* target_scene;
+    MainWindow* win;
+
 
 protected:
     // L_BFGS
@@ -92,7 +96,7 @@ private:
     std::vector<Point> source_points;
     std::vector<FT> capacities;
 
-    lbfgsfloatval_t probability_per_cell;
+    FT integrated_source_intensity;
 
     bool prepare_data();
 };

@@ -157,6 +157,32 @@ public:
         }
         return variance;
     }
+
+    FT compute_wasserstein(FT weight)
+    {
+
+        FT val = 0.0;
+        Point site = get_position();
+        for(uint i=0; i<nb_pixels(); i++)
+        {
+            val += ( CGAL::squared_distance(site, get_pixel(i).compute_centroid()) - weight );
+        }
+
+        return val;
+    }
+
+    FT compute_wasserstein(Point & other, FT weight)
+    {
+
+        FT val = 0.0;
+        Point site = get_position();
+        for(uint i=0; i<nb_pixels(); i++)
+        {
+            val += ( CGAL::squared_distance(other, get_pixel(i).compute_centroid()) - weight );
+        }
+
+        return val;
+    }
     
     // DUAL CELL //
     

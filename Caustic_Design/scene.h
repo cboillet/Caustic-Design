@@ -11,12 +11,6 @@
 // local
 #include "matrix/sparse_matrix.h"
 #include "types.h"
-#include "interpolation.h"
-#include "voronoi_creation.h"
-
-
-class Interpolation;
-class VoronoiCreator;
 
 class Scene
 {
@@ -35,8 +29,6 @@ private:
     bool m_timer_on;
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
-    Interpolation* interpolation;
-    VoronoiCreator* voronoicreator;
     
 public:
     Scene()
@@ -50,7 +42,6 @@ public:
     ~Scene()
     {
         clear();
-        delete interpolation;
     }
     Scene(const Scene& sc);
 
