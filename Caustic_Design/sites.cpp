@@ -15,6 +15,7 @@ Scene::Scene(const Scene& sc){
     m_vertices= sc.m_vertices;
 }
 
+<<<<<<< HEAD
 Scene* Scene::operator=(const Scene& sc){
     srand(0);
     m_tau = 1.0;
@@ -29,6 +30,8 @@ Scene* Scene::operator=(const Scene& sc){
     m_vertices= sc.m_vertices;
 }
 
+=======
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 void Scene::generate_random_sites(const unsigned nb)
 {
     if (!m_domain.is_valid()) return;

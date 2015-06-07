@@ -84,6 +84,11 @@ bool Scene::construct_triangulation(const std::vector<Point>& points,
 
     clear_triangulation();
     bool ok = populate_vertices(points, weights);
+
+    if(!ok){
+        std::cerr << "Warning, some vertices are hidden" << std::endl;
+    }
+
     if (ok || !skip)
     {
         pre_build_dual_cells();
@@ -103,13 +108,21 @@ bool Scene::populate_vertices(const std::vector<Point>& points,
     
     unsigned nb = 0;
     unsigned nsites = points.size();
+    FT weight_sum = 0.0;
     for (unsigned i = 0; i < nsites; ++i)
     {
+        weight_sum += weights[i];
         Vertex_handle vertex = insert_vertex(points[i], weights[i], nb);
-        if (vertex == Vertex_handle()) continue;
+        if (vertex == Vertex_handle())
+        {
+            std::cerr << "did not insert vertex with index " << nb << std::endl;
+            continue;
+        }
         m_vertices.push_back(vertex);
         nb++;
     }
+
+    std::cout << "weight sum is " << weight_sum << std::endl;
     
     if (m_timer_on) Timer::stop_timer(m_timer, COLOR_YELLOW);
 
@@ -127,9 +140,14 @@ Vertex_handle Scene::insert_vertex(const Point& point,
     Weighted_point wp(point, weight);
     Vertex_handle vertex = m_rt.insert(wp);
 
-    if (vertex->get_index() != -1) 
+    if (vertex->get_index() != -1)
+    {
+        std::cerr << "Did not insert point @ (" << point.x() << ", " << point.y() << ") with weight = " << weight << std::endl;
         return Vertex_handle();
-    
+    }else{
+        //std::cout << "inserted point @ (" << point.x() << ", " << point.y() << ") with weight = " << weight << std::endl;
+    }
+
     vertex->set_index(index);
     return vertex;
 }
@@ -175,6 +193,7 @@ void Scene::update_weights(const std::vector<FT>& weights, bool hidden)
     {
         Vertex_handle vi = m_vertices[i];
         if (hidden && vi->is_hidden()) continue;
+        //vi->set_weight(weights[j++]);
         vi->set_weight(weights[j++] - mean);
     }
 }

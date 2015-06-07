@@ -48,14 +48,22 @@ public:
         clear();
     }
     Scene(const Scene& sc);
+<<<<<<< HEAD
     Scene* operator=(const Scene& sc);
+=======
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
     
     double get_tau() const { return m_tau; }
     void set_tau(double tau) { m_tau = tau; }
     void toggle_invert() { m_domain.toggle_invert(); }
     void toggle_timer() { m_timer_on = !m_timer_on; }   
+<<<<<<< HEAD
     void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }   
+=======
+    void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }
+    
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
     bool connectivity_fixed() const { return m_fixed_connectivity; }
     void clear()
     {

@@ -3,19 +3,40 @@
 
 // System
 #include "lbfgs.h"
+<<<<<<< HEAD
 
 // Local
 #include "scene.h"
 
+=======
+#include <string>
+
+// Local
+#include "scene.h"
+#include "window.h"
+#include "domain.h"
+#include "random.h"
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
 class OptimalTransport
 {
 public:
+<<<<<<< HEAD
     OptimalTransport(Scene* sc, Scene* tc);
     void runOptimalTransport();
 
     Scene* m_scene;
     Scene* target_scene;
+=======
+    OptimalTransport(Scene* sc, Scene* tc, MainWindow* win);
+    void runOptimalTransport();
+    void evaluate_results(int ret, lbfgsfloatval_t *x, int n);
+
+    Scene* m_scene;
+    Scene* target_scene;
+    MainWindow* win;
+
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
 protected:
     // L_BFGS
@@ -88,8 +109,14 @@ private:
 
     std::vector<Vertex_handle> source_vertices;
     std::vector<Point> source_points;
+<<<<<<< HEAD
 
     lbfgsfloatval_t probability_per_cell;
+=======
+    std::vector<FT> capacities;
+
+    FT integrated_source_intensity;
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
     bool prepare_data();
 };

@@ -21,7 +21,10 @@ private:
     VoronoiCreator* voronoicreator;
     Scene* m_scene;
     Scene* target_scene;
+<<<<<<< HEAD
     Scene* compute_scene;
+=======
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
     double m_stepX;
     double m_stepW;
@@ -56,7 +59,9 @@ public:
 
     unsigned& max_iters() { return m_max_iters; }
     const unsigned max_iters() const { return m_max_iters; } 
-    
+
+    void update();
+
 protected slots:
     // drag and drop
     void dropEvent(QDropEvent *event);
@@ -70,8 +75,12 @@ protected slots:
 	void addRecentFiles(QMenu* menu, QAction* insertBefore = 0);    
 	unsigned int maxNumberOfRecentFiles() const {return maxNumRecentFiles;}
 
+<<<<<<< HEAD
     // 
     void update();
+=======
+    //
+>>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
     void open(const QString& filename, const bool open_target);
     void save(const QString& filename) const;
     bool is_image(const QString& filename) const;
