@@ -12,6 +12,9 @@
 #include "types.h"
 #include "scene.h"
 
+class Scene;
+class VoronoiCreator;
+
 class Interpolation{
 
 private:
@@ -19,19 +22,24 @@ private:
     std::vector<double> c_weights;
     std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
-    Scene* sc;
 
 public:
-    Interpolation();
-    ~Interpolation(){delete sc;}
+    Scene* m_scene;
+    Scene* target_scene;
+    Scene* compute_scene;
 
-    Scene getSceneCp();
-    Scene& getScene();
+    Interpolation(Scene* sc, Scene* tsc, Scene* csc);
+    ~Interpolation(){}
 
-    std::vector<Point> findNaturalNeighbor(Point oP);
+    void runInterpolation();
+    bool prepareData();
+
+    std::vector<Point>& getXo(){return Xo;}
+    std::vector<Vertex_handle> findNaturalNeighbor(Point oP);
     std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP){}
-    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices){}
+    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices,Scene* sc){}
 
+    std::vector<Vertex_handle> compareCell(Vertex_handle vc);
 
 
 };

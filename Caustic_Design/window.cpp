@@ -16,14 +16,21 @@
 #include "window.h"
 #include "dialog.h"
 #include "scene.h"
+#include "voronoi_creation.h"
+#include "optimal_transport.h"
 
-MainWindow::MainWindow() : 
-QMainWindow(), Ui_MainWindow(), 
-maxNumRecentFiles(15), recentFileActs(15)
+int nbpoints; // nb of centroids
+
+MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15), recentFileActs(15)
 {
 	setupUi(this);    
     m_scene = new Scene;
 	viewer->set_scene(m_scene);
+
+    target_scene = new Scene;
+    compute_scene = new Scene;
+
+    voronoicreator= new VoronoiCreator(m_scene);
     
     m_verbose = 1;
     m_stepX = 0.0;
@@ -35,13 +42,16 @@ maxNumRecentFiles(15), recentFileActs(15)
 	// accepts drop events
 	setAcceptDrops(true);
 	addRecentFiles(menuFile);
-	connect(this, SIGNAL(openRecentFile(QString)), 
-            this, SLOT(open(QString)));
+    connect(this, SIGNAL(openRecentFile(QString, bool)),
+            this, SLOT(open(QString, bool)));
 }
 
 MainWindow::~MainWindow()
 {
     if (m_scene) delete(m_scene);
+    if (target_scene) delete(target_scene);
+    if (compute_scene) delete(compute_scene);
+    if (compute_scene) delete(compute_scene);
 }
 
 void MainWindow::addToRecentFiles(QString fileName)
@@ -64,7 +74,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 		if (!filename.isEmpty())
 		{
 			QTextStream(stderr) << QString("dropEvent(\"%1\")\n").arg(filename);
-			open(filename);
+            open(filename, false);
 		}
 	}
 	event->acceptProposedAction();
@@ -85,7 +95,7 @@ void MainWindow::openRecentFile_aux()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
 	if (action)
-		emit openRecentFile(action->data().toString());
+        emit openRecentFile(action->data().toString(), false);
 }
 
 void MainWindow::updateRecentFileActions()
@@ -129,13 +139,26 @@ void MainWindow::addRecentFiles(QMenu* menu, QAction* insertBeforeAction)
 	updateRecentFileActions();
 }
 
-void MainWindow::open(const QString& filename)
+void MainWindow::open(const QString& filename, const bool open_target)
 {
     std::cerr << "open ...";
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (is_image(filename)) m_scene->load_image(filename);
-    else                    m_scene->load_points(filename);
-	QApplication::restoreOverrideCursor();	
+    if (open_target)
+    {
+        if (is_image(filename)) target_scene->load_image(filename);
+        else                    target_scene->load_points(filename);
+    }else
+    {
+        if (is_image(filename)) {
+            m_scene->load_image(filename);
+            compute_scene->load_image(filename);
+        }
+        else                    {
+            m_scene->load_points(filename);
+            compute_scene->load_points(filename);
+        }
+    }
+    QApplication::restoreOverrideCursor();
     std::cerr << "done" << std::endl;
 
     addToRecentFiles(filename);
@@ -176,15 +199,32 @@ void MainWindow::on_actionOpenImage_triggered()
 	QString fileName = 
     QFileDialog::getOpenFileName(this, tr("Open image"), ".");
 	if (fileName.isEmpty()) return;
-    open(fileName);
+    open(fileName, false);
 }
+
+void MainWindow::on_actionLoadTargetImage_triggered()
+{
+    QString fileName =
+    QFileDialog::getOpenFileName(this, tr("Open image"), ".");
+    if (fileName.isEmpty()) return;
+    open(fileName, true);
+}
+
 
 void MainWindow::on_actionOpenPoints_triggered()
 {
 	QString fileName = 
     QFileDialog::getOpenFileName(this, tr("Open pointset"), ".dat");
 	if (fileName.isEmpty()) return;
-    open(fileName);
+    open(fileName, false);
+}
+
+void MainWindow::on_actionOpenTargetDAT_triggered()
+{
+    QString fileName =
+            QFileDialog::getOpenFileName(this, tr("Open pointset"), ".dat");
+    if (fileName.isEmpty()) return;
+    open(fileName, true);
 }
 
 void MainWindow::on_actionSavePoints_triggered()
@@ -663,3 +703,42 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
     if (!ok) return;
     m_scene->count_sites_per_bin(nb);
 }
+
+void MainWindow::on_actionVoronoiCreation_triggered(){
+    bool ok;
+    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 5000, 100, &ok);
+    if (!ok) return;
+    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 10, 1, &ok);
+    if (!ok) return;
+    voronoicreator->init_points(nbpoints,m_scene);
+    voronoicreator->init_points(nbpoints,compute_scene);
+    for (uint i=0; i<nbiter; i++){
+        std::cout << "(" << (i+1) << "/" << nbiter << "): ";
+        voronoicreator->apply_lloyd_optimization(m_scene);
+        voronoicreator->apply_lloyd_optimization(compute_scene);
+    }
+    this->on_actionSavePoints_triggered();
+}
+
+void MainWindow::on_actionComputeInterpolation_triggered(){
+    std::cout << "onActionComputeInterpolation" << std::endl;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    Interpolation inter = Interpolation(m_scene, target_scene, compute_scene);
+    inter.runInterpolation();
+    QApplication::restoreOverrideCursor();
+    update();
+}
+
+void MainWindow::on_actionCalculateOptimalTransport_triggered()
+{
+    std::cout << "onActionComputeOptimal" << std::endl;
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    OptimalTransport ot = OptimalTransport(m_scene, target_scene);
+    ot.runOptimalTransport();
+    QApplication::restoreOverrideCursor();
+    update();
+}
+
+
+

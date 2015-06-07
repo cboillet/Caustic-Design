@@ -1,12 +1,13 @@
 #include "interpolation.h"
 #include "random.h"
+#include "voronoi_creation.h"
 
-Interpolation::Interpolation(){
-    sc = new Scene();
+Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc):m_scene(sc),target_scene(tsc),compute_scene(csc){
     if (!sc->getDomain().is_valid()) return;
     double dx = sc->getDomain().get_dx();
     double dy = sc->getDomain().get_dy();
-    while (Xo.size() != 500)
+    int i;
+    for (i=0; i<400; i++)
     {
         double x = random_double(-dx, dx);
         double y = random_double(-dy, dy);
@@ -14,8 +15,81 @@ Interpolation::Interpolation(){
     }
 }
 
-Scene Interpolation::getSceneCp(){return *sc;}
-Scene& Interpolation::getScene(){return (*sc);}
+bool Interpolation::prepareData(){
+  /*  std::vector<Vertex_handle> compute_vertices;
+    std::vector<FT> compute_weights;
+    std::vector<Point> compute_points;
+
+    //ensure scene are available
+    if(!m_scene) return false;
+    if(!compute_scene) return false;
+    std::cout << "scenes available.. ";
+
+    // --- retrieve points, weights, vertices
+    source_points.clear();
+    std::vector<FT> scene_weights = std::vector<FT>();
+    m_scene->collect_sites(source_points, scene_weights);
+
+    compute_points.clear();
+    compute_weights.clear();
+    compute_scene->collect_sites(compute_points, compute_weights);
+
+    source_vertices = m_scene->getVertices();
+    compute_vertices = compute_scene->getVertices();
+
+    // --- ensure they are of same dimension
+    //if(target_points.size() != source_points.size()) return false;
+    std::cout << "same point amount.. ";
+    //if(target_weights.size() != scene_weights.size()) return false;
+    std::cout << "same weight amount.. ";
+    if(compute_vertices.size() != source_vertices.size())
+    {
+        std::cout << "error.. target_vertices.size = " << target_vertices.size() << " != " << source_vertices.size() << " = source.vertices.size";
+        return false;
+    }
+    std::cout << "same vertex amount.. ";
+
+    std::cout << std::endl;
+    // --- no issue found
+    return true;
+    */
+}
+
+std::vector<Vertex_handle> Interpolation::compareCell(Vertex_handle vc){
+   /* Edge_circulator ecirc = compute_scene->getRT().incident_edges(vi);
+    Edge_circulator eend  = ecirc;
+    Vertex_handle neighborVertex;
+    std::vector<Vertex_handle> neighbors;
+    GAL_For_all(ecirc, eend)
+    {
+        Edge edge = *ecirc;
+        neighborVertex = get_opposite(edge);
+        std::cout << "we have a neighbor here" << std::endl;
+        neighbors.push_back(neighborVertex);
+    }
+
+
+    std::vector<Point> polygonc;
+    std::vector<Point> polygono;
+    if (!vc->is_hidden()){
+        bool ok = compute_scene->getRT().pre_build_polygon(vc, vc->dual().points());
+        compute_scene->getRT().build_polygon(vc, polygonc);
+    }
+
+    for (int i = 0; i <= m_scene->getVertices().size(); ++i){
+        compute_scene->getRT().build_polygon(vo, polygono);
+        if(polygono == polygonc) {
+            std::cout << "not a neigbor" << std::endl;
+            return false;
+        }
+        polygono.clear();
+    }
+
+    std::cout << "we have a neighbor here" << std::endl;
+    return true;
+    */
+
+}
 
 /*
 Method 1:
@@ -34,46 +108,80 @@ Method 3:
 
 Current: method 1
 */
+void Interpolation::runInterpolation(){
+   std::vector<Vertex_handle> neighbors = findNaturalNeighbor(Xo[0]);
+}
 
-std::vector<Point> Interpolation::findNaturalNeighbor(Point oP){
-    /*Centroid instertion*/
-    Scene modifiedScene = this->getSceneCp();
-    Scene& originScene = this->getScene();
+std::vector<Vertex_handle> Interpolation::findNaturalNeighbor(Point oP){
+    unsigned int i;
     std::vector<Point> points;
-    points.push_back(oP);
-    std::vector<Point> neighbors;
+    std::vector<Vertex_handle> neighbors;
+    Vertex_handle neighborVertex;
+    bool newnei;
+    /*Insert new vertex/oP as centroids as in the computational Scene*/
+    //test
+    if(!compute_scene){
+        std::cerr << "target scene not available!" << std::endl;
+    }
+    std::vector<Vertex_handle> cs_vertex = compute_scene->getVertices();
+    std::cout << "compute scene vertices= " << cs_vertex.data() << std::endl;
 
-    /*Insert new vertex*/
-    int nb=modifiedScene.getVertices().size();
-    Vertex_handle vertex = modifiedScene.insert_vertex(oP, 0, nb);
-    if (vertex != Vertex_handle()) modifiedScene.getVertices().push_back(vertex);
-
-    /*update centroids
-     * compute modified centroids
-     * update_positions();
-    */
-    //TO DO: add modified centroids
-    unsigned j = 0;
-    for (unsigned i = 0; i < nb+1; ++i)
+    Vertex_handle testc=cs_vertex[3];
+    for (i = 0; i < m_scene->getVertices().size(); ++i)
     {
-        //update modifier point
-        Vertex_handle vm = modifiedScene.getVertices()[i];
-        if (vm->is_hidden()) continue;
-        Point pm = vm->compute_centroid();
-        points.push_back(pm);
-        pm = modifiedScene.getDomain().clamp(pm); //go to boundaries
-        vm->set_position(pm);
+       Vertex_handle vi = m_scene->getVertices()[i];
+       Vertex_handle vtest = compute_scene->getVertices()[i];
 
-        //compare original voronoi
-        Vertex_handle vo = originScene.getVertices()[i];
-        if (i==nb) continue;
-        Point po = vo->compute_centroid();
-        if (po != pm)
-            neighbors.push_back(pm);
+       if (vi->is_hidden()) continue;
+       Point ci = vi->compute_centroid();
+       points.push_back(ci);
+    }
+    points.push_back(oP);
+    Vertex_handle vertex = compute_scene->insert_vertex(points[i], 0.0, cs_vertex.size());
+    cs_vertex.push_back(vertex);
+    compute_scene->update_positions(points);
+    std::vector<FT> weights(points.size(), 0.0);
+    compute_scene->construct_triangulation(points, weights);
+
+    //need not centroids but edge !
+
+    /*reconstruct the cell polygon and check the modified polygon*/
+    /*
+      for (i = 0; i <= m_scene->getVertices().size(); ++i){
+       if(points[i] != oP )
+
+           newnei = this->compareCell(m_scene->getVertices()[i], compute_scene->getVertices()[i]);
+       }
+    */
+    const RT& rt = compute_scene->getRT();
+    Edge_circulator ecirc = rt.incident_edges(vertex); //to debug !
+   /* Edge_circulator eend  = ecirc;
+    CGAL_For_all(ecirc, eend)
+    {
+        Edge edge = *ecirc;
+        neighborVertex = compute_scene->getRT().get_opposite(edge);
+        std::cout << "we have a neighbor here" << std::endl;
+        neighbors.push_back(neighborVertex);
+
+    }
+    */
+
+
+    std::vector<Point> polygonc;
+    std::vector<Point> polygono;
+    if (!vertex->is_hidden()){
+        bool ok = compute_scene->getRT().pre_build_polygon(vertex, vertex->dual().points());
+        compute_scene->getRT().build_polygon(vertex, polygonc);
     }
 
-    modifiedScene.update_triangulation();
+    for (int i = 0; i <= m_scene->getVertices().size(); ++i){
+        compute_scene->getRT().build_polygon(m_scene->getVertices()[i], polygono);
+        if(polygono == polygonc) {
+            std::cout << "not a neigbor" << std::endl;
+        }
+        polygono.clear();
+    }
 
-    /*compute weights*/
+    std::cout << "we have a neighbor here" << std::endl;
     return neighbors;
 }

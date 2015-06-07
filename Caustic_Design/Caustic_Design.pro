@@ -16,6 +16,8 @@ LIBS        += -ltbb
 LIBS        += -lmetis
 LIBS        += -lblas
 LIBS        += -llapack
+# L-BFGS
+LIBS        += -llbfgs
 QMAKE_CXXFLAGS += -frounding-math -O3
 
 HEADERS += \
@@ -42,7 +44,9 @@ HEADERS += \
     types.h \
     util.h \
     window.h \
-    interpolation.h
+    interpolation.h \
+        optimal_transport.h \
+        voronoi_creation.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -59,9 +63,13 @@ SOURCES += \
     render.cpp \
     sites.cpp \
     window.cpp \
-    interpolation.cpp
+    interpolation.cpp \
+    optimal_transport.cpp \
+        voronoi_creation.cpp
+
 
 FORMS += \
     caustic.ui \
     dialog.ui
 QT += opengl
+CONFIG += c++11
