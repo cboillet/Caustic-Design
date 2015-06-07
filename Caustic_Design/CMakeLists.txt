@@ -22,10 +22,15 @@ if(NOT OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
-
+################################
+# lbfgs
+################################
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
+FIND_PACKAGE(LBFGS)
+#
 
 set(QT_USE_QTOPENGL TRUE)
-set ( CGAL_FLAGS "-lCGAL -lboost_thread -lgmp -lmpfr -lm -lamd -lcamd -lcolamd -lccolamd -lcholmod -lspqr -ltbb -lmetis -lblas -llapack -llbfgs" )
+set ( CGAL_FLAGS "-lCGAL -lboost_thread -lgmp -lmpfr -lm -lamd -lcamd -lcolamd -lccolamd -lcholmod -lspqr -ltbb -lmetis -lblas -llapack" )
 set (CMAKE_CXX_FLAGS "-frounding-math -O3 ${CGAL_FLAGS}")
 include ( ${QT_USE_FILE} )
 include_directories (
@@ -33,6 +38,7 @@ include_directories (
 	${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
 	${GLUT_INCLUDE_DIR}
+	${LBFGS_INCLUDE_DIRS}
 	/usr/include/)
 set ( Caustic_Design_HDRS
 	matrix/sparse_array.h
@@ -94,4 +100,4 @@ set ( Caustic_Design_MOCS
 QT4_WRAP_CPP(MOCS ${Caustic_Design_MOCS})
 
 add_executable ( Caustic_Design ${Caustic_Design_SRCS} ${UIS} ${RSCS} ${TRS} ${MOCS} )
-target_link_libraries ( Caustic_Design  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLU_LIBRARY} ${CGAL_FLAGS})
+target_link_libraries ( Caustic_Design  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLU_LIBRARY} ${CGAL_FLAGS} ${LBFGS_LIBRARIES})
