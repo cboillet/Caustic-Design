@@ -31,6 +31,8 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     target_scene = new Scene;
     compute_scene = new Scene;
 
+    viewer_2->set_scene(target_scene);
+
     voronoicreator= new VoronoiCreator(m_scene);
     
     m_verbose = 1;
@@ -178,6 +180,7 @@ void MainWindow::save(const QString& filename) const
 void MainWindow::update()
 {
 	viewer->repaint();
+    viewer_2->repaint();
 }
 
 bool MainWindow::is_image(const QString& filename) const
