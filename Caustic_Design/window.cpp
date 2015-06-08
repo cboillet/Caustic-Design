@@ -735,7 +735,7 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     std::cout << "onActionComputeOptimal" << std::endl;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, target_scene);
+    OptimalTransport ot = OptimalTransport(m_scene, target_scene, this);
     ot.runOptimalTransport();
     QApplication::restoreOverrideCursor();
     update();
