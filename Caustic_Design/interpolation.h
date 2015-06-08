@@ -1,4 +1,4 @@
-#ifndef INTERPOLATION_H&
+#ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 // STL
 #include <map>
@@ -11,9 +11,11 @@
 #include "matrix/sparse_matrix.h"
 #include "types.h"
 #include "scene.h"
+#include "window.h"
 
 class Scene;
 class VoronoiCreator;
+class MainWindow;
 
 class Interpolation{
 
@@ -27,19 +29,18 @@ public:
     Scene* m_scene;
     Scene* target_scene;
     Scene* compute_scene;
+    MainWindow* win;
 
-    Interpolation(Scene* sc, Scene* tsc, Scene* csc);
+    Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* win);
     ~Interpolation(){}
 
     void runInterpolation();
-    bool prepareData();
 
     std::vector<Point>& getXo(){return Xo;}
     std::vector<Vertex_handle> findNaturalNeighbor(Point oP);
-    std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP){}
-    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices,Scene* sc){}
+    std::vector<std::pair<Vertex_handle, FT> > computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
+    std::vector<Point> computeXr(std::vector<std::pair<Vertex_handle, FT> > vertices_weight);
 
-    std::vector<Vertex_handle> compareCell(Vertex_handle vc);
 
 
 };

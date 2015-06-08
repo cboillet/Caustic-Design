@@ -45,8 +45,8 @@ HEADERS += \
     util.h \
     window.h \
     interpolation.h \
-        optimal_transport.h \
-        voronoi_creation.h
+    optimal_transport.h \
+    voronoi_creation.h
 
 SOURCES += \
     matrix/sparse_array.cpp \

@@ -52,7 +52,7 @@ MainWindow::~MainWindow()
     if (m_scene) delete(m_scene);
     if (target_scene) delete(target_scene);
     if (compute_scene) delete(compute_scene);
-    if (compute_scene) delete(compute_scene);
+ 
 }
 
 void MainWindow::addToRecentFiles(QString fileName)
@@ -724,7 +724,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(m_scene, target_scene, compute_scene);
+    Interpolation inter = Interpolation(m_scene, target_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
     update();
@@ -733,6 +733,7 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimal" << std::endl;
+    std::cout << "onActionComputeOptimalTransport" << std::endl;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     OptimalTransport ot = OptimalTransport(m_scene, target_scene, this);

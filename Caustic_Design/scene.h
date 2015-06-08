@@ -29,6 +29,7 @@ private:
     std::map<Edge, FT> m_ratio;
     std::vector<double> m_r, m_g, m_b;
     std::vector<Vertex_handle> m_vertices;
+
     
     bool m_timer_on;
     std::vector<double> m_timer;    
@@ -66,7 +67,7 @@ public:
     }
 
     Domain& getDomain(){return m_domain;} //vieux getteur
-    const RT& getRT(){return m_rt;}
+    RT& getRT(){return m_rt;}
     std::vector<Vertex_handle>& getVertices(){return m_vertices;}
 
 
@@ -312,6 +313,12 @@ public:
     Point jitter_point(const Point& p, const FT max_radius) const;
     
     void count_sites_per_bin(unsigned N) const;
+
+    // NEIGHBOR //
+
+    std::vector<Vertex_handle> find_neighbors(Vertex_handle vi);
+
+    int findIndexVertice (Vertex_handle vi);
 };
 
 #endif

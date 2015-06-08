@@ -395,6 +395,26 @@ public:
         } while (vclosest != vertex);
         return vclosest;  
     }
+
+  /*  std::vector<Vertex_handle> find_neighbors(Vertex_handle vi){
+        std::vector<Vertex_handle> neighbors;
+
+        Edge_circulator ecirc = incident_edges(vi);
+        Edge_circulator eend  = ecirc;
+        if (vi->is_hidden()) return neighbors;
+        CGAL_For_all(ecirc, eend)
+            {
+                Edge edge = *ecirc;
+                if (!is_inside(edge)) continue;
+                std::cout << "we have a neighbor here" << std::endl;
+                Vertex_handle vj = get_source(edge);
+                if (vj == vi) vj = get_target(edge);
+            }
+
+        return neighbors;
+    }
+*/
+
 };
 
 #endif
