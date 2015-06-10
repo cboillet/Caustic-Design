@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow, public Ui_MainWindow
 private:
     VoronoiCreator* voronoicreator;
     Scene* m_scene;
-    Scene* target_scene;
+    Scene*source_scene;
     Scene* compute_scene;
 
     double m_stepX;

@@ -28,10 +28,10 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_scene = new Scene;
 	viewer->set_scene(m_scene);
 
-    target_scene = new Scene;
+    source_scene = new Scene;
     compute_scene = new Scene;
 
-    viewer_2->set_scene(target_scene);
+    viewer_2->set_scene(source_scene);
 
     voronoicreator= new VoronoiCreator(m_scene);
     
@@ -52,7 +52,7 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
 MainWindow::~MainWindow()
 {
     if (m_scene) delete(m_scene);
-    if (target_scene) delete(target_scene);
+    if (source_scene) delete(source_scene);
     if (compute_scene) delete(compute_scene);
  
 }
@@ -148,8 +148,8 @@ void MainWindow::open(const QString& filename, const bool open_target)
 	QApplication::setOverrideCursor(Qt::WaitCursor);
     if (open_target)
     {
-        if (is_image(filename)) target_scene->load_image(filename);
-        else                    target_scene->load_points(filename);
+        if (is_image(filename)) source_scene->load_image(filename);
+        else                    source_scene->load_points(filename);
     }else
     {
         if (is_image(filename)) {
@@ -549,108 +549,126 @@ void MainWindow::on_actionGenerateVariablePoints_triggered()
 void MainWindow::on_actionViewImageGrid_toggled()
 {
     viewer->toggle_view_image_grid();
+    viewer_2->toggle_view_image_grid();
     update();
 }
 
 void MainWindow::on_actionViewImage_toggled()
 {
     viewer->toggle_view_image();
+    viewer_2->toggle_view_image();
     update();
 }
 
 void MainWindow::on_actionViewDomain_toggled()
 {
     viewer->toggle_view_domain();
+    viewer_2->toggle_view_domain();
     update();
 }
 
 void MainWindow::on_actionViewPoints_toggled()
 {
     viewer->toggle_view_points();
+    viewer_2->toggle_view_points();
     update();
 }
 
 void MainWindow::on_actionViewVertices_toggled()
 {
     viewer->toggle_view_vertices();
+    viewer_2->toggle_view_vertices();
     update();
 }
 
 void MainWindow::on_actionViewEdges_toggled()
 {
     viewer->toggle_view_edges();
+    viewer_2->toggle_view_edges();
     update();
 }
 
 void MainWindow::on_actionViewFaces_toggled()
 {
     viewer->toggle_view_faces();
+    viewer_2->toggle_view_faces();
     update();
 }
 
 void MainWindow::on_actionViewWeights_toggled()
 {
     viewer->toggle_view_weights();
+    viewer_2->toggle_view_weights();
     update();
 }
 
 void MainWindow::on_actionViewDual_toggled()
 {
     viewer->toggle_view_dual();
+    viewer_2->toggle_view_dual();
     update();
 }
 
 void MainWindow::on_actionViewBoundedDual_toggled()
 {
     viewer->toggle_view_bounded_dual();
+    viewer_2->toggle_view_bounded_dual();
     update();
 }
 
 void MainWindow::on_actionViewPixels_toggled()
 {
     viewer->toggle_view_pixels();
+    viewer_2->toggle_view_pixels();
     update();
 }
 
 void MainWindow::on_actionViewCapacity_toggled()
 {
     viewer->toggle_view_capacity();
+    viewer_2->toggle_view_capacity();
     update();
 }
 
 void MainWindow::on_actionViewRegularity_toggled()
 {
     viewer->toggle_view_regularity();
+    viewer_2->toggle_view_regularity();
     update();
 }
 
 void MainWindow::on_actionViewRegularSites_toggled()
 {
     viewer->toggle_view_regular_sites();
+    viewer_2->toggle_view_regular_sites();
     update();
 }
 
 void MainWindow::on_actionViewVariance_toggled()
 {
     viewer->toggle_view_variance();
+    viewer_2->toggle_view_variance();
     update();
 }
 
 void MainWindow::on_actionViewBarycenter_toggled()
 {
     viewer->toggle_view_barycenter();
+    viewer_2->toggle_view_barycenter();
     update();
 }
 
 void MainWindow::on_actionViewWeightHistogram_toggled()
 {
     viewer->toggle_view_weight_histogram();
+    viewer_2->toggle_view_weight_histogram();
     update();
 }
 
 void MainWindow::on_actionViewCapacityHistogram_toggled()
 {
     viewer->toggle_view_capacity_histogram();
+    viewer_2->toggle_view_capacity_histogram();
     update();
 }
 
@@ -710,9 +728,9 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
 
 void MainWindow::on_actionVoronoiCreation_triggered(){
     bool ok;
-    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 5000, 100, &ok);
+    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 200000, 100, &ok);
     if (!ok) return;
-    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 10, 1, &ok);
+    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 40, 1, &ok);
     if (!ok) return;
     voronoicreator->init_points(nbpoints,m_scene);
     voronoicreator->init_points(nbpoints,compute_scene);
@@ -727,7 +745,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(m_scene, target_scene, compute_scene, this);
+    Interpolation inter = Interpolation(m_scene, source_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
     update();
@@ -735,11 +753,10 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
-    std::cout << "onActionComputeOptimal" << std::endl;
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, target_scene, this);
+    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);
     ot.runOptimalTransport();
     QApplication::restoreOverrideCursor();
     update();

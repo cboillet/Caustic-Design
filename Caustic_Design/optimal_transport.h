@@ -14,12 +14,12 @@
 class OptimalTransport
 {
 public:
-    OptimalTransport(Scene* sc, Scene* tc, MainWindow* win);
+    OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win);
     void runOptimalTransport();
     void evaluate_results(int ret, lbfgsfloatval_t *x, int n);
 
     Scene* m_scene;
-    Scene* target_scene;
+    Scene*source_scene;
     MainWindow* win;
 
 
@@ -88,14 +88,15 @@ protected:
 
 private:
 
-    std::vector<Vertex_handle> target_vertices;
-    std::vector<FT> target_weights;
-    std::vector<Point> target_points;
-
     std::vector<Vertex_handle> source_vertices;
+    std::vector<FT> source_weights;
     std::vector<Point> source_points;
-    std::vector<FT> capacities;
 
+    std::vector<Vertex_handle> m_vertices;
+    std::vector<Point> m_points;
+    std::vector<FT> source_capacities;
+
+    FT integrated_m_intensity;
     FT integrated_source_intensity;
 
     bool prepare_data();
