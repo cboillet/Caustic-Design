@@ -54,10 +54,10 @@
     </property>
     <addaction name="actionToggleInvert"/>
     <addaction name="actionOpenImage"/>
-    <addaction name="actionLoadTargetImage"/>
+    <addaction name="actionLoadSourceImage"/>
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
-    <addaction name="actionOpenTargetDAT"/>
+    <addaction name="actionOpenSourceDAT"/>
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
     <addaction name="separator"/>
@@ -534,14 +534,14 @@
     <string>Generate Voronoi</string>
    </property>
   </action>
-  <action name="actionOpenTargetDAT">
+  <action name="actionOpenSourceDAT">
    <property name="text">
-    <string>Open Target DAT</string>
+    <string>Load Source DAT</string>
    </property>
   </action>
-  <action name="actionLoadTargetImage">
+  <action name="actionLoadSourceImage">
    <property name="text">
-    <string>Load Target Image</string>
+    <string>Load Source Image</string>
    </property>
   </action>
   <action name="actionCalculateOptimalTransport">

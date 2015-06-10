@@ -73,7 +73,7 @@ protected slots:
 	unsigned int maxNumberOfRecentFiles() const {return maxNumRecentFiles;}
 
     //
-    void open(const QString& filename, const bool open_target);
+    void open(const QString& filename, const bool open_source);
     void save(const QString& filename) const;
     bool is_image(const QString& filename) const;
     
@@ -81,8 +81,8 @@ protected slots:
     void on_actionClear_triggered();
     void on_actionSnapshot_triggered();
     void on_actionOpenImage_triggered();
-    void on_actionLoadTargetImage_triggered();
-    void on_actionOpenTargetDAT_triggered();
+    void on_actionLoadSourceImage_triggered();
+    void on_actionOpenSourceDAT_triggered();
     void on_actionOpenPoints_triggered();
     void on_actionSavePoints_triggered();
     void on_actionSaveEPS_triggered();

@@ -142,11 +142,11 @@ void MainWindow::addRecentFiles(QMenu* menu, QAction* insertBeforeAction)
 	updateRecentFileActions();
 }
 
-void MainWindow::open(const QString& filename, const bool open_target)
+void MainWindow::open(const QString& filename, const bool open_source)
 {
     std::cerr << "open ...";
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (open_target)
+    if (open_source)
     {
         if (is_image(filename)) source_scene->load_image(filename);
         else                    source_scene->load_points(filename);
@@ -206,7 +206,7 @@ void MainWindow::on_actionOpenImage_triggered()
     open(fileName, false);
 }
 
-void MainWindow::on_actionLoadTargetImage_triggered()
+void MainWindow::on_actionLoadSourceImage_triggered()
 {
     QString fileName =
     QFileDialog::getOpenFileName(this, tr("Open image"), ".");
@@ -223,7 +223,7 @@ void MainWindow::on_actionOpenPoints_triggered()
     open(fileName, false);
 }
 
-void MainWindow::on_actionOpenTargetDAT_triggered()
+void MainWindow::on_actionOpenSourceDAT_triggered()
 {
     QString fileName =
             QFileDialog::getOpenFileName(this, tr("Open pointset"), ".dat");
