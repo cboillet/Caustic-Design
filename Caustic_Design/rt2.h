@@ -60,22 +60,18 @@ public:
     ////////////
     // ACCESS //
     ////////////
-    
     Vertex_handle get_source(const Edge& edge) const
     {
         return edge.first->vertex( Rt::ccw(edge.second) );
     }    
-    
     Vertex_handle get_target(const Edge& edge) const
     {
         return edge.first->vertex( Rt::cw(edge.second) );        
     }
-    
     Vertex_handle get_opposite(const Edge& edge) const
     {
         return edge.first->vertex( edge.second );
     }    
-    
     Edge get_twin(const Edge& edge) const
     {
         Face_handle f = edge.first;
@@ -83,40 +79,34 @@ public:
         Face_handle nf = f->neighbor(edge.second);
         return Edge(nf, Rt::ccw(nf->index(v)));
     }
-    
     Edge get_next(const Edge& edge) const
     {
         Face_handle f = edge.first;
         int index = Rt::ccw(edge.second);
         return Edge(f, index);
     }
-    
     Edge get_prev(const Edge& edge) const
     {
         Face_handle f = edge.first;
         int index = Rt::cw(edge.second);
         return Edge(f, index);
     }
-    
     FT get_length(const Edge& edge) const
     {
         Segment segment = get_segment(edge);
         return std::sqrt(segment.squared_length());
     }
-    
     Segment get_segment(const Edge& edge) const
     {
         const Point& ps = get_source(edge)->get_position();
         const Point& pt = get_target(edge)->get_position();
         return Segment(ps, pt);        
     }
-    
     FT get_area(Face_handle face) const
     {
         Triangle triangle = get_triangle(face);
         return triangle.area();
     }
-    
     Triangle get_triangle(Face_handle face) const
     {
         Vertex_handle v0 = face->vertex(0);
@@ -124,7 +114,6 @@ public:
         Vertex_handle v2 = face->vertex(2);
         return Triangle(v0->get_position(), v1->get_position(), v2->get_position());
     }
-    
     Vector get_orthogonal_vector(const Edge& edge) const
     {
         const Point& ps = get_source(edge)->get_position();
@@ -132,7 +121,6 @@ public:
         Vector vst = pt - ps;
         return Vector(-vst.y(), vst.x());
     }    
-
     FT get_average_length() const
     {
         unsigned nb = 0;
@@ -153,7 +141,6 @@ public:
     //////////
     // AREA //
     //////////
-    
     FT compute_area() const
     {
         FT area = 0.0;
@@ -170,14 +157,12 @@ public:
         
     ///////////////////////
     // INSIDE / BOUNDARY //
-    ///////////////////////
-    
+    ///////////////////////   
     bool is_inside(Face_handle face) const
     {
         if (RT::is_infinite(face)) return false;
         return true;
     }
-    
     bool is_inside(const Edge& edge) const
     {
         Edge twin = get_twin(edge);
@@ -185,7 +170,6 @@ public:
         bool right = is_inside(twin.first);
         return (left || right);
     }
-    
     bool is_boundary(const Edge& edge) const
     {
         Edge twin = get_twin(edge);
@@ -193,7 +177,6 @@ public:
         bool right = is_inside(twin.first);
         return (left != right);
     }
-    
     bool is_boundary(Vertex_handle vertex) const
     {
         if (vertex->is_hidden()) return false;
@@ -211,12 +194,10 @@ public:
     //////////
     // DUAL //
     //////////
-    
     Point get_dual(Face_handle face) const
     {
         return RT::dual(face);
     }
-
     Segment get_dual(const Edge& edge) const
     {
         /*
@@ -250,13 +231,11 @@ public:
             Point cw = get_dual(left_face);
             Ray ray(cw, -vec90);
             return Segment(ray.point(100), cw);
-        }
-        
+        }   
         Point cw = get_dual(right_face);
         Ray ray(cw, vec90);
         return Segment(cw, ray.point(100));
     }
-    
     Point get_edge_cw(const Edge& edge) const
     {
         Vertex_handle vi = get_source(edge);
@@ -276,14 +255,13 @@ public:
     /////////////
     // BOUNDED //
     /////////////
-
     void build_polygon(Vertex_handle vi, 
                        std::vector<Point>& points) const
     {
         points = vi->get_dual().get_points();
     }
-    
-    bool pre_build_polygon(Vertex_handle vi, 
+
+    bool pre_build_polygon(Vertex_handle vi,
                            std::vector<Point>& points) const
     {
         std::vector<Segment> segments;
@@ -330,7 +308,7 @@ public:
         }
         return true;
     }
-    
+
     void fill_gap(const Point& center, const Vector& size,
                   const Point& a, const Point& b, 
                   std::vector<Point>& points) const
@@ -417,6 +395,26 @@ public:
         } while (vclosest != vertex);
         return vclosest;  
     }
+
+  /*  std::vector<Vertex_handle> find_neighbors(Vertex_handle vi){
+        std::vector<Vertex_handle> neighbors;
+
+        Edge_circulator ecirc = incident_edges(vi);
+        Edge_circulator eend  = ecirc;
+        if (vi->is_hidden()) return neighbors;
+        CGAL_For_all(ecirc, eend)
+            {
+                Edge edge = *ecirc;
+                if (!is_inside(edge)) continue;
+                std::cout << "we have a neighbor here" << std::endl;
+                Vertex_handle vj = get_source(edge);
+                if (vj == vi) vj = get_target(edge);
+            }
+
+        return neighbors;
+    }
+*/
+
 };
 
 #endif

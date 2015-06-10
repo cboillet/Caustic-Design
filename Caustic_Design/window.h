@@ -7,16 +7,21 @@
 
 // local
 #include "ui_caustic.h"
+#include "voronoi_creation.h"
+
 
 class Scene;
+class VoronoiCreator;
 
 class MainWindow : public QMainWindow, public Ui_MainWindow
 {
 	Q_OBJECT
     
 private:
+    VoronoiCreator* voronoicreator;
     Scene* m_scene;
     Scene* target_scene;
+    Scene* compute_scene;
 
     double m_stepX;
     double m_stepW;

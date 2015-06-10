@@ -22,15 +22,18 @@
 
 int nbpoints; // nb of centroids
 
-MainWindow::MainWindow() : 
-QMainWindow(), Ui_MainWindow(), 
-maxNumRecentFiles(15), recentFileActs(15)
+MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15), recentFileActs(15)
 {
 	setupUi(this);    
     m_scene = new Scene;
 	viewer->set_scene(m_scene);
 
     target_scene = new Scene;
+    compute_scene = new Scene;
+
+    viewer_2->set_scene(target_scene);
+
+    voronoicreator= new VoronoiCreator(m_scene);
     
     m_verbose = 1;
     m_stepX = 0.0;
@@ -50,6 +53,8 @@ MainWindow::~MainWindow()
 {
     if (m_scene) delete(m_scene);
     if (target_scene) delete(target_scene);
+    if (compute_scene) delete(compute_scene);
+ 
 }
 
 void MainWindow::addToRecentFiles(QString fileName)
@@ -147,8 +152,14 @@ void MainWindow::open(const QString& filename, const bool open_target)
         else                    target_scene->load_points(filename);
     }else
     {
-        if (is_image(filename)) m_scene->load_image(filename);
-        else                    m_scene->load_points(filename);
+        if (is_image(filename)) {
+            m_scene->load_image(filename);
+            compute_scene->load_image(filename);
+        }
+        else                    {
+            m_scene->load_points(filename);
+            compute_scene->load_points(filename);
+        }
     }
     QApplication::restoreOverrideCursor();
     std::cerr << "done" << std::endl;
@@ -169,6 +180,7 @@ void MainWindow::save(const QString& filename) const
 void MainWindow::update()
 {
 	viewer->repaint();
+    viewer_2->repaint();
 }
 
 bool MainWindow::is_image(const QString& filename) const
@@ -702,71 +714,29 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
     if (!ok) return;
     int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 10, 1, &ok);
     if (!ok) return;
-    VoronoiCreator vc = VoronoiCreator(m_scene);
-    vc.init_points(nbpoints,m_scene);
+    voronoicreator->init_points(nbpoints,m_scene);
+    voronoicreator->init_points(nbpoints,compute_scene);
     for (uint i=0; i<nbiter; i++){
         std::cout << "(" << (i+1) << "/" << nbiter << "): ";
-        vc.apply_lloyd_optimization(m_scene);
+        voronoicreator->apply_lloyd_optimization(m_scene);
+        voronoicreator->apply_lloyd_optimization(compute_scene);
     }
     this->on_actionSavePoints_triggered();
 }
 
 void MainWindow::on_actionComputeInterpolation_triggered(){
-    Interpolation inter = Interpolation(m_scene);
-    int i;
-    std::vector<Point> neighboors;
-    for (i=0; i<500; i++)
-    {
-        neighboors = inter.findNaturalNeighbor(inter.getXo()[i],m_scene);
-    }
+    std::cout << "onActionComputeInterpolation" << std::endl;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    Interpolation inter = Interpolation(m_scene, target_scene, compute_scene, this);
+    inter.runInterpolation();
+    QApplication::restoreOverrideCursor();
+    update();
 }
 
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
+    std::cout << "onActionComputeOptimal" << std::endl;
     std::cout << "onActionComputeOptimalTransport" << std::endl;
-
-    // -- following part randomizes the weights with input from user (for debugging)
-    /*bool ok;
-    double min = QInputDialog::getDouble(this, tr("Min"), tr("Minimum weight:"), 0, -10.0, 10.0, 1, &ok);
-    if(!ok) return;
-    double max = QInputDialog::getDouble(this, tr("Max"), tr("Maximum weight:"), 0, -10.0, 10.0, 1, &ok);
-    if(!ok) return;
-
-    min /= 1000.0;
-    max /= 1000.0;
-
-    std::cout << "min = " << min << ", max = " << max << std::endl;
-
-    std::vector<FT> weights = std::vector<FT>(m_scene->getVertices().size());
-    for(int i=0; i<m_scene->getVertices().size(); i++){
-        weights[i] = random_double(min, max);
-    }
-    m_scene->update_weights(weights);
-    m_scene->update_triangulation();
-    update();
-
-    std::vector<Point> points = std::vector<Point>();
-    m_scene->collect_visible_points(points);
-
-    std::cout << "visible points = " << points.size() << ", vertices.size = " << m_scene->getVertices().size() << std::endl;
-
-    if(true) return;
-    */
-
-    // -- following parts automatically opens all relevant data (from absolute paths for my laptop)
-    /*
-    // open einstein as source
-    open(QString("/home/p/Pictures/einstein.png"), false);
-    // and corresponding dat file
-    open(QString("/home/p/Documents/Uni/cg-proj/Caustic-Design/build-Caustic_Design-Desktop-Release/einstein_2000.dat"), false);
-
-    // open render as target
-    open(QString("/home/p/Pictures/render.png"), true);
-    // and corresponding dat file
-    open(QString("/home/p/Documents/Uni/cg-proj/Caustic-Design/build-Caustic_Design-Desktop-Release/render_2000.dat"), true);
-
-    // show image
-    update();*/
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     OptimalTransport ot = OptimalTransport(m_scene, target_scene, this);

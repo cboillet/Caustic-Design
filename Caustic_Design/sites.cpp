@@ -15,6 +15,20 @@ Scene::Scene(const Scene& sc){
     m_vertices= sc.m_vertices;
 }
 
+Scene* Scene::operator=(const Scene& sc){
+    srand(0);
+    m_tau = 1.0;
+    m_timer_on = false;
+    m_fixed_connectivity = false;
+    m_rt = sc.m_rt;
+    m_domain = sc.m_domain;
+    m_capacities = sc.m_capacities;
+    m_tau = sc.m_tau;
+    m_ratio = sc.m_ratio;
+    m_r = sc.m_r; m_g=sc.m_g; m_b=sc.m_b;
+    m_vertices= sc.m_vertices;
+}
+
 void Scene::generate_random_sites(const unsigned nb)
 {
     if (!m_domain.is_valid()) return;
@@ -86,4 +100,34 @@ void Scene::init_colors(const unsigned nb)
         m_g.push_back(random_double(0.0, 1.0));
         m_b.push_back(random_double(0.0, 1.0));
     }
+}
+
+std::vector<Vertex_handle> Scene::find_neighbors(Vertex_handle vi){
+        std::vector<Vertex_handle> neighbors;
+        Edge_circulator ecirc = m_rt.incident_edges(vi);
+        Edge_circulator eend  = ecirc;
+        if (vi->is_hidden()) return neighbors;
+        CGAL_For_all(ecirc, eend)
+            {
+                Edge edge = *ecirc;
+                if (!m_rt.is_inside(edge)) continue;
+                std::cout << "we have a neighbor here" << std::endl;
+                Vertex_handle vj = m_rt.get_source(edge);
+                if (vj == vi) vj = m_rt.get_opposite(edge);
+                neighbors.push_back(vj);
+            }
+
+        return neighbors;
+    }
+
+int Scene::findIndexVertice (Vertex_handle vi){
+    int i;
+    Point ci = vi->compute_centroid();
+    Point cn;
+    for(i=0; i<m_vertices.size(); ++i){
+        cn = m_vertices[i]->compute_centroid();
+        if (ci.x()==cn.x() && ci.y()==cn.y())
+            return i;
+    }
+    return -1;
 }

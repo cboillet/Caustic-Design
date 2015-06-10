@@ -233,7 +233,7 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     for(int i=0; i<n; i++)
     {
         //FT integration_term = target_vertices[i]->compute_wasserstein( x[i] );
-        FT integration_term = source_vertices[i]->compute_wasserstein( target_points[i], x[i] );
+        FT integration_term = source_vertices[i]->compute_wasserstein( source_points[i], x[i] );
         fx += ( x[i]*capacities[i] - integration_term );
     }
 
@@ -300,11 +300,11 @@ bool OptimalTransport::prepare_data()
 
     integrated_source_intensity = m_scene->getDomain().integrate_intensity();
 
-    FT integrated_source_intensity = target_scene->getDomain().integrate_intensity();
+    FT integrated_target_intensity = target_scene->getDomain().integrate_intensity();
 
     for (int i=0; i<source_vertices.size(); i++)
     {
-        capacities.push_back(target_vertices[i]->compute_area() / integrated_source_intensity);
+        capacities.push_back(target_vertices[i]->compute_area() / integrated_target_intensity);
     }
 
     // --- ensure they are of same dimension

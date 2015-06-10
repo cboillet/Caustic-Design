@@ -11,6 +11,10 @@
 // local
 #include "matrix/sparse_matrix.h"
 #include "types.h"
+#include "interpolation.h"
+
+
+class Interpolation;
 
 class Scene
 {
@@ -25,10 +29,12 @@ private:
     std::map<Edge, FT> m_ratio;
     std::vector<double> m_r, m_g, m_b;
     std::vector<Vertex_handle> m_vertices;
+
     
     bool m_timer_on;
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
+
     
 public:
     Scene()
@@ -44,6 +50,7 @@ public:
         clear();
     }
     Scene(const Scene& sc);
+    Scene* operator=(const Scene& sc);
 
     
     double get_tau() const { return m_tau; }
@@ -51,8 +58,7 @@ public:
 
     void toggle_invert() { m_domain.toggle_invert(); }
     void toggle_timer() { m_timer_on = !m_timer_on; }   
-    void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }
-    
+    void toggle_connectivity() { m_fixed_connectivity = !m_fixed_connectivity; }   
     bool connectivity_fixed() const { return m_fixed_connectivity; }
 
     void clear()
@@ -66,15 +72,11 @@ public:
 
 
     // IO //
-
-    void load_image(const QString& filename);
-    
+    void load_image(const QString& filename);  
     void load_points(const QString& filename);
     
     void load_dat(const QString& filename, std::vector<Point>& points) const;
-    
-    void save_points(const QString& filename) const;
-    
+    void save_points(const QString& filename) const;   
     void save_dat(const QString& filename, const std::vector<Point>& points) const;
     
     void save_txt(const QString& filename, const std::vector<Point>& points) const;
@@ -96,12 +98,9 @@ public:
     void draw_point(const Point& a) const; 
     
     void draw_segment(const Point& a, const Point& b) const;    
-    
-    void draw_triangle(const Point& a, const Point& b, const Point& c) const;    
-    
+    void draw_triangle(const Point& a, const Point& b, const Point& c) const;
     void draw_polygon(const std::vector<Point>& polygon) const;
-    
-    void draw_circle(const Point& center, 
+    void draw_circle(const Point& center,
                      const FT scale, 
                      const std::vector<Point>& pts) const;
 
@@ -120,8 +119,7 @@ public:
                     const float blue) const;
     
     void draw_vertices(const float point_size) const;
-    
-    void draw_faces(const float red, 
+    void draw_faces(const float red,
                     const float green,
                     const float blue) const;
     
@@ -179,10 +177,8 @@ public:
                         const double ymax) const;
     
     // HISTOGRAM //
-    
-    void compute_capacity_histogram(std::vector<unsigned>& histogram) const;    
-    
-    void compute_weight_histogram(const double range, std::vector<unsigned>& histogram) const;    
+    void compute_capacity_histogram(std::vector<unsigned>& histogram) const;
+    void compute_weight_histogram(const double range, std::vector<unsigned>& histogram) const;
     
     // INIT //
     
@@ -206,27 +202,20 @@ public:
     bool construct_triangulation(const std::vector<Point>& points,
                                  const std::vector<FT>& weights,
                                  bool skip = false);
-    
-    bool populate_vertices(const std::vector<Point>& points,
+   bool populate_vertices(const std::vector<Point>& points,
                            const std::vector<FT>& weights);
-    
-    Vertex_handle insert_vertex(const Point& point,
+   Vertex_handle insert_vertex(const Point& point,
                                 const FT weight,
                                 const unsigned index);
-    
-    void compute_capacities(std::vector<FT>& capacities) const;
-    
-    void update_positions(const std::vector<Point>& points, 
+   void compute_capacities(std::vector<FT>& capacities) const;
+   void update_positions(const std::vector<Point>& points,
                           bool clamp = true,
-                          bool hidden = true);
-                          
+                          bool hidden = true);                  
     void update_weights(const std::vector<FT>& weights, 
                         bool hidden = true);
     
     void reset_weights();
-    
-	FT compute_value_integral() const;
-    
+    FT compute_value_integral() const;
     void pre_build_dual_cells();
     
     void pre_compute_area();
@@ -248,17 +237,13 @@ public:
     FT optimize_positions_via_lloyd(bool update);
     
     FT optimize_positions_via_gradient_ascent(FT timestep, bool update);
-    
-    FT optimize_weights_via_gradient_descent(FT timestep, bool update);    
-    
+    FT optimize_weights_via_gradient_descent(FT timestep, bool update);
     FT optimize_weights_via_newton(FT timestep, bool update);
-    
-    unsigned optimize_weights_via_gradient_descent_until_converge(FT timestep, 
+    unsigned optimize_weights_via_gradient_descent_until_converge(FT timestep,
                                                                   FT threshold,
                                                                   unsigned update,
                                                                   unsigned max_iters);
-    
-    unsigned optimize_weights_via_newton_until_converge(FT timestep, 
+    unsigned optimize_weights_via_newton_until_converge(FT timestep,
                                                         FT epsilon,
                                                         unsigned update,
                                                         unsigned max_iters);
@@ -291,8 +276,7 @@ public:
     void assign_pixels();
     
     FT rasterize(const EnrichedSegment& enriched_segment, Grid& grid);
-    
-    bool move(const unsigned i, const unsigned j, 
+    bool move(const unsigned i, const unsigned j,
               const Point& source, const Vector& velocity,
               unsigned& u, unsigned& v, Point& target);
 
@@ -323,14 +307,18 @@ public:
     
     void compute_regularity_vector(const std::vector<FT>& variance,
                                    std::vector<FT>& regularity) const;
-    
-    FT compute_regularity(Vertex_handle vi, const std::vector<FT>& variance) const; 
-
+    FT compute_regularity(Vertex_handle vi, const std::vector<FT>& variance) const;
     void jitter_vertices(const std::set<Vertex_handle>& vertices, const FT max_radius);
 
     Point jitter_point(const Point& p, const FT max_radius) const;
     
     void count_sites_per_bin(unsigned N) const;
+
+    // NEIGHBOR //
+
+    std::vector<Vertex_handle> find_neighbors(Vertex_handle vi);
+
+    int findIndexVertice (Vertex_handle vi);
 };
 
 #endif
