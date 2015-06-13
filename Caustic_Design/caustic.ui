@@ -55,6 +55,7 @@
     <addaction name="actionToggleInvert"/>
     <addaction name="actionOpenImage"/>
     <addaction name="actionLoadSourceImage"/>
+    <addaction name="actionLoadWeights"/>
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
     <addaction name="actionOpenSourceDAT"/>
@@ -559,6 +560,11 @@
    </property>
    <property name="text">
     <string>Centroid To Site</string>
+   </property>
+  </action>
+  <action name="actionLoadWeights">
+   <property name="text">
+    <string>Load Weights</string>
    </property>
   </action>
  </widget>

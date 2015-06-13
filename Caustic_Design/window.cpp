@@ -50,10 +50,10 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
 
     /*
     open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_5000.dat"), false);
+    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
     open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_5000.dat"), true);
+    open(QString("/home/p/Pictures/white_2000.dat"), true);
     */
 }
 
@@ -204,6 +204,19 @@ void MainWindow::on_actionClear_triggered()
 	m_scene->clear();
     std::cerr << "done" << std::endl;
 	update();
+}
+
+void MainWindow::on_actionLoadWeights_triggered()
+{
+    QString fileName =
+    QFileDialog::getOpenFileName(this, tr("Open Weights"), ".");
+    if(fileName.isEmpty()) return;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    std::vector<FT> weights = m_scene->load_weights(fileName);
+    m_scene->update_weights(weights, false);
+    m_scene->update_triangulation();
+    QApplication::restoreOverrideCursor();
+    update();
 }
 
 void MainWindow::on_actionOpenImage_triggered()
@@ -774,6 +787,10 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);
     ot.runOptimalTransport();
+    QString filename =
+    QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
+    if (!filename.isEmpty())
+        m_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
 }

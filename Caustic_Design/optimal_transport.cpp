@@ -199,7 +199,9 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     }
 
     // --- update the triangulation with the old points and the new weights
-    source_scene->construct_triangulation(source_points, weights);
+    source_scene->update_weights(weights, false);
+    source_scene->update_triangulation();
+    //source_scene->construct_triangulation(source_points, weights);
     current_source_vertices = source_scene->getVertices();
     // --- update UI (can be removed for improved performance)
     win->update();

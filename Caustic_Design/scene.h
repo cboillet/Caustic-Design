@@ -77,7 +77,10 @@ public:
     
     void load_dat(const QString& filename, std::vector<Point>& points) const;
     void save_points(const QString& filename) const;   
+    std::vector<FT> load_weights(const QString& filename) const;
     void save_dat(const QString& filename, const std::vector<Point>& points) const;
+
+    void save_weights(const QString& filename) const;
     
     void save_txt(const QString& filename, const std::vector<Point>& points) const;
     
