@@ -121,6 +121,19 @@ void Scene::draw_barycenter(const float point_size,
     }
 }
 
+void Scene::draw_movement() const
+{
+    glColor3d(1.0, 1.0, 0.0);
+    for (unsigned i = 0; i < m_vertices.size(); i++)
+    {
+        Vertex_handle vi = m_vertices[i];
+        if(vi->is_hidden()) continue;
+        const Point& centroid = vi->compute_centroid();
+        const Point& site = vi->get_position();
+        draw_segment(centroid, site);
+    }
+}
+
 void Scene::draw_vertices(const float point_size) const
 {
     glPointSize(point_size);

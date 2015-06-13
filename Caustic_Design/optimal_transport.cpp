@@ -35,6 +35,7 @@ void OptimalTransport::runOptimalTransport()
     }
     /* Initialize the parameters for the L-BFGS optimization. */
     lbfgs_parameter_init(&param);
+    param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
     /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
     /*
         Start the L-BFGS optimization; this will invoke the callback functions
@@ -172,13 +173,8 @@ void OptimalTransport::evaluate_results(int ret, lbfgsfloatval_t *x, int n){
 
     std::cout << "Finished solving, exit status: " << resultString << std::endl;
 
-    std::vector<Point> points = std::vector<Point>();
-    std::vector<FT> w = std::vector<FT>();
-    //source_scene->collect_visible_points(points);
-    //source_scene->collect_sites(points, w);
-    m_scene->update_positions(source_points);
-    m_scene->update_weights(weights);
-    m_scene->update_triangulation();
+    // assign value to original scene (optional, can be removed!)
+    m_scene->construct_triangulation(source_points, weights);
 }
 
 /*
@@ -202,41 +198,32 @@ lbfgsfloatval_t OptimalTransport::evaluate(
         weights[i] = x[i];
     }
 
-    source_scene->update_positions(source_points, false);
-    source_scene->update_weights(weights, false);
-    source_scene->update_triangulation();
-
-    // TODO: following if clause is only for debugging. should be removed later
-    std::vector<Vertex_handle> target_vertices = source_scene->getVertices();
-    int nv = target_vertices.size();
-    if(n != nv)
-    {
-        m_scene->update_positions(source_points);
-        m_scene->update_weights(weights);
-        m_scene->update_triangulation();
-        win->update();
-        std::cerr << "wrong amount of vertices" << std::endl;
-        return 0;
-    }
+    // --- update the triangulation with the old points and the new weights
+    source_scene->construct_triangulation(source_points, weights);
+    current_source_vertices = source_scene->getVertices();
+    // --- update UI (can be removed for improved performance)
+    win->update();
 
     // fx = f(w)
     lbfgsfloatval_t fx = 0.0;
 
     // f(w) = --- the convex function to be minimized
-    //std::cout << "n = " << n << ", source_vertices.size() = " << nv << std::endl;
-    //std::cout << std::flush;
     for(int i=0; i<n; i++)
     {
-        FT integration_term = target_vertices[i]->compute_wasserstein( m_points[i], x[i] );
-        //FT integration_term = m_vertices[i]->compute_wasserstein( m_points[i], x[i] );
-        fx += ( x[i]* source_capacities[i] - integration_term );
+        FT integration_term = current_source_vertices[i]->compute_wasserstein(  x[i], integrated_m_intensity );
+        fx += ( x[i] * initial_source_capacities[i] - integration_term );
+        //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
 
-    // df/dwi = --- The derivate of the convex function
+    //source_scene->compute_capacities(areas);
+    // df/dwi = --- The derivative of the convex function
     for (i=0; i<n; i++)
     {
-        g[i] = source_capacities[i] - m_vertices[i]->compute_area() / integrated_m_intensity;
+        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i];
+        //std::cout << "g[" << i << "] = " << g[i] << " = " << initial_source_capacities[i] << " - " << areas[i] << std::endl;
     }
+
+    std::cout << "evaluate done, fx = " << fx << std::endl;
 
     return fx;
 }
@@ -254,7 +241,7 @@ int OptimalTransport::progress(
         )
 {
 
-    return 1;
+    //return 1;
 
     printf("Iteration %d:\n", k);
     printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
@@ -277,38 +264,57 @@ bool OptimalTransport::prepare_data()
     m_points.clear();
     std::vector<FT> scene_weights = std::vector<FT>();
     m_scene->collect_sites(m_points, scene_weights);
-    // TODO: remove following lines
-    /*scene_weights[16] = 0.01;
-    scene_weights[60] = 0.01;
-    scene_weights[118] = 0.01;
-    m_scene->update_weights(scene_weights);
-    m_scene->update_triangulation();
-    return false;
-    // --- until here*/
 
     source_points.clear();
     source_weights.clear();
     source_scene->collect_sites(source_points, source_weights);
 
     m_vertices = m_scene->getVertices();
-    source_vertices = source_scene->getVertices();
+    current_source_vertices = source_scene->getVertices();
 
+    // --- integrate the intensities (areas)
     integrated_m_intensity = m_scene->getDomain().integrate_intensity();
     integrated_source_intensity = source_scene->getDomain().integrate_intensity();
 
+    //source_scene->compute_capacities(initial_source_capacities);
+
+    FT cap_sum = 0.0;
+    // --- pre-compute the not-changing value of capacities (== probabilities)
     for (int i=0; i< m_vertices.size(); i++)
     {
-        source_capacities.push_back(source_vertices[i]->compute_area() / integrated_source_intensity);
+        initial_source_capacities.push_back(FT(current_source_vertices[i]->compute_area() / integrated_source_intensity));
+        cap_sum += initial_source_capacities[i];
+    }
+
+    std::cout << "initial source capacity sum = " << cap_sum << std::endl;
+
+    // --- load the target image into the source scene.
+    // --- reinsert the points, update triangulation
+    // --- points need to be re-inserted and re-read to have valid points
+    QString filename = m_scene->getDomain().get_filename();
+    std::cout << "loading image " << filename.toStdString() << "...";
+    source_scene->load_image(filename);
+    std::cout << "re-inserting points...";
+    source_weights.clear();
+    source_points.clear();
+    source_scene->update_positions(source_points);
+    source_scene->update_triangulation();
+    source_scene->collect_sites(source_points, source_weights);
+
+    // copy points to ensure we don't only have pointers -- possibly can be removed
+    for(int i=0; i<source_points.size(); i++)
+    {
+        source_points[i] = Point(source_points[i]);
     }
 
     // --- ensure they are of same dimension
-    //if(source_points.size() != m_points.size()) return false;
+    if(source_points.size() != m_points.size()) return false;
     std::cout << "same point amount.. ";
-    //if(source_weights.size() != scene_weights.size()) return false;
+    if(source_weights.size() != scene_weights.size()) return false;
     std::cout << "same weight amount.. ";
-    if(source_vertices.size() != m_vertices.size())
+    if(current_source_vertices.size() != m_vertices.size())
     {
-        std::cout << "error.. source_vertices.size = " << source_vertices.size() << " != " << m_vertices.size() << " = m_vertices.size";
+        std::cout << "error.. source_vertices.size = " << current_source_vertices.size() << " != " << m_vertices.size() << " = m_vertices.size";
         return false;
     }
     std::cout << "same vertex amount.. ";

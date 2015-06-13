@@ -193,8 +193,8 @@ void Scene::update_weights(const std::vector<FT>& weights, bool hidden)
     {
         Vertex_handle vi = m_vertices[i];
         if (hidden && vi->is_hidden()) continue;
-        vi->set_weight(weights[j++]);
-        //vi->set_weight(weights[j++] - mean);
+        //vi->set_weight(weights[j++]);
+        vi->set_weight(weights[j++] - mean);
     }
 }
 

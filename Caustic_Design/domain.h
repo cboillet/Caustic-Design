@@ -24,6 +24,7 @@ private:
     double m_dx;
     double m_dy;
     QImage m_image;
+    QString filename;
     //PGMImage m_image;
     bool m_invert;
     
@@ -131,12 +132,19 @@ public:
         bool ok = m_image.load(filename);
         //bool ok = m_image.load(filename.toStdString());
         if (!ok) return false;
-        
+
+        this->filename = filename;
+
         unsigned w = get_width();
         unsigned h = get_height();
         m_dx = 0.5;
         m_dy = m_dx * double(h) / double(w);
         return true;
+    }
+
+    QString get_filename()
+    {
+        return filename;
     }
     
     double get_value(unsigned i, unsigned j, const bool normalized = false) const

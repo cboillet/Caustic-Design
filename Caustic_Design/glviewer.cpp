@@ -126,6 +126,9 @@ void GlViewer::paintGL()
     
     if (m_view_points)
         m_scene->draw_sites(m_point_size, 0., 0., 0.);
+
+    if(m_view_movement)
+        m_scene->draw_movement();
     
     glPopMatrix();
     

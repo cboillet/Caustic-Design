@@ -88,13 +88,13 @@ protected:
 
 private:
 
-    std::vector<Vertex_handle> source_vertices;
+    std::vector<Vertex_handle> current_source_vertices;
     std::vector<FT> source_weights;
     std::vector<Point> source_points;
 
     std::vector<Vertex_handle> m_vertices;
     std::vector<Point> m_points;
-    std::vector<FT> source_capacities;
+    std::vector<FT> initial_source_capacities;
 
     FT integrated_m_intensity;
     FT integrated_source_intensity;

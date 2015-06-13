@@ -30,6 +30,7 @@ private:
     bool m_view_regularity;
     bool m_view_regular_sites;
     bool m_view_barycenter;
+    bool m_view_movement;
     bool m_view_bounded_dual;
     bool m_view_weight_histogram;
     bool m_view_capacity_histogram;    
@@ -111,6 +112,8 @@ public:
     void toggle_view_regular_sites() { m_view_regular_sites = !m_view_regular_sites; }
 
     void toggle_view_barycenter() { m_view_barycenter = !m_view_barycenter; }
+
+    void toggle_view_movement() { m_view_movement = !m_view_movement; }
 
     void toggle_view_bounded_dual() { m_view_bounded_dual = !m_view_bounded_dual; }
     

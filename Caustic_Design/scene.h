@@ -137,6 +137,8 @@ public:
                            const float red,
                            const float green,
                            const float blue) const;
+
+    void draw_movement() const;
     
     void draw_weights() const;
     

@@ -47,6 +47,14 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
 	addRecentFiles(menuFile);
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
+
+    /*
+    open(QString("/home/p/Pictures/einstein.png"), false);
+    open(QString("/home/p/Pictures/einstein_5000.dat"), false);
+
+    open(QString("/home/p/Pictures/white.png"), true);
+    open(QString("/home/p/Pictures/white_5000.dat"), true);
+    */
 }
 
 MainWindow::~MainWindow()
@@ -658,6 +666,13 @@ void MainWindow::on_actionViewBarycenter_toggled()
     update();
 }
 
+void MainWindow::on_actionDrawMovement_toggled()
+{
+    viewer->toggle_view_movement();
+    viewer_2->toggle_view_movement();
+    update();
+}
+
 void MainWindow::on_actionViewWeightHistogram_toggled()
 {
     viewer->toggle_view_weight_histogram();
@@ -754,6 +769,7 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimalTransport" << std::endl;
+
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);

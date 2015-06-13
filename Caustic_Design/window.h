@@ -103,6 +103,7 @@ protected slots:
     void on_actionViewRegularity_toggled();
     void on_actionViewRegularSites_toggled();
     void on_actionViewBarycenter_toggled();
+    void on_actionDrawMovement_toggled();
     void on_actionViewBoundedDual_toggled();
     void on_actionViewWeightHistogram_toggled();
     void on_actionViewCapacityHistogram_toggled();

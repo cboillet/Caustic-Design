@@ -107,6 +107,7 @@
     <addaction name="actionViewBoundedDual"/>
     <addaction name="actionViewDual"/>
     <addaction name="actionViewBarycenter"/>
+    <addaction name="actionDrawMovement"/>
     <addaction name="separator"/>
     <addaction name="actionViewPixels"/>
     <addaction name="actionViewCapacity"/>
@@ -550,6 +551,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+O</string>
+   </property>
+  </action>
+  <action name="actionDrawMovement">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Centroid To Site</string>
    </property>
   </action>
  </widget>
