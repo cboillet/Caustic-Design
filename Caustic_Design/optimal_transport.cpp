@@ -165,10 +165,10 @@ void OptimalTransport::evaluate_results(int ret, lbfgsfloatval_t *x, int n){
     for (int i=0; i<n; i++)
     {
         weights[i] = x[i];
-        if(weights[i] != 0.0)
+        /*if(weights[i] != 0.0)
         {
             std::cout << "weights[" << i << "] = " << weights[i] << std::endl;
-        }
+        }*/
     }
 
     std::cout << "Finished solving, exit status: " << resultString << std::endl;
@@ -199,9 +199,9 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     }
 
     // --- update the triangulation with the old points and the new weights
-    source_scene->update_weights(weights, false);
-    source_scene->update_triangulation();
-    //source_scene->construct_triangulation(source_points, weights);
+    //source_scene->update_weights(weights, false);
+    //source_scene->update_triangulation();
+    source_scene->construct_triangulation(source_points, weights);
     current_source_vertices = source_scene->getVertices();
     // --- update UI (can be removed for improved performance)
     win->update();
@@ -212,8 +212,8 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     // f(w) = --- the convex function to be minimized
     for(int i=0; i<n; i++)
     {
-        FT integration_term = current_source_vertices[i]->compute_wasserstein(  x[i], integrated_m_intensity );
-        fx += ( x[i] * initial_source_capacities[i] - integration_term );
+        FT integration_term = current_source_vertices[i]->compute_wasserstein( x[i], integrated_m_intensity );
+        fx += (x[i] * initial_source_capacities[i] - integration_term );
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
 
@@ -284,7 +284,8 @@ bool OptimalTransport::prepare_data()
     // --- pre-compute the not-changing value of capacities (== probabilities)
     for (int i=0; i< m_vertices.size(); i++)
     {
-        initial_source_capacities.push_back(FT(current_source_vertices[i]->compute_area() / integrated_source_intensity));
+        initial_source_capacities.push_back(FT(1.0 / ((FT)m_vertices.size())));
+        //initial_source_capacities.push_back(FT(current_source_vertices[i]->compute_area() / integrated_source_intensity));
         cap_sum += initial_source_capacities[i];
     }
 
