@@ -152,6 +152,19 @@ Vertex_handle Scene::insert_vertex(const Point& point,
     return vertex;
 }
 
+void Scene::delete_vertex(Vertex_handle vd)
+{
+    int i= -1;
+    i=findIndexVertice(vd);
+
+    if (i == -1) std::cout << "Not inside the m_vertices, can't be deleted" << std::endl;
+    return;
+    //m_rt.delete_vertex(vd);
+    //int i=findIndexVertice(vd);
+    //m_vertices.erase(m_vertices.begin()+i);
+
+}
+
 FT Scene::compute_mean_capacity() const
 {
     FT domain_area = compute_value_integral();

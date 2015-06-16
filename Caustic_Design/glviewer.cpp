@@ -129,6 +129,10 @@ void GlViewer::paintGL()
 
     if(m_view_movement)
         m_scene->draw_movement();
+
+    if(m_view_Xrs)
+        m_scene->draw_Xrs();
+
     
     glPopMatrix();
     
@@ -200,3 +204,12 @@ void GlViewer::move_camera(const QPoint& p0, const QPoint& p1)
     m_center_x -= double(p1.x() - p0.x()) / double(width());
     m_center_y += double(p1.y() - p0.y()) / double(height());
 }
+
+/*
+void GlViewer::view_Xrs(std::vector<Point> points){
+    if (!m_scene) return;
+    m_scene->draw_Xrs(points);
+    m_scene->draw_point(Point(0,0));
+    updateGL ();
+}
+*/

@@ -26,8 +26,8 @@ private:
     std::vector<Vertex_handle> p_vertices;
 
 public:
+    Scene* source_scene;
     Scene* m_scene;
-    Scene* target_scene;
     Scene* compute_scene;
     MainWindow* win;
 
@@ -37,9 +37,9 @@ public:
     void runInterpolation();
 
     std::vector<Point>& getXo(){return Xo;}
-    std::vector<Vertex_handle> findNaturalNeighbor(Point oP);
-    std::vector<std::pair<Vertex_handle, FT> > computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
-    std::vector<Point> computeXr(std::vector<std::pair<Vertex_handle, FT> > vertices_weight);
+    void computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
+    void findNaturalNeighbor(Point oP);
+    //std::vector<Point> computeXr(std::vector<std::pair<Vertex_handle, FT> > vertices_weight);
 
 
 
