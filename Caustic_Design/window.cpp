@@ -48,13 +48,13 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
 
-    /*
+
     open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
+    //open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
     open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_2000.dat"), true);
-    */
+    //open(QString("/home/p/Pictures/white_2000.dat"), true);
+
 }
 
 MainWindow::~MainWindow()
@@ -783,16 +783,21 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
+    Timer::start_timer(m_timer, COLOR_BLUE, "OTM");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);
+    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2);
     ot.runOptimalTransport();
+
+    Timer::stop_timer(m_timer, COLOR_BLUE);
+
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
         m_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
+
 }
 
 

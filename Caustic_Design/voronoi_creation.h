@@ -10,6 +10,7 @@ class VoronoiCreator
 {
 public:
     VoronoiCreator(Scene* sc){}
+    VoronoiCreator(){}
     ~VoronoiCreator(){}
 
     void init_points(int npoints, Scene* sc);
