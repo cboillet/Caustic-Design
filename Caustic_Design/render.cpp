@@ -500,7 +500,7 @@ void Scene::draw_histogram(const std::vector<unsigned>& histogram,
 
 void Scene::draw_Xrs(){
     int i;
-    glPointSize(1);
+    glPointSize(3);
     glColor3d(1.0,1.0,0.0);
     //Point p;
     for (i=0; i<lightpts.size(); ++i) {
@@ -510,7 +510,7 @@ void Scene::draw_Xrs(){
 
 void Scene::draw_Xr(){
     int i;
-    glPointSize(2);
+    glPointSize(3);
     glColor3d(1.0,1.0,0.0);
     //Point p;
     for (i=0; i<lightpt.size(); ++i) {

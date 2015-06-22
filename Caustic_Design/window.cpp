@@ -292,6 +292,7 @@ void MainWindow::on_actionResetWeights_triggered()
 	
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_scene->reset_weights();
+    source_scene->reset_weights();
 	QApplication::restoreOverrideCursor();
     
     Timer::stop_timer(m_timer, COLOR_GREEN);
@@ -798,7 +799,7 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
-        m_scene->save_weights(filename);
+        source_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
 

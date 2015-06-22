@@ -30,8 +30,8 @@ private:
     std::vector<double> m_r, m_g, m_b;
     std::vector<Vertex_handle> m_vertices;
 
-    std::vector<Point> lightpts; //incident light ray on source before interpolation
-    std::vector<Point> lightpt; //incident light ray after interpolation
+    std::vector<Point> lightpts; //incident light ray on m_scene before interpolation
+    std::vector<Point> lightpt; //incident light ray after interpolation on source scene
     
     bool m_timer_on;
     std::vector<double> m_timer;    
