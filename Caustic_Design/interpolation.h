@@ -22,7 +22,6 @@ class Interpolation{
 private:
     std::vector<Point> Xo;
     std::vector<double> c_weights;
-    std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
 
 public:

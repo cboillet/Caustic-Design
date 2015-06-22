@@ -38,6 +38,7 @@ private:
     bool m_view_weight_histogram;
     bool m_view_capacity_histogram;
     bool m_view_Xrs;
+    bool m_view_Xr;
 
     // rendering options
     double m_line_thickness;
@@ -126,6 +127,8 @@ public:
     void toggle_view_capacity_histogram() { m_view_capacity_histogram = !m_view_capacity_histogram; }
 
     void toggle_view_Xrs() {m_view_Xrs = !m_view_Xrs; }
+
+    void toggle_view_Xr() {m_view_Xr = !m_view_Xr;}
 
     //void view_Xrs(std::vector<Point> points); //view light ray on the receiver before interpolation
 

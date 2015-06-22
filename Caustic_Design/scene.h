@@ -30,7 +30,8 @@ private:
     std::vector<double> m_r, m_g, m_b;
     std::vector<Vertex_handle> m_vertices;
 
-    std::vector<Point> lightpts;
+    std::vector<Point> lightpts; //incident light ray on source before interpolation
+    std::vector<Point> lightpt; //incident light ray after interpolation
     
     bool m_timer_on;
     std::vector<double> m_timer;    
@@ -69,7 +70,8 @@ public:
 
     Domain& getDomain(){return m_domain;} //vieux getteur
     RT& getRT(){return m_rt;}
-    std::vector<Point>& getLightPoints(){return lightpts;}
+    std::vector<Point>& getLightPointsSource(){return lightpts;}
+    std::vector<Point>& getLightPointsTarget(){return lightpt;}
     std::vector<Vertex_handle>& getVertices(){return m_vertices;}
 
 
@@ -183,7 +185,8 @@ public:
                         const double ymin,
                         const double ymax) const;
 
-    void draw_Xrs();
+    void draw_Xrs(); //source light inicident ray
+    void draw_Xr(); //target light incident ray
 
     // HISTOGRAM //
     void compute_capacity_histogram(std::vector<unsigned>& histogram) const;

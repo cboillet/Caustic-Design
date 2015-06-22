@@ -773,7 +773,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(m_scene, source_scene, compute_scene, this);
+    Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
     update();

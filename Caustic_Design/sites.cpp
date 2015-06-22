@@ -111,7 +111,7 @@ std::vector<Vertex_handle> Scene::find_neighbors(Vertex_handle vi){
             {
                 Edge edge = *ecirc;
                 if (!m_rt.is_inside(edge)) continue;
-                std::cout << "we have a neighbor here" << std::endl;
+                //std::cout << "we have a neighbor here" << std::endl;
                 Vertex_handle vj = m_rt.get_source(edge);
                 if (vj == vi) vj = m_rt.get_opposite(edge);
                 neighbors.push_back(vj);
@@ -125,7 +125,7 @@ int Scene::findIndexVerticeBySite (Vertex_handle vi){
     //Point ci = vi->compute_centroid();
     Point ci = vi->get_position();
     Point cn;
-    std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
+    //std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
     for(i=0; i<m_vertices.size(); ++i){
         cn = m_vertices[i]->compute_centroid();
         if (ci.x()==cn.x() && ci.y()==cn.y())
@@ -138,7 +138,7 @@ int Scene::findIndexVerticeByCentroid (Vertex_handle vi){
     int i;
     Point ci = vi->compute_centroid();
     Point cn;
-    std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
+    //std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
     for(i=0; i<m_vertices.size(); ++i){
         cn = m_vertices[i]->compute_centroid();
         if (ci.x()==cn.x() && ci.y()==cn.y())

@@ -2,32 +2,31 @@
 #include "random.h"
 #include "voronoi_creation.h"
 
-Interpolation::Interpolation(Scene* tsc, Scene* sc, Scene* csc, MainWindow* w):m_scene(tsc),source_scene(sc),compute_scene(csc), win(w){
+Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* w):source_scene(sc),m_scene(tsc),compute_scene(csc), win(w){
     if (!sc->getDomain().is_valid()) return;
-    FT stepx = 2.0 * tsc->getDomain().get_dx() / 30;
-    FT stepy = 2.0 * tsc->getDomain().get_dy() / 20;
-    std::cout << "dx" << tsc->getDomain().get_dy() << std::endl;
-    std::cout << "dy " << tsc->getDomain().get_dy() << std::endl;
+    FT stepx = 2.0 * sc->getDomain().get_dx() / 10;//30;
+    FT stepy = 2.0 * sc->getDomain().get_dy() / 5;//20;
+    std::cout << "dx" << sc->getDomain().get_dy() << std::endl;
+    std::cout << "dy " << sc->getDomain().get_dy() << std::endl;
     std::cout << "stepx" << stepx << std::endl;
     std::cout << "stepy" << stepy << std::endl;
     int nbpoints = 0;
-    for (unsigned i = 0; i < 30; ++i)
+    for (unsigned i = 0; i < 10; ++i)
     {
-        FT x = (i + 0.5)*stepx - tsc->getDomain().get_dx();
+        FT x = (i + 0.5)*stepx - sc->getDomain().get_dx();
         x += EPS;
-        for (unsigned j = 0; j < 20; ++j)
+        for (unsigned j = 0; j < 5; ++j)
         {
-            FT y = (j + 0.5)*stepy - tsc->getDomain().get_dy();
+            FT y = (j + 0.5)*stepy - sc->getDomain().get_dy();
             y += EPS;
             Xo.push_back(Point(x, y));
-            m_scene->getLightPoints().push_back(Point(x,y));
+            source_scene->getLightPointsSource().push_back(Point(x,y));
             std::cout << "inserted point Xrs x" << x << std::endl;
             std::cout << "inserted point Xrs y" << y << std::endl;
             nbpoints++;
         }
     }
     std::cout << "nbpoints" << nbpoints << std::endl;
-    win->viewer_2->toggle_view_Xrs();
 }
 
 /*
@@ -49,7 +48,7 @@ Current: method 1
 */
 void Interpolation::runInterpolation(){
    int i;
-   for(i=0; i<m_scene->getLightPoints().size(); ++i)
+   for(i=0; i<source_scene->getLightPointsSource().size(); ++i)
    {
         findNaturalNeighbor(Xo[i]);
    }
@@ -60,6 +59,8 @@ void Interpolation::runInterpolation(){
            3. Xo normal distribution
            4. UI for output
     */
+    win->viewer_2->toggle_view_Xrs();
+    win->viewer->toggle_view_Xr();
 }
 
 void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point oP){
@@ -69,6 +70,8 @@ void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point o
     std::vector<std::pair<Vertex_handle, FT> > vertices_weight;
     std::pair<Vertex_handle, FT> p;
     Vertex_handle vn;
+    double x = 0;
+    double y = 0;
 //    FT areaOnFace;
 //    FT weight;
 //    FT temp;
@@ -82,41 +85,24 @@ void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point o
     for (i=0; i<neighbors.size(); ++i){
         /*compute area of the overlapsing cell*/
         vn = neighbors[i];
-        mscIndex = m_scene->findIndexVerticeBySite(vn);
-        std::cout << "indice du vertex dans m_scene" << mscIndex << std::endl;
+        mscIndex = source_scene->findIndexVerticeBySite(vn);
         cscIndex = compute_scene->findIndexVerticeByCentroid(vn);
-        std::cout << "indice du vertex dans m_scene" << std::endl;
-        std::cout << "test d'équivalence compute et m scene" << cscIndex << std::endl;
-        Point cm = m_scene->getVertices()[cscIndex]->get_position();
+        Point cm = source_scene->getVertices()[cscIndex]->get_position();
         Point cp = compute_scene->getVertices()[cscIndex]->get_position();
-        std::cout << "m_scene neighbor x coordinate" << cm.x() << std::endl;
-        std::cout << "m_scene neighbor y coordinate" << cm.y() << std::endl;
-        std::cout << "compute_scene neighbor x coordinate" << cp.x() << std::endl;
-        std::cout << "compute_scene neighbor y coordinate" << cp.y() << std::endl;
-        if (cp.x() != cm.x())
-            std::cout<< "different absiss" << std::endl;
-        if (cp.y() != cm.y())
-            std::cout<< "different axis" << std::endl;
-
-        std::cout << "avant weight" << std::endl;
-        FT area_m_scene = m_scene->getVertices()[mscIndex]->compute_area();
-        std::cout << "area_m_scene" << area_m_scene << std::endl;
+        FT area_m_scene = source_scene->getVertices()[mscIndex]->compute_area();
         FT area_c_scene = compute_scene->getVertices()[cscIndex]->compute_area();
-        std::cout << "area_c_scene" << area_c_scene << std::endl;
-        //FT areaOnFace = m_scene->getVertices()[mscIndex]->compute_area() - compute_scene->getVertices()[cscIndex]->compute_area();
         FT areaOnFace= area_m_scene-area_c_scene;
-        std::cout << "areaOnFace" << areaOnFace << std::endl;
         /*compute ratio*/
-        //std::cout << "avant weight" << std::endl;
-        FT temp = m_scene->getVertices()[mscIndex]->compute_area();
-        std::cout << "temp" << temp << std::endl;
+        FT temp = source_scene->getVertices()[mscIndex]->compute_area();
         FT weight = areaOnFace/temp;
-        std::cout << "weight" << weight << std::endl;
-        //p.first = vn;
-        //p.second = weight;
-        //vertices_weight.push_back(std::make_pair(vn,weight));
+        std::cout<<"weight"<<weight<<std::endl;
+        /*retrieve on m_scene*/
+        x = x + (m_scene->getVertices()[mscIndex]->compute_centroid().x())*weight;
+        y = y + (m_scene->getVertices()[mscIndex]->compute_centroid().y())*weight;
     }
-
+    std::cout<<"x for Xr"<<x<<std::endl;
+    std::cout<<"y for Xr"<<y<<std::endl;
+    m_scene->getLightPointsTarget().push_back(Point(x,y));
     return;
 }
 
@@ -134,7 +120,7 @@ void Interpolation::findNaturalNeighbor(Point oP){
     std::cout << "vertices size before insertion =" << size << std::endl;
     for (i = 0; i < size; ++i)
     {
-       Vertex_handle vi = m_scene->getVertices()[i];
+       Vertex_handle vi = source_scene->getVertices()[i];
        if (vi->is_hidden()) continue;
        Point ci = vi->compute_centroid();
        points.push_back(ci);
