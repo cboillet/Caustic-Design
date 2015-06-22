@@ -48,13 +48,13 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
 
-    /*
+
     open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
+    open(QString("/home/p/Pictures/einstein_200000.dat"), false);
 
     open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_2000.dat"), true);
-    */
+    open(QString("/home/p/Pictures/white_200000.dat"), true);
+
 }
 
 MainWindow::~MainWindow()
@@ -215,6 +215,8 @@ void MainWindow::on_actionLoadWeights_triggered()
     std::vector<FT> weights = m_scene->load_weights(fileName);
     m_scene->update_weights(weights, false);
     m_scene->update_triangulation();
+    unsigned visible_sites = m_scene->count_visible_sites();
+    std::cout << visible_sites << " of " << weights.size() << " are visible. (" << (weights.size() - visible_sites) << " are hidden)" << std::endl;
     QApplication::restoreOverrideCursor();
     update();
 }
@@ -756,9 +758,11 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
 
 void MainWindow::on_actionVoronoiCreation_triggered(){
     bool ok;
-    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 200000, 100, &ok);
+    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 20, 20, 200000, 100, &ok);
     if (!ok) return;
-    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 40, 1, &ok);
+
+
+    /*int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 40, 1, &ok);
     if (!ok) return;
     voronoicreator->init_points(nbpoints,m_scene);
     voronoicreator->init_points(nbpoints,compute_scene);
@@ -766,8 +770,10 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
         std::cout << "(" << (i+1) << "/" << nbiter << "): ";
         voronoicreator->apply_lloyd_optimization(m_scene);
         voronoicreator->apply_lloyd_optimization(compute_scene);
-    }
-    this->on_actionSavePoints_triggered();
+    }*/
+
+    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon()))
+        this->on_actionSavePoints_triggered();
 }
 
 void MainWindow::on_actionComputeInterpolation_triggered(){
