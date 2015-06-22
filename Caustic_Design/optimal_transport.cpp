@@ -9,8 +9,8 @@ OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow
     win(win),
     source_viewer(source_viewer)
 {
-    level_max = 4;
-    site_amount = 5000;
+    level_max = 3;
+    site_amount = 10000;
 }
 
 void OptimalTransport::runOptimalTransport()
@@ -48,6 +48,10 @@ void OptimalTransport::runOptimalTransport()
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
         param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
+        param.m = 10;
+        param.ftol = 0.000000000000001;
+        //param.epsilon = 0;
+        //param.delta = 0.0001;
         /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
         /*
             Start the L-BFGS optimization; this will invoke the callback functions
