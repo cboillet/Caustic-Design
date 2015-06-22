@@ -38,7 +38,7 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_verbose = 1;
     m_stepX = 0.0;
     m_stepW = 0.0;
-    m_epsilon = 1.0;
+    m_epsilon = 0.5;
     m_frequency = 0;
     m_max_iters = 500;
     
@@ -48,13 +48,13 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
 
-
+    /*
     open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_200000.dat"), false);
+    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
     open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_200000.dat"), true);
-
+    open(QString("/home/p/Pictures/white_2000.dat"), true);
+    */
 }
 
 MainWindow::~MainWindow()
@@ -215,8 +215,6 @@ void MainWindow::on_actionLoadWeights_triggered()
     std::vector<FT> weights = m_scene->load_weights(fileName);
     m_scene->update_weights(weights, false);
     m_scene->update_triangulation();
-    unsigned visible_sites = m_scene->count_visible_sites();
-    std::cout << visible_sites << " of " << weights.size() << " are visible. (" << (weights.size() - visible_sites) << " are hidden)" << std::endl;
     QApplication::restoreOverrideCursor();
     update();
 }
@@ -789,16 +787,21 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
+    Timer::start_timer(m_timer, COLOR_BLUE, "OTM");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);
+    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2);
     ot.runOptimalTransport();
+
+    Timer::stop_timer(m_timer, COLOR_BLUE);
+
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
         m_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
+
 }
 
 

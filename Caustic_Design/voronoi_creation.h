@@ -10,6 +10,7 @@ class VoronoiCreator
 {
 public:
     VoronoiCreator(Scene* sc){}
+    VoronoiCreator(){}
     ~VoronoiCreator(){}
 
     bool generate_voronoi(Scene* sc, unsigned npoints, double epsilon);
