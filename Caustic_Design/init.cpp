@@ -155,7 +155,7 @@ Vertex_handle Scene::insert_vertex(const Point& point,
 void Scene::delete_vertex(Vertex_handle vd)
 {
     int i= -1;
-    i=findIndexVertice(vd);
+    i=findIndexVerticeBySite(vd);
 
     if (i == -1) std::cout << "Not inside the m_vertices, can't be deleted" << std::endl;
     return;

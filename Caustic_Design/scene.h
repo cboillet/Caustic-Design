@@ -330,7 +330,8 @@ public:
 
     std::vector<Vertex_handle> find_neighbors(Vertex_handle vi);
 
-    int findIndexVertice (Vertex_handle vi);
+    int findIndexVerticeBySite (Vertex_handle vi);
+    int findIndexVerticeByCentroid (Vertex_handle vi);
 };
 
 #endif

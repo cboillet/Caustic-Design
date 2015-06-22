@@ -120,10 +120,25 @@ std::vector<Vertex_handle> Scene::find_neighbors(Vertex_handle vi){
         return neighbors;
     }
 
-int Scene::findIndexVertice (Vertex_handle vi){
+int Scene::findIndexVerticeBySite (Vertex_handle vi){
+    int i;
+    //Point ci = vi->compute_centroid();
+    Point ci = vi->get_position();
+    Point cn;
+    std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
+    for(i=0; i<m_vertices.size(); ++i){
+        cn = m_vertices[i]->compute_centroid();
+        if (ci.x()==cn.x() && ci.y()==cn.y())
+            return i;
+    }
+    return -1;
+}
+
+int Scene::findIndexVerticeByCentroid (Vertex_handle vi){
     int i;
     Point ci = vi->compute_centroid();
     Point cn;
+    std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
     for(i=0; i<m_vertices.size(); ++i){
         cn = m_vertices[i]->compute_centroid();
         if (ci.x()==cn.x() && ci.y()==cn.y())

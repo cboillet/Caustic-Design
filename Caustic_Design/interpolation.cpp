@@ -69,9 +69,9 @@ void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point o
     std::vector<std::pair<Vertex_handle, FT> > vertices_weight;
     std::pair<Vertex_handle, FT> p;
     Vertex_handle vn;
-    FT areaOnFace;
-    FT weight;
-    FT temp;
+//    FT areaOnFace;
+//    FT weight;
+//    FT temp;
 
     if (neighbors.size() == 0) {
         std::cout << "weight vector empty" << std::endl;
@@ -82,15 +82,36 @@ void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point o
     for (i=0; i<neighbors.size(); ++i){
         /*compute area of the overlapsing cell*/
         vn = neighbors[i];
-        mscIndex = m_scene->findIndexVertice(vn);
-        cscIndex = compute_scene->findIndexVertice(vn);
+        mscIndex = m_scene->findIndexVerticeBySite(vn);
+        std::cout << "indice du vertex dans m_scene" << mscIndex << std::endl;
+        cscIndex = compute_scene->findIndexVerticeByCentroid(vn);
+        std::cout << "indice du vertex dans m_scene" << std::endl;
+        std::cout << "test d'équivalence compute et m scene" << cscIndex << std::endl;
+        Point cm = m_scene->getVertices()[cscIndex]->get_position();
+        Point cp = compute_scene->getVertices()[cscIndex]->get_position();
+        std::cout << "m_scene neighbor x coordinate" << cm.x() << std::endl;
+        std::cout << "m_scene neighbor y coordinate" << cm.y() << std::endl;
+        std::cout << "compute_scene neighbor x coordinate" << cp.x() << std::endl;
+        std::cout << "compute_scene neighbor y coordinate" << cp.y() << std::endl;
+        if (cp.x() != cm.x())
+            std::cout<< "different absiss" << std::endl;
+        if (cp.y() != cm.y())
+            std::cout<< "different axis" << std::endl;
+
         std::cout << "avant weight" << std::endl;
-        areaOnFace = m_scene->getVertices()[mscIndex]->compute_area() - compute_scene->getVertices()[cscIndex]->compute_area();
+        FT area_m_scene = m_scene->getVertices()[mscIndex]->compute_area();
+        std::cout << "area_m_scene" << area_m_scene << std::endl;
+        FT area_c_scene = compute_scene->getVertices()[cscIndex]->compute_area();
+        std::cout << "area_c_scene" << area_c_scene << std::endl;
+        //FT areaOnFace = m_scene->getVertices()[mscIndex]->compute_area() - compute_scene->getVertices()[cscIndex]->compute_area();
+        FT areaOnFace= area_m_scene-area_c_scene;
+        std::cout << "areaOnFace" << areaOnFace << std::endl;
         /*compute ratio*/
-        std::cout << "avant weight" << std::endl;
-        temp = m_scene->getVertices()[mscIndex]->compute_area();
-        weight = areaOnFace/temp;
-        std::cout << "weight" << std::endl;
+        //std::cout << "avant weight" << std::endl;
+        FT temp = m_scene->getVertices()[mscIndex]->compute_area();
+        std::cout << "temp" << temp << std::endl;
+        FT weight = areaOnFace/temp;
+        std::cout << "weight" << weight << std::endl;
         //p.first = vn;
         //p.second = weight;
         //vertices_weight.push_back(std::make_pair(vn,weight));
@@ -109,7 +130,6 @@ void Interpolation::findNaturalNeighbor(Point oP){
 
     /*Insert new vertex/oP as centroids as in the computational Scene*/
     std::vector<Vertex_handle>& cs_vertex = compute_scene->getVertices();
-    std::cout << "compute scene vertices= " << cs_vertex.data() << std::endl;
     size = compute_scene->getVertices().size();
     std::cout << "vertices size before insertion =" << size << std::endl;
     for (i = 0; i < size; ++i)
