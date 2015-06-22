@@ -93,6 +93,7 @@ bool Scene::construct_triangulation(const std::vector<Point>& points,
     {
         pre_build_dual_cells();
         assign_pixels();
+        assign_singularites();
         pre_compute_area();
         compute_capacities(m_capacities);
     }

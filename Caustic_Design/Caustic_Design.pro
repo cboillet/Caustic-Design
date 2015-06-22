@@ -46,7 +46,8 @@ HEADERS += \
     window.h \
     interpolation.h \
     optimal_transport.h \
-    voronoi_creation.h
+    voronoi_creation.h \
+    singularity.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -65,7 +66,8 @@ SOURCES += \
     window.cpp \
     interpolation.cpp \
     optimal_transport.cpp \
-        voronoi_creation.cpp
+        voronoi_creation.cpp \
+    singularity.cpp
 
 
 FORMS += \

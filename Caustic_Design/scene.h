@@ -280,6 +280,8 @@ public:
 
     void assign_pixels();
     
+    void assign_singularites();
+
     FT rasterize(const EnrichedSegment& enriched_segment, Grid& grid);
     bool move(const unsigned i, const unsigned j,
               const Point& source, const Vector& velocity,

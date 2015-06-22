@@ -111,6 +111,23 @@ void Scene::assign_pixels()
     if (m_timer_on) Timer::stop_timer(m_timer, COLOR_GREEN);
 }
 
+
+void Scene::assign_singularites()
+{
+    std::vector<PointSingularity> singularities;
+    Point p = Point(0.1, 0.1);
+    singularities.push_back(PointSingularity(p, 1.0));
+    for (unsigned i = 0; i < singularities.size(); i++)
+    {
+        PointSingularity ps = singularities[i];
+
+        Vertex_handle vertex = m_rt.find_nearest_vertex(ps.get_position());
+        vertex->append_point_singularity(ps);
+
+    }
+}
+
+
 FT Scene::rasterize(const EnrichedSegment& enriched_segment, Grid& grid)
 {
     const Segment& segment = enriched_segment.segment();
