@@ -19,6 +19,12 @@ LIBS        += -llapack
 # L-BFGS
 LIBS        += -llbfgs
 QMAKE_CXXFLAGS += -frounding-math -O3
+#optimization
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE -= -O3
+QMAKE_CXXFLAGS_RELEASE -= -O1
+QMAKE_CFLAGS_RELEASE = -O0
+QMAKE_LFLAGS_RELEASE -= -O0
 
 HEADERS += \
     matrix/sparse_array.h \

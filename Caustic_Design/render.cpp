@@ -497,3 +497,13 @@ void Scene::draw_histogram(const std::vector<unsigned>& histogram,
         glEnd();
     }
 }
+
+void Scene::draw_Xrs(){
+    int i;
+    glPointSize(1);
+    glColor3d(1.0,1.0,0.0);
+    //Point p;
+    for (i=0; i<lightpts.size(); ++i) {
+        draw_point(lightpts[i]);
+    }
+}

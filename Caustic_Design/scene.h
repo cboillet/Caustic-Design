@@ -30,6 +30,7 @@ private:
     std::vector<double> m_r, m_g, m_b;
     std::vector<Vertex_handle> m_vertices;
 
+    std::vector<Point> lightpts;
     
     bool m_timer_on;
     std::vector<double> m_timer;    
@@ -68,6 +69,7 @@ public:
 
     Domain& getDomain(){return m_domain;} //vieux getteur
     RT& getRT(){return m_rt;}
+    std::vector<Point>& getLightPoints(){return lightpts;}
     std::vector<Vertex_handle>& getVertices(){return m_vertices;}
 
 
@@ -180,7 +182,9 @@ public:
                         const double xmax,
                         const double ymin,
                         const double ymax) const;
-    
+
+    void draw_Xrs();
+
     // HISTOGRAM //
     void compute_capacity_histogram(std::vector<unsigned>& histogram) const;
     void compute_weight_histogram(const double range, std::vector<unsigned>& histogram) const;
@@ -212,6 +216,9 @@ public:
    Vertex_handle insert_vertex(const Point& point,
                                 const FT weight,
                                 const unsigned index);
+
+   void delete_vertex(Vertex_handle vd);
+
    void compute_capacities(std::vector<FT>& capacities) const;
    void update_positions(const std::vector<Point>& points,
                           bool clamp = true,
@@ -325,7 +332,8 @@ public:
 
     std::vector<Vertex_handle> find_neighbors(Vertex_handle vi);
 
-    int findIndexVertice (Vertex_handle vi);
+    int findIndexVerticeBySite (Vertex_handle vi);
+    int findIndexVerticeByCentroid (Vertex_handle vi);
 };
 
 #endif
