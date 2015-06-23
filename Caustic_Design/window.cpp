@@ -292,6 +292,7 @@ void MainWindow::on_actionResetWeights_triggered()
 	
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_scene->reset_weights();
+    source_scene->reset_weights();
 	QApplication::restoreOverrideCursor();
     
     Timer::stop_timer(m_timer, COLOR_GREEN);
@@ -777,7 +778,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(m_scene, source_scene, compute_scene, this);
+    Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
     update();
@@ -798,7 +799,7 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
-        m_scene->save_weights(filename);
+        source_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
 
