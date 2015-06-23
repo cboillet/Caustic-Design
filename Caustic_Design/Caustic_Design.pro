@@ -72,8 +72,7 @@ SOURCES += \
     window.cpp \
     interpolation.cpp \
     optimal_transport.cpp \
-        voronoi_creation.cpp \
-    singularity.cpp
+        voronoi_creation.cpp
 
 
 FORMS += \

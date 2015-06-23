@@ -61,6 +61,34 @@ void Scene::draw_circle(const Point& center,
     glPopMatrix();
 }
 
+void Scene::draw_point_singularity() const
+{
+
+    double line_length = m_domain.get_dx() / 100.0;
+
+    glLineWidth(2.0f);
+    glColor3d(0.0d, 0.0d, 1.0d);
+
+    glBegin(GL_LINES);
+
+    for (unsigned i = 0; i < m_vertices.size(); i++)
+    {
+        std::vector<PointSingularity> singularities = m_vertices[i]->get_point_singularities();
+
+        for (unsigned j = 0; j < singularities.size(); j++)
+        {
+            Point p = singularities[j].get_position();
+            glVertex2d(p.x() - line_length, p.y() - line_length);
+            glVertex2d(p.x() + line_length, p.y() + line_length);
+
+            glVertex2d(p.x() + line_length, p.y() - line_length);
+            glVertex2d(p.y() - line_length, p.x() + line_length);
+        }
+    }
+
+    glEnd();
+}
+
 /////////////
 // OBJECTS //
 /////////////

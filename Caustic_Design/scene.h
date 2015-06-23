@@ -109,6 +109,8 @@ public:
                      const FT scale, 
                      const std::vector<Point>& pts) const;
 
+    void draw_point_singularity() const;
+
     void draw_image() const;
 
     void draw_image_grid() const;

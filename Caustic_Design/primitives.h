@@ -122,6 +122,11 @@ public:
         m_point_singularities.push_back(singularity);
     }
 
+    const std::vector<PointSingularity> get_point_singularities()
+    {
+        return m_point_singularities;
+    }
+
     // ATTRIBUTES //
     
     FT compute_area() const
@@ -142,6 +147,7 @@ public:
         {
             for (unsigned i = 0; i < m_point_singularities.size(); i++)
             {
+                std::cout << "adding " << m_point_singularities[i].get_value() << " to area " << m_area << std::endl;
                 m_area += m_point_singularities[i].get_value();
             }
         }
@@ -203,8 +209,10 @@ public:
         for(uint i=0; i<nb_pixels(); i++)
         {
             val += ( CGAL::squared_distance(site, get_pixel(i).compute_centroid()) - weight )
-                   * (get_pixel(i).compute_area() / integrated_intensity);
+                   * (get_pixel(i).compute_area());
         }
+
+        val /= integrated_intensity;
 
         if (singularites)
         {

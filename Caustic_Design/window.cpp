@@ -48,13 +48,14 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
 
-    /*
+
+    //open(QString("/home/p/rect2958.png"), false);
     open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
+    //open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
     open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_2000.dat"), true);
-    */
+    //open(QString("/home/p/Pictures/white_2000.dat"), true);
+
 }
 
 MainWindow::~MainWindow()
@@ -770,7 +771,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
         voronoicreator->apply_lloyd_optimization(compute_scene);
     }*/
 
-    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon()))
+    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon(), viewer))
         this->on_actionSavePoints_triggered();
 }
 

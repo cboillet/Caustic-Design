@@ -15,6 +15,7 @@
 #include "pixel.h"
 #include "grid.h"
 #include "rt2.h"
+#include "singularity.h"
 
 #undef min
 #undef max

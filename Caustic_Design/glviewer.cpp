@@ -84,7 +84,9 @@ void GlViewer::paintGL()
     
     if (m_view_image)
         m_scene->draw_image();
-    
+
+    m_scene->draw_point_singularity();
+
     if (m_view_variance)
         m_scene->draw_variance();
     

@@ -3,15 +3,23 @@
 #include <iostream>
 #include <ostream>
 
-bool VoronoiCreator::generate_voronoi(Scene *sc, unsigned npoints, double epsilon)
+#define LIVE_DEMO
+
+bool VoronoiCreator::generate_voronoi(Scene *sc, unsigned npoints, double epsilon, GlViewer* viewer)
 {
     // --- initialize the voronoi diagram
     init_points(npoints, sc);
+
+#ifdef LIVE_DEMO
+    viewer->repaint();
+#endif
+
 
     FT threshold = sc->compute_position_threshold(epsilon);
     bool success = false;
     unsigned iter = 0;
     unsigned max_iter = 200;
+
 
     std::cout << "optimizing voronoi diagram via lloyd ..";
     // optimize until the movement is below a certain threshold
@@ -22,6 +30,10 @@ bool VoronoiCreator::generate_voronoi(Scene *sc, unsigned npoints, double epsilo
         // norm is the norm of the position gradient
         // ( a metric for how far the centroid is away from the site after the optimzation step )
         FT norm = sc->optimize_positions_via_lloyd(true);
+
+#ifdef LIVE_DEMO
+    viewer->repaint();
+#endif
 
         if(norm < threshold)
         {

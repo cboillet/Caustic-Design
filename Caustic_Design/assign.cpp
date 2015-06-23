@@ -114,16 +114,16 @@ void Scene::assign_pixels()
 
 void Scene::assign_singularites()
 {
+    if(true) return;
     std::vector<PointSingularity> singularities;
-    Point p = Point(0.1, 0.1);
-    singularities.push_back(PointSingularity(p, 1.0));
+    Point p = Point(-0.4, -0.4);
+    singularities.push_back(PointSingularity(p, 0.001));
     for (unsigned i = 0; i < singularities.size(); i++)
     {
         PointSingularity ps = singularities[i];
 
         Vertex_handle vertex = m_rt.find_nearest_vertex(ps.get_position());
         vertex->append_point_singularity(ps);
-
     }
 }
 

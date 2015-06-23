@@ -9,8 +9,8 @@ OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow
     win(win),
     source_viewer(source_viewer)
 {
-    level_max = 3;
-    site_amount = 10000;
+    level_max = 5;
+    site_amount = 250000;
 }
 
 void OptimalTransport::runOptimalTransport()
@@ -48,9 +48,10 @@ void OptimalTransport::runOptimalTransport()
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
         param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
-        param.m = 10;
-        param.ftol = 0.000000000000001;
-        //param.epsilon = 0;
+        //param.m = 10;
+        //param.ftol = 1e-30;
+        param.epsilon = 0;
+        param.xtol = 1e-20;
         //param.delta = 0.0001;
         /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
         /*
@@ -226,10 +227,18 @@ lbfgsfloatval_t OptimalTransport::evaluate(
 
     std::cout << "Eval.. step = " << step << std::endl;
     std::vector<FT> weights = std::vector<FT>(n);
+    FT min_weight = 1000;
+    FT max_weight = -1000;
     int i;
     for(i=0; i<n; i++)
     {
         weights[i] = x[i];
+
+        if(weights[i] < min_weight)
+            min_weight = weights[i];
+
+        if(weights[i] > max_weight)
+            max_weight = weights[i];
     }
 
     // --- update the triangulation with the old points and the new weights
@@ -246,20 +255,31 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     lbfgsfloatval_t fx = 0.0;
 
     // f(w) = --- the convex function to be minimized
+    FT integral_sum = 0.0;
+    FT source_sum = 0.0;
     for(int i=0; i<n; i++)
     {
+
         FT integration_term = current_source_vertices[i]->compute_wasserstein( x[i], integrated_m_intensity );
-        fx += (x[i] * initial_source_capacities[i] - integration_term );
+        integral_sum += integration_term;
+        source_sum += x[i] * initial_source_capacities[i];
+        fx += (x[i] * (initial_source_capacities[i]) - integration_term);
+
+        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i];
+
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
 
+    std::cout << "integrated sum = " << integral_sum << std::endl;
+    std::cout << "source_sum = " << source_sum << std::endl;
+
     //source_scene->compute_capacities(areas);
     // df/dwi = --- The derivative of the convex function
-    for (i=0; i<n; i++)
-    {
-        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i];
+    //for (i=0; i<n; i++)
+    //{
+        //g[i] = 2*(( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i]) * (x[i] * initial_source_capacities[i] - integration_term );
         //std::cout << "g[" << i << "] = " << g[i] << " = " << initial_source_capacities[i] << " - " << areas[i] << std::endl;
-    }
+    //}
 
     std::cout << "evaluate done, fx = " << fx << std::endl;
 
@@ -279,12 +299,36 @@ int OptimalTransport::progress(
         )
 {
 
-    //return 1;
+    bool hidden_vertices = false;
+    bool norm = gnorm < 3e-4;
+    int hidden_vertices_amount = 0;
+
+    std::vector<Vertex_handle> vertices = scaled_scenes[current_level]->getVertices();
+
+    for (int i = 0; i<vertices.size(); i++)
+    {
+        if(vertices[i]->is_hidden())
+        {
+            hidden_vertices_amount++;
+        }
+    }
+
+    hidden_vertices = (hidden_vertices_amount != 0);
+
+    bool will_stop = norm & !hidden_vertices;
 
     printf("Iteration %d:\n", k);
     printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
     printf("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step);
+    printf("  hidden vertices: %d, norm reached: %s, will stop: %s", hidden_vertices_amount, norm ? "true" : "false", will_stop ? "true" : "false");
     printf("\n");
+
+
+
+    // returning 0 will continue, returning sth else will stop
+    if(will_stop)
+        return 1;
+
     return 0;
 }
 
@@ -324,7 +368,7 @@ bool OptimalTransport::prepare_data()
         source_viewer->set_scene(scaled_scenes[i]);
 #endif
 
-        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, 0.5);
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, 0.5, source_viewer);
         //voronoi_creator.init_points(scene_sites, scaled_scenes[i]);
 
         /*for(int j=0; j<10; j++)
@@ -352,6 +396,8 @@ bool OptimalTransport::prepare_data()
     // --- integrate the intensities (areas)
     integrated_m_intensity = m_scene->getDomain().integrate_intensity();
     integrated_source_intensity = source_scene->getDomain().integrate_intensity();
+
+    std::cout << "integrated_target-sum = " << integrated_m_intensity << std::endl;
 
     return true;
 /*
