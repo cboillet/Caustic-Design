@@ -126,7 +126,16 @@ void GlViewer::paintGL()
     
     if (m_view_points)
         m_scene->draw_sites(m_point_size, 0., 0., 0.);
-    
+
+    if(m_view_movement)
+        m_scene->draw_movement();
+
+    if(m_view_Xrs)
+        m_scene->draw_Xrs();
+
+    if(m_view_Xr)
+        m_scene->draw_Xr();
+
     glPopMatrix();
     
     // histograms
@@ -197,3 +206,5 @@ void GlViewer::move_camera(const QPoint& p0, const QPoint& p1)
     m_center_x -= double(p1.x() - p0.x()) / double(width());
     m_center_y += double(p1.y() - p0.y()) / double(height());
 }
+
+

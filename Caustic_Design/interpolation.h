@@ -1,4 +1,4 @@
-#ifndef INTERPOLATION_H&
+#ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 // STL
 #include <map>
@@ -11,48 +11,35 @@
 #include "matrix/sparse_matrix.h"
 #include "types.h"
 #include "scene.h"
+#include "window.h"
 
 class Scene;
-<<<<<<< HEAD
 class VoronoiCreator;
+class MainWindow;
 
-=======
->>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 class Interpolation{
 
 private:
     std::vector<Point> Xo;
     std::vector<double> c_weights;
-    std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
 
 public:
-<<<<<<< HEAD
+    Scene* source_scene;
     Scene* m_scene;
-    Scene* target_scene;
     Scene* compute_scene;
+    MainWindow* win;
 
-    Interpolation(Scene* sc, Scene* tsc, Scene* csc);
+    Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* win);
     ~Interpolation(){}
 
     void runInterpolation();
-    bool prepareData();
 
     std::vector<Point>& getXo(){return Xo;}
-    std::vector<Vertex_handle> findNaturalNeighbor(Point oP);
-    std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP){}
-=======
-    Interpolation(Scene* sc);
-    ~Interpolation(){}
+    void computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
+    void findNaturalNeighbor(Point oP);
+    //std::vector<Point> computeXr(std::vector<std::pair<Vertex_handle, FT> > vertices_weight);
 
-    std::vector<Point>& getXo(){return Xo;}
-
-    std::vector<Point> findNaturalNeighbor(Point oP,Scene* sc);
-    std::vector<std::pair<Point, FT> > computeWeights(std::vector<Point> neighbors, Point oP,Scene* sc){}
->>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
-    std::vector<Point> computeXr(std::vector<std::pair<Point, FT> > cWeights, std::vector<Vertex_handle> p_vertices,Scene* sc){}
-
-    std::vector<Vertex_handle> compareCell(Vertex_handle vc);
 
 
 };

@@ -49,6 +49,19 @@ void Scene::load_dat(const QString& filename, std::vector<Point>& points) const
     ifs.close();
 }
 
+std::vector<FT> Scene::load_weights(const QString& filename) const
+{
+    std::vector<FT> weights = std::vector<FT>();
+
+    std::ifstream ifs(qPrintable(filename));
+    FT weight;
+    while(ifs >> weight) weights.push_back(weight);
+    ifs.close();
+
+    return weights;
+    //update_weights(weights);
+}
+
 void Scene::save_points(const QString& filename) const
 {
     std::vector<Point> points;
@@ -73,6 +86,22 @@ void Scene::save_points(const QString& filename) const
     }
 
     std::cout << red << "try (.dat, .txt, .eps) file format" << white << std::endl;
+}
+
+void Scene::save_weights(const QString& filename) const
+{
+    std::vector<Point> foo = std::vector<Point>();
+    std::vector<FT> weights = std::vector<FT>();
+    collect_sites(foo, weights);
+
+    std::ofstream ofs(qPrintable(filename));
+    ofs.precision(20);
+
+    for(unsigned i = 0; i < weights.size(); i++)
+    {
+        ofs << weights[i] << std::endl;
+    }
+    ofs.close();
 }
 
 void Scene::save_dat(const QString& filename, const std::vector<Point>& points) const

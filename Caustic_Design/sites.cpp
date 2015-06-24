@@ -15,7 +15,6 @@ Scene::Scene(const Scene& sc){
     m_vertices= sc.m_vertices;
 }
 
-<<<<<<< HEAD
 Scene* Scene::operator=(const Scene& sc){
     srand(0);
     m_tau = 1.0;
@@ -30,8 +29,6 @@ Scene* Scene::operator=(const Scene& sc){
     m_vertices= sc.m_vertices;
 }
 
-=======
->>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 void Scene::generate_random_sites(const unsigned nb)
 {
     if (!m_domain.is_valid()) return;
@@ -103,4 +100,49 @@ void Scene::init_colors(const unsigned nb)
         m_g.push_back(random_double(0.0, 1.0));
         m_b.push_back(random_double(0.0, 1.0));
     }
+}
+
+std::vector<Vertex_handle> Scene::find_neighbors(Vertex_handle vi){
+        std::vector<Vertex_handle> neighbors;
+        Edge_circulator ecirc = m_rt.incident_edges(vi);
+        Edge_circulator eend  = ecirc;
+        if (vi->is_hidden()) return neighbors;
+        CGAL_For_all(ecirc, eend)
+            {
+                Edge edge = *ecirc;
+                if (!m_rt.is_inside(edge)) continue;
+                //std::cout << "we have a neighbor here" << std::endl;
+                Vertex_handle vj = m_rt.get_source(edge);
+                if (vj == vi) vj = m_rt.get_opposite(edge);
+                neighbors.push_back(vj);
+            }
+
+        return neighbors;
+    }
+
+int Scene::findIndexVerticeBySite (Vertex_handle vi){
+    int i;
+    //Point ci = vi->compute_centroid();
+    Point ci = vi->get_position();
+    Point cn;
+    //std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
+    for(i=0; i<m_vertices.size(); ++i){
+        cn = m_vertices[i]->compute_centroid();
+        if (ci.x()==cn.x() && ci.y()==cn.y())
+            return i;
+    }
+    return -1;
+}
+
+int Scene::findIndexVerticeByCentroid (Vertex_handle vi){
+    int i;
+    Point ci = vi->compute_centroid();
+    Point cn;
+    //std::cout << "m_vertices size:" << m_vertices.size() << std::endl;
+    for(i=0; i<m_vertices.size(); ++i){
+        cn = m_vertices[i]->compute_centroid();
+        if (ci.x()==cn.x() && ci.y()==cn.y())
+            return i;
+    }
+    return -1;
 }

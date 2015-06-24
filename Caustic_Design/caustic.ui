@@ -7,17 +7,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>676</width>
-    <height>572</height>
+    <width>806</width>
+    <height>586</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Caustic Light Designer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout">
-    <item row="0" column="0">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
      <widget class="GlViewer" name="viewer" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="GlViewer" name="viewer_2" native="true">
       <property name="focusPolicy">
        <enum>Qt::StrongFocus</enum>
       </property>
@@ -34,7 +44,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>676</width>
+     <width>806</width>
      <height>27</height>
     </rect>
    </property>
@@ -44,10 +54,11 @@
     </property>
     <addaction name="actionToggleInvert"/>
     <addaction name="actionOpenImage"/>
-    <addaction name="actionLoadTargetImage"/>
+    <addaction name="actionLoadSourceImage"/>
+    <addaction name="actionLoadWeights"/>
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
-    <addaction name="actionOpenTargetDAT"/>
+    <addaction name="actionOpenSourceDAT"/>
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
     <addaction name="separator"/>
@@ -97,6 +108,7 @@
     <addaction name="actionViewBoundedDual"/>
     <addaction name="actionViewDual"/>
     <addaction name="actionViewBarycenter"/>
+    <addaction name="actionDrawMovement"/>
     <addaction name="separator"/>
     <addaction name="actionViewPixels"/>
     <addaction name="actionViewCapacity"/>
@@ -524,14 +536,14 @@
     <string>Generate Voronoi</string>
    </property>
   </action>
-  <action name="actionOpenTargetDAT">
+  <action name="actionOpenSourceDAT">
    <property name="text">
-    <string>Open Target DAT</string>
+    <string>Load Source DAT</string>
    </property>
   </action>
-  <action name="actionLoadTargetImage">
+  <action name="actionLoadSourceImage">
    <property name="text">
-    <string>Load Target Image</string>
+    <string>Load Source Image</string>
    </property>
   </action>
   <action name="actionCalculateOptimalTransport">
@@ -540,6 +552,19 @@
    </property>
    <property name="shortcut">
     <string>Shift+O</string>
+   </property>
+  </action>
+  <action name="actionDrawMovement">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Centroid To Site</string>
+   </property>
+  </action>
+  <action name="actionLoadWeights">
+   <property name="text">
+    <string>Load Weights</string>
    </property>
   </action>
  </widget>

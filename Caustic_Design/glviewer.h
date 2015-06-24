@@ -5,6 +5,9 @@
 #include <QGLWidget>
 #include <QPaintEvent>
 
+//local
+#include "types.h"
+
 class Scene;
 
 class GlViewer : public QGLWidget 
@@ -30,10 +33,13 @@ private:
     bool m_view_regularity;
     bool m_view_regular_sites;
     bool m_view_barycenter;
+    bool m_view_movement;
     bool m_view_bounded_dual;
     bool m_view_weight_histogram;
-    bool m_view_capacity_histogram;    
-    
+    bool m_view_capacity_histogram;
+    bool m_view_Xrs;
+    bool m_view_Xr;
+
     // rendering options
     double m_line_thickness;
     double m_point_size;
@@ -112,11 +118,19 @@ public:
 
     void toggle_view_barycenter() { m_view_barycenter = !m_view_barycenter; }
 
+    void toggle_view_movement() { m_view_movement = !m_view_movement; }
+
     void toggle_view_bounded_dual() { m_view_bounded_dual = !m_view_bounded_dual; }
     
     void toggle_view_weight_histogram() { m_view_weight_histogram = !m_view_weight_histogram; }
     
     void toggle_view_capacity_histogram() { m_view_capacity_histogram = !m_view_capacity_histogram; }
+
+    void toggle_view_Xrs() {m_view_Xrs = !m_view_Xrs; }
+
+    void toggle_view_Xr() {m_view_Xr = !m_view_Xr;}
+
+    //void view_Xrs(std::vector<Point> points); //view light ray on the receiver before interpolation
 
 protected:
     // GL

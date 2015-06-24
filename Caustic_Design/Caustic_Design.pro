@@ -19,6 +19,12 @@ LIBS        += -llapack
 # L-BFGS
 LIBS        += -llbfgs
 QMAKE_CXXFLAGS += -frounding-math -O3
+#optimization
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE -= -O3
+QMAKE_CXXFLAGS_RELEASE -= -O1
+QMAKE_CFLAGS_RELEASE = -O0
+QMAKE_LFLAGS_RELEASE -= -O0
 
 HEADERS += \
     matrix/sparse_array.h \
@@ -45,13 +51,8 @@ HEADERS += \
     util.h \
     window.h \
     interpolation.h \
-<<<<<<< HEAD
-        optimal_transport.h \
-        voronoi_creation.h
-=======
-	optimal_transport.h \
-	voronoi_creation.h
->>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
+    optimal_transport.h \
+    voronoi_creation.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -70,11 +71,7 @@ SOURCES += \
     window.cpp \
     interpolation.cpp \
     optimal_transport.cpp \
-<<<<<<< HEAD
         voronoi_creation.cpp
-=======
-	voronoi_creation.cpp
->>>>>>> 13c14360646e9cad8f42118e91dc7f290592b60b
 
 
 FORMS += \
