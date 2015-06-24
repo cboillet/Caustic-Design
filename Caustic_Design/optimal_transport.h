@@ -10,16 +10,19 @@
 #include "window.h"
 #include "domain.h"
 #include "random.h"
+#include "voronoi_creation.h"
+#include "glviewer.h"
 
 class OptimalTransport
 {
 public:
-    OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win);
+    OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer);
     void runOptimalTransport();
-    void evaluate_results(int ret, lbfgsfloatval_t *x, int n);
 
     Scene* m_scene;
     Scene*source_scene;
+    Scene** scaled_scenes;
+
     MainWindow* win;
 
 
@@ -99,7 +102,22 @@ private:
     FT integrated_m_intensity;
     FT integrated_source_intensity;
 
+    GlViewer* source_viewer;
+
+    int level_max;
+    int current_level;
+    int site_amount;
+
+    bool evaluate_results(int ret, lbfgsfloatval_t *x, int n);
+
+    std::string get_result_string(int ret);
+
+    FT get_initial_weight(Point point, Scene* scene);
+
     bool prepare_data();
+    void prepare_level_data(lbfgsfloatval_t* initial_weights, unsigned n);
+    unsigned get_level_sites(unsigned level);
+    void clean();
 };
 
 #endif // OPTIMAL_TRANSPORT_H

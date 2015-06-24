@@ -19,6 +19,7 @@
 #include "voronoi_creation.h"
 #include "optimal_transport.h"
 #include "interpolation.h"
+#include "config.h"
 
 int nbpoints; // nb of centroids
 
@@ -38,7 +39,7 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_verbose = 1;
     m_stepX = 0.0;
     m_stepW = 0.0;
-    m_epsilon = 1.0;
+    m_epsilon = EPSILON;
     m_frequency = 0;
     m_max_iters = 500;
     
@@ -292,6 +293,7 @@ void MainWindow::on_actionResetWeights_triggered()
 	
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_scene->reset_weights();
+    source_scene->reset_weights();
 	QApplication::restoreOverrideCursor();
     
     Timer::stop_timer(m_timer, COLOR_GREEN);
@@ -756,9 +758,11 @@ void MainWindow::on_actionCountSitesPerBin_triggered()
 
 void MainWindow::on_actionVoronoiCreation_triggered(){
     bool ok;
-    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 2000, 1000, 200000, 100, &ok);
+    nbpoints = QInputDialog::getInt(this, tr("NBpoint"), tr("Number of voronoi Centroids:"), 20, 20, 200000, 100, &ok);
     if (!ok) return;
-    int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 40, 1, &ok);
+
+
+    /*int nbiter = QInputDialog::getInt(this, tr("NBllyod"), tr("Number of Llyod simplification:"), 5, 1, 40, 1, &ok);
     if (!ok) return;
     voronoicreator->init_points(nbpoints,m_scene);
     voronoicreator->init_points(nbpoints,compute_scene);
@@ -766,8 +770,10 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
         std::cout << "(" << (i+1) << "/" << nbiter << "): ";
         voronoicreator->apply_lloyd_optimization(m_scene);
         voronoicreator->apply_lloyd_optimization(compute_scene);
-    }
-    this->on_actionSavePoints_triggered();
+    }*/
+
+    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon()))
+        this->on_actionSavePoints_triggered();
 }
 
 void MainWindow::on_actionComputeInterpolation_triggered(){
@@ -776,23 +782,29 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
     Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
-    update();
+    //viewer_2->toggle_view_Xr();
+    //update();
 }
 
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
+    Timer::start_timer(m_timer, COLOR_BLUE, "OTM");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this);
+    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2);
     ot.runOptimalTransport();
+
+    Timer::stop_timer(m_timer, COLOR_BLUE);
+
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
-        m_scene->save_weights(filename);
+        source_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
+
 }
 
 
