@@ -11,4 +11,7 @@
     /*Interpolation*/
     #define MESH_AMOUNT 50
 
+    /* debug and demo */
+    #define LIVE_DEMO
+
 #endif // CONFIG_H

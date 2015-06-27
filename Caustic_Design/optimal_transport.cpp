@@ -2,8 +2,6 @@
 #include "config.h"
 #include "scene.h"
 
-#define LIVE_DEMO
-
 OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer):
     m_scene(m_scene),
     source_scene(source_scene),
@@ -49,8 +47,8 @@ void OptimalTransport::runOptimalTransport()
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
         param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
-        param.m = 10;
-        param.ftol = 0.000000000000001;
+        //param.m = 10;
+        //param.ftol = 0.000000000000001;
         //param.epsilon = 0;
         //param.delta = 0.0001;
         /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
@@ -325,7 +323,7 @@ bool OptimalTransport::prepare_data()
         source_viewer->set_scene(scaled_scenes[i]);
 #endif
 
-        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON);
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, source_viewer);
         //voronoi_creator.init_points(scene_sites, scaled_scenes[i]);
 
         /*for(int j=0; j<10; j++)

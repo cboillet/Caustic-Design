@@ -2,6 +2,7 @@
 #define VORONOI_CREATION_H
 
 #include <scene.h>
+#include <glviewer.h>
 #include <QtCore>
 #include <QString>
 
@@ -13,7 +14,7 @@ public:
     VoronoiCreator(){}
     ~VoronoiCreator(){}
 
-    bool generate_voronoi(Scene* sc, unsigned npoints, double epsilon);
+    bool generate_voronoi(Scene* sc, unsigned npoints, double epsilon, GlViewer* viewer=NULL);
 
     void init_points(int npoints, Scene* sc);
     void apply_lloyd_optimization(Scene* sc);
