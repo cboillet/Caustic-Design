@@ -54,6 +54,7 @@ HEADERS += \
     optimal_transport.h \
     voronoi_creation.h \
     singularity.h
+	config.h
 
 SOURCES += \
     matrix/sparse_array.cpp \

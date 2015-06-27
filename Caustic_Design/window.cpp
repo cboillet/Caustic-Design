@@ -19,6 +19,7 @@
 #include "voronoi_creation.h"
 #include "optimal_transport.h"
 #include "interpolation.h"
+#include "config.h"
 
 int nbpoints; // nb of centroids
 
@@ -38,7 +39,7 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_verbose = 1;
     m_stepX = 0.0;
     m_stepW = 0.0;
-    m_epsilon = 0.5;
+    m_epsilon = EPSILON;
     m_frequency = 0;
     m_max_iters = 500;
     
@@ -293,6 +294,7 @@ void MainWindow::on_actionResetWeights_triggered()
 	
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_scene->reset_weights();
+    source_scene->reset_weights();
 	QApplication::restoreOverrideCursor();
     
     Timer::stop_timer(m_timer, COLOR_GREEN);
@@ -778,10 +780,11 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(m_scene, source_scene, compute_scene, this);
+    Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
-    update();
+    //viewer_2->toggle_view_Xr();
+    //update();
 }
 
 void MainWindow::on_actionCalculateOptimalTransport_triggered()
@@ -799,7 +802,7 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     QString filename =
     QFileDialog::getSaveFileName(this, tr("Save weights"), ".weight");
     if (!filename.isEmpty())
-        m_scene->save_weights(filename);
+        source_scene->save_weights(filename);
     QApplication::restoreOverrideCursor();
     update();
 

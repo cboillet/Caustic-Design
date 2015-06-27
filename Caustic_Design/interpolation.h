@@ -12,6 +12,7 @@
 #include "types.h"
 #include "scene.h"
 #include "window.h"
+#include "glviewer.h"
 
 class Scene;
 class VoronoiCreator;
@@ -22,8 +23,8 @@ class Interpolation{
 private:
     std::vector<Point> Xo;
     std::vector<double> c_weights;
-    std::vector<Point> Xr;
     std::vector<Vertex_handle> p_vertices;
+
 
 public:
     Scene* source_scene;

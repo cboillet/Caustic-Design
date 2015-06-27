@@ -1,5 +1,13 @@
 # ignore build folder
 **/build/
+# any type of it
+**/build-*
+
+# idea project folder
+**/.idea
 
 # ignore pro.user files from qt-creator
 **/*.pro.user*
+
+# qt-creator user files
+**/*creator.user

@@ -1,0 +1,71 @@
+# Fernando de Goes (fdegoes@caltech.edu)
+# Copyright @ Aug 2012
+
+bnot: Blue Noise through Optimal Transport
+
+This project is divided in three parts:
+    * pbnot - bnot on periodic domain with constant density function; used for spectral /spatial analyses.
+    * bbnot - bnot on bounded domain with constant density function; used for profiling / timing.
+    * ibnot - bnot on bounded domain with non-constant density function; used for stippling of images.
+
+============
+Requirements
+============
+
+The following libraries are required:
+    * CMake (v2.4+) [http://www.cmake.org/]
+    * QT4   (v4.4+) [http://qt.nokia.com/]
+    * CGAL  (v3.9+) [http://www.cgal.org/]
+    * SuiteSparse   [http://www.cise.ufl.edu/research/sparse/SuiteSparse/]
+
+========
+Building
+========
+1. Go to one of the projects
+
+   cd pbnot
+   or
+   cd bbnot
+   or
+   cd ibnot
+
+2. Create a building directory
+
+   mkdir build
+   cd build
+
+2. Configure using CMake
+   
+   cmake .. 
+   or
+   ccmake ..
+   or 
+   cmake-gui ..
+
+3. Compile the code
+
+   make 
+
+=======
+Running
+=======
+1. Run executable
+
+    ./pbnot
+    or
+    ./bbnot
+    or
+    ./ibnot
+
+2. [ibnot] Load / Drag & Drop an image
+
+3. Initialize points from a DAT file OR randomly (press 'I' and enter number of points)
+
+4. Run Optimization (press 'A')
+
+5. Save points as a DAT file or as an EPS image (press ctrl+'S').
+
+==========
+DAT format
+==========
+DAT is an ASCII file with the list of x and y coordinates.
