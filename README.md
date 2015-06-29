@@ -86,11 +86,7 @@ Example usage:<br>
 
 ### 4. Interpolation-> Natural Neigbors CGAL 
 // Assigned to: Cam<br>
-<b>Input</b>
- *  Power Diagram [3]
-
-<b>Output</b>
- *  Coordinates (xR) [4]
+To run the interpolation after computing the Optimal transport, load on the left scene (m_scene) the source irradiance, compute the interpolation, results appear on the left scene.
 
 ------
 
@@ -104,5 +100,16 @@ Example usage:<br>
  *  Incoming Light Direction
 
 <b>Output</b>
- *  3D Mesh (target surface)
+ *  3D Mesh (target surface) 
+
+<b>Computing the surface optomization</b><br />
+The code is located in target-surface-optimization folder<br>
+Prerequisits:<br>
+ *  openGL
+ *  GLM header librairy
+ *  glew
+
+Debian dependencies as one-liner:<br>
+`sudo apt-get install libglew-dev `
+<br>
 
