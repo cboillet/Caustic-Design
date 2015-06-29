@@ -26,6 +26,8 @@ public:
         m_value(value)
     {}
 
+    void set_value(const FT value) { m_value = value; }
+
     const FT get_value(){ return m_value; }
     const Point& get_position(){ return m_position; }
 

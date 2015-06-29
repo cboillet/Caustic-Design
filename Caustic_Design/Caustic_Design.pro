@@ -18,6 +18,7 @@ LIBS        += -lblas
 LIBS        += -llapack
 # L-BFGS
 LIBS        += -llbfgs
+LIBS        += -ltinyxml
 QMAKE_CXXFLAGS += -frounding-math -O3
 #optimization
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -53,7 +54,8 @@ HEADERS += \
     interpolation.h \
     optimal_transport.h \
     voronoi_creation.h \
-    singularity.h
+    singularity.h \
+    config.h
 	config.h
 
 SOURCES += \

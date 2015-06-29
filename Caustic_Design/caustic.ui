@@ -62,6 +62,8 @@
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
     <addaction name="separator"/>
+    <addaction name="actionLoadSingularities"/>
+    <addaction name="separator"/>
     <addaction name="actionSnapshot"/>
     <addaction name="actionClear"/>
    </widget>
@@ -565,6 +567,11 @@
   <action name="actionLoadWeights">
    <property name="text">
     <string>Load Weights</string>
+   </property>
+  </action>
+  <action name="actionLoadSingularities">
+   <property name="text">
+    <string>Load Singularities</string>
    </property>
   </action>
  </widget>

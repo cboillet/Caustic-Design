@@ -260,13 +260,15 @@ lbfgsfloatval_t OptimalTransport::evaluate(
 
         FT integration_term = current_source_vertices[i]->compute_wasserstein( x[i], integrated_m_intensity );
         integral_sum += integration_term;
-        source_sum += x[i] * initial_source_capacities[i];
-        fx += (x[i] * (initial_source_capacities[i]) - integration_term);
+        source_sum += x[i] * initial_source_capacity;
+        fx += (x[i] * (initial_source_capacity) - integration_term);
 
-        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i];
+        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacity;
 
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
+
+    fx += 10.0;
 
     std::cout << "integrated sum = " << integral_sum << std::endl;
     std::cout << "source_sum = " << source_sum << std::endl;
@@ -393,6 +395,8 @@ bool OptimalTransport::prepare_data()
 
     // --- integrate the intensities (areas)
     integrated_m_intensity = m_scene->getDomain().integrate_intensity();
+    integrated_m_intensity += m_scene->integrate_singularities();
+    // source does not have singularities
     integrated_source_intensity = source_scene->getDomain().integrate_intensity();
 
     return true;
@@ -432,12 +436,7 @@ void OptimalTransport::prepare_level_data(lbfgsfloatval_t *initial_weights, unsi
 
 
     // --- pre-compute the not-changing value of capacities (== probabilities)
-    initial_source_capacities.clear();
-    for (int i=0; i< current_source_vertices.size(); i++)
-    {
-        initial_source_capacities.push_back(FT(1.0 / ((FT)current_source_vertices.size())));
-        //initial_source_capacities.push_back(FT(current_source_vertices[i]->compute_area() / integrated_source_intensity));
-    }
+    initial_source_capacity = FT(1.0 / ((FT)current_source_vertices.size()));
 
     // --- load the target image into the source scene.
     // --- reinsert the points, update triangulation
@@ -448,6 +447,11 @@ void OptimalTransport::prepare_level_data(lbfgsfloatval_t *initial_weights, unsi
     std::cout << "re-inserting points...";
     source_weights.clear();
     source_points.clear();
+    // load the singularities of the target image
+    std::vector<PointSingularity> ps;
+    std::vector<CurveSingularity> cs;
+    m_scene->collect_singularities(ps, cs);
+    scaled_scenes[current_level]->update_singularities(ps, cs);
     scaled_scenes[current_level]->update_positions(source_points);
     scaled_scenes[current_level]->update_triangulation();
     scaled_scenes[current_level]->collect_sites(source_points, source_weights);

@@ -221,6 +221,22 @@ void MainWindow::on_actionLoadWeights_triggered()
     update();
 }
 
+void MainWindow::on_actionLoadSingularities_triggered()
+{
+    QString fileName =
+            QFileDialog::getOpenFileName(this, tr("Open Singularities"), ".");
+
+    if(fileName.isEmpty()) return;
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    std::vector<PointSingularity> ps;
+    std::vector<CurveSingularity> cs;
+    m_scene->load_singularities(fileName, ps, cs);
+    m_scene->update_singularities(ps, cs);
+    QApplication::restoreOverrideCursor();
+    update();
+}
+
 void MainWindow::on_actionOpenImage_triggered()
 {
 	QString fileName = 

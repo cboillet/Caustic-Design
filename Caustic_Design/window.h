@@ -87,6 +87,7 @@ protected slots:
     void on_actionSavePoints_triggered();
     void on_actionSaveEPS_triggered();
     void on_actionLoadWeights_triggered();
+    void on_actionLoadSingularities_triggered();
         
     // view
     void on_actionViewImage_toggled();

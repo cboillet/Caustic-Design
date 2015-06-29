@@ -114,14 +114,15 @@ void Scene::assign_pixels()
 
 void Scene::assign_singularites()
 {
-    if(true) return;
-    std::vector<PointSingularity> singularities;
-    Point p = Point(-0.4, -0.4);
-    singularities.push_back(PointSingularity(p, 0.001));
-    for (unsigned i = 0; i < singularities.size(); i++)
-    {
-        PointSingularity ps = singularities[i];
 
+    //FT intensity = m_domain.integrate_intensity();
+    FT intensity_per_cell = FT(1.0) / FT(m_vertices.size());
+    FT singularity_value = FT(0.75) * intensity_per_cell;
+
+    for (unsigned i = 0; i < m_point_singularities.size(); i++)
+    {
+        PointSingularity ps = m_point_singularities[i];
+        ps.set_value(singularity_value);
         Vertex_handle vertex = m_rt.find_nearest_vertex(ps.get_position());
         vertex->append_point_singularity(ps);
     }

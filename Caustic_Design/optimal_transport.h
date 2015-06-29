@@ -97,7 +97,7 @@ private:
 
     std::vector<Vertex_handle> m_vertices;
     std::vector<Point> m_points;
-    std::vector<FT> initial_source_capacities;
+    FT initial_source_capacity;
 
     FT integrated_m_intensity;
     FT integrated_source_intensity;

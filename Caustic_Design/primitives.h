@@ -147,7 +147,6 @@ public:
         {
             for (unsigned i = 0; i < m_point_singularities.size(); i++)
             {
-                std::cout << "adding " << m_point_singularities[i].get_value() << " to area " << m_area << std::endl;
                 m_area += m_point_singularities[i].get_value();
             }
         }
@@ -212,16 +211,18 @@ public:
                    * (get_pixel(i).compute_area());
         }
 
-        val /= integrated_intensity;
 
         if (singularites)
         {
             for (uint i = 0; i < m_point_singularities.size(); i++)
             {
                 val += ( CGAL::squared_distance(site, m_point_singularities[i].get_position()) - weight )
-                        * (m_point_singularities[i].get_value() / integrated_intensity);
+                        * (m_point_singularities[i].get_value());
             }
         }
+
+        val /= integrated_intensity;
+
         return val;
     }
 

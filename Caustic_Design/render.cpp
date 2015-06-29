@@ -71,19 +71,15 @@ void Scene::draw_point_singularity() const
 
     glBegin(GL_LINES);
 
-    for (unsigned i = 0; i < m_vertices.size(); i++)
+    for (unsigned j = 0; j < m_point_singularities.size(); j++)
     {
-        std::vector<PointSingularity> singularities = m_vertices[i]->get_point_singularities();
+        PointSingularity ps = m_point_singularities[j];
+        Point p = ps.get_position();
+        glVertex2d(p.x() - line_length, p.y() - line_length);
+        glVertex2d(p.x() + line_length, p.y() + line_length);
 
-        for (unsigned j = 0; j < singularities.size(); j++)
-        {
-            Point p = singularities[j].get_position();
-            glVertex2d(p.x() - line_length, p.y() - line_length);
-            glVertex2d(p.x() + line_length, p.y() + line_length);
-
-            glVertex2d(p.x() + line_length, p.y() - line_length);
-            glVertex2d(p.y() - line_length, p.x() + line_length);
-        }
+        glVertex2d(p.x() + line_length, p.y() - line_length);
+        glVertex2d(p.x() - line_length, p.y() + line_length);
     }
 
     glEnd();

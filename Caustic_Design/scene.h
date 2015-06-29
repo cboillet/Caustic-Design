@@ -37,6 +37,9 @@ private:
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
 
+    std::vector<PointSingularity> m_point_singularities;
+    std::vector<CurveSingularity> m_curve_singularities;
+
     
 public:
     Scene()
@@ -82,6 +85,8 @@ public:
     void load_dat(const QString& filename, std::vector<Point>& points) const;
     void save_points(const QString& filename) const;   
     std::vector<FT> load_weights(const QString& filename) const;
+    void load_singularities(const QString& filename, std::vector<PointSingularity>& pSing, std::vector<CurveSingularity>& cSing) const;
+
     void save_dat(const QString& filename, const std::vector<Point>& points) const;
 
     void save_weights(const QString& filename) const;
@@ -208,6 +213,9 @@ public:
     
     void collect_sites(std::vector<Point>& points,
                        std::vector<FT>& weights) const;
+
+    void collect_singularities(std::vector<PointSingularity> & pointSingularities,
+                               std::vector<CurveSingularity> & urveSingularities) const;
     
     void clear_triangulation();
     
@@ -230,6 +238,11 @@ public:
                           bool hidden = true);                  
     void update_weights(const std::vector<FT>& weights, 
                         bool hidden = true);
+
+    void update_singularities(const std::vector<PointSingularity>& pointSingularities,
+                              const std::vector<CurveSingularity>& curveSingularities);
+
+    FT integrate_singularities();
     
     void reset_weights();
     FT compute_value_integral() const;
