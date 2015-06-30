@@ -90,6 +90,8 @@ public:
     
     void save_eps(const QString& filename) const;
 
+    void save_interpolation_dat(const QString &filename) const;
+
     // SITES //
     
     void generate_random_sites(const unsigned nb);
