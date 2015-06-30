@@ -47,9 +47,12 @@ void OptimalTransport::runOptimalTransport()
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
         param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
-        //param.m = 10;
+        //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE;
+        //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
+        param.m = 10;
+        param.max_linesearch = 40;
         //param.ftol = 0.000000000000001;
-        //param.epsilon = 0;
+        param.epsilon = 0;
         //param.delta = 0.0001;
         /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
         /*
@@ -239,6 +242,8 @@ lbfgsfloatval_t OptimalTransport::evaluate(
             max_weight = weights[i];
     }
 
+    std::cout << "min-weight = " << min_weight << ", max-weight = " << max_weight << std::endl;
+
     // --- update the triangulation with the old points and the new weights
     //source_scene->update_weights(weights, false);
     //source_scene->update_triangulation();
@@ -250,7 +255,7 @@ lbfgsfloatval_t OptimalTransport::evaluate(
 #endif
 
     // fx = f(w)
-    lbfgsfloatval_t fx = 0.0;
+    FT fx = 0.0;
 
     // f(w) = --- the convex function to be minimized
     FT integral_sum = 0.0;
@@ -267,8 +272,6 @@ lbfgsfloatval_t OptimalTransport::evaluate(
 
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
-
-    fx += 10.0;
 
     std::cout << "integrated sum = " << integral_sum << std::endl;
     std::cout << "source_sum = " << source_sum << std::endl;
@@ -300,7 +303,9 @@ int OptimalTransport::progress(
 {
 
     bool hidden_vertices = false;
-    bool norm = gnorm < 3e-4;
+
+    double epsilon = current_level == 0 ? 3e-4 : 3e-3;
+    bool norm = gnorm < epsilon;
     int hidden_vertices_amount = 0;
 
     std::vector<Vertex_handle> vertices = scaled_scenes[current_level]->getVertices();

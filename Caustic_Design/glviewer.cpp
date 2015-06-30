@@ -4,6 +4,7 @@
 // local
 #include "scene.h"
 #include "glviewer.h"
+#include "config.h"
 
 GlViewer::GlViewer(QWidget *pParent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent)
@@ -52,10 +53,12 @@ void GlViewer::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
     double aspect_ratio = double(height) / double(width);
-    
+
+    double domain_width = DOMAIN_WIDTH * 0.9;
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-1.0, 1.0, -aspect_ratio, aspect_ratio, -1.0, 1.0);
+    glOrtho(-domain_width, domain_width, -aspect_ratio*domain_width, aspect_ratio*domain_width, -1.0, 1.0);
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

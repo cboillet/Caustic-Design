@@ -9,6 +9,7 @@
 // local
 #include "util.h"
 #include "pgm.h"
+#include "config.h"
 
 #define PIXEL_EPS 0.0 //1.0e-6
 
@@ -137,7 +138,7 @@ public:
 
         unsigned w = get_width();
         unsigned h = get_height();
-        m_dx = 0.5;
+        m_dx = DOMAIN_WIDTH;
         m_dy = m_dx * double(h) / double(w);
         return true;
     }
