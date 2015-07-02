@@ -37,10 +37,11 @@ Prerequisits:<br>
  *  liblapack-dev
  *  libtbb-dev
  *  libmetis-dev
- *  suitesparse: http://www.cise.ufl.edu/research/sparse/SuiteSparse/
+ *  libqt4-opengl-dev
+ *  suitesparse: http://faculty.cse.tamu.edu/davis/suitesparse.html
 
 Debian dependencies as one-liner:<br>
-`sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev`
+`sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev libqt4-opengl-dev`
 <br>
 <br>
 Do following steps to build voronoi-creator:<br>
