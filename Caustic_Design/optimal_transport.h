@@ -89,6 +89,14 @@ protected:
         );
 
 
+    bool prepare_data();
+    void prepare_level_data(lbfgsfloatval_t* initial_weights, unsigned n);
+    unsigned get_level_sites(unsigned level);
+    void clean();
+    bool evaluate_results(int ret, lbfgsfloatval_t *x, int n);
+    std::string get_result_string(int ret);
+    FT get_initial_weight(Point point, Scene* scene);
+
 private:
 
     std::vector<Vertex_handle> current_source_vertices;
@@ -108,16 +116,7 @@ private:
     int current_level;
     int site_amount;
 
-    bool evaluate_results(int ret, lbfgsfloatval_t *x, int n);
 
-    std::string get_result_string(int ret);
-
-    FT get_initial_weight(Point point, Scene* scene);
-
-    bool prepare_data();
-    void prepare_level_data(lbfgsfloatval_t* initial_weights, unsigned n);
-    unsigned get_level_sites(unsigned level);
-    void clean();
 };
 
 #endif // OPTIMAL_TRANSPORT_H

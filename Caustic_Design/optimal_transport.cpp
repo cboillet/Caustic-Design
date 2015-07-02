@@ -1,6 +1,7 @@
 #include "optimal_transport.h"
 #include "config.h"
 #include "scene.h"
+#include "gradientdescent.h"
 
 OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer):
     m_scene(m_scene),
@@ -14,6 +15,12 @@ OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow
 
 void OptimalTransport::runOptimalTransport()
 {
+
+    if(true)
+    {
+        GradientDescent gd = GradientDescent(this);
+        gd.run();
+    }
 
     if (!prepare_data())
     {
