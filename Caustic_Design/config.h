@@ -14,5 +14,8 @@
     /* debug and demo */
     #define LIVE_DEMO
 
+    /* manual optimization implementation */
+    #define DESCENT_GRADIENT
+
     #define DOMAIN_WIDTH 0.5
 #endif // CONFIG_H

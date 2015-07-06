@@ -39,24 +39,28 @@ private:
     std::vector<Pixel> m_pixels;
     std::vector<PointSingularity> m_point_singularities;
     FT m_area;
+    FT old_wasserstein;
     
 public:
     My_vertex_base() : Vbb() 
     { 
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
    
     My_vertex_base(const Weighted_point& p) : Vbb(p)
     {
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
 
     My_vertex_base(const Weighted_point& p, Face_handle f) : Vbb(p, f)
     {
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
 
     ~My_vertex_base()
@@ -116,6 +120,11 @@ public:
     }
     
     // POINT SINGULARITIES //
+
+    void clear_singularities()
+    {
+        m_point_singularities.clear();
+    }
 
     void append_point_singularity(const PointSingularity& singularity)
     {
@@ -203,6 +212,13 @@ public:
     FT compute_wasserstein(FT weight, FT integrated_intensity, bool singularites = true)
     {
 
+        if(this->is_hidden())
+        {
+            return 0.0;
+//            return old_wasserstein;
+        }
+
+
         FT val = 0.0;
         Point site = get_position();
         for(uint i=0; i<nb_pixels(); i++)
@@ -222,6 +238,8 @@ public:
         }
 
         val /= integrated_intensity;
+
+        old_wasserstein = val;
 
         return val;
     }

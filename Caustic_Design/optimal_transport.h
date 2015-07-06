@@ -26,7 +26,7 @@ public:
     MainWindow* win;
 
 
-protected:
+//protected:
     // L_BFGS
 
     /*
@@ -96,6 +96,8 @@ protected:
     bool evaluate_results(int ret, lbfgsfloatval_t *x, int n);
     std::string get_result_string(int ret);
     FT get_initial_weight(Point point, Scene* scene);
+
+    void update_visibility();
 
 private:
 

@@ -19,7 +19,11 @@ class Interpolation;
 class Scene
 {
 public:
-    
+
+    std::vector<Vertex_handle> m_vertices;
+
+    std::vector<bool> old_visibility;
+    std::vector<bool> new_visibility;
 private:
     RT m_rt;
     Domain m_domain;
@@ -28,7 +32,6 @@ private:
     double m_tau;
     std::map<Edge, FT> m_ratio;
     std::vector<double> m_r, m_g, m_b;
-    std::vector<Vertex_handle> m_vertices;
 
     std::vector<Point> lightpts; //incident light ray on m_scene before interpolation
     std::vector<Point> lightpt; //incident light ray after interpolation on source scene
@@ -40,7 +43,10 @@ private:
     std::vector<PointSingularity> m_point_singularities;
     std::vector<CurveSingularity> m_curve_singularities;
 
-    
+    std::vector<FT> gradient;
+
+    std::vector<FT> old_weights;
+
 public:
     Scene()
     {
@@ -69,6 +75,24 @@ public:
     void clear()
     {
         clear_triangulation();
+    }
+
+    void update_gradient(double* g)
+    {
+        gradient.clear();
+        for (uint i=0; i<m_vertices.size(); i++)
+        {
+            gradient.push_back(g[i]);
+        }
+    }
+
+    void store_old_weights()
+    {
+        old_weights.clear();
+        for (uint i=0; i<m_vertices.size(); i++)
+        {
+            old_weights.push_back(m_vertices[i]->get_weight());
+        }
     }
 
     Domain& getDomain(){return m_domain;} //vieux getteur
@@ -117,6 +141,10 @@ public:
                      const std::vector<Point>& pts) const;
 
     void draw_point_singularity() const;
+
+    void draw_new_visibility() const;
+
+    void draw_gradient() const;
 
     void draw_image() const;
 

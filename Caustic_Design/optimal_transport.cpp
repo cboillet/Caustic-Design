@@ -11,16 +11,24 @@ OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow
 {
     level_max = LEVEL_MAX;
     site_amount = SITE_AMOUNT;
+    current_level = 0;
 }
 
 void OptimalTransport::runOptimalTransport()
 {
 
-    if(true)
-    {
-        GradientDescent gd = GradientDescent(this);
-        gd.run();
-    }
+#if LBFGS_FLOAT == 32
+    std::cout << "precision is 32" << std::endl;
+#elif LBFGS_FLOAT == 64
+    std::cout << "precision is 64" << std::endl;
+#endif
+
+
+#ifdef DESCENT_GRADIENT
+    GradientDescent gd = GradientDescent(this);
+    gd.run();
+    return;
+#endif
 
     if (!prepare_data())
     {
@@ -53,9 +61,9 @@ void OptimalTransport::runOptimalTransport()
         }*/
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
-        param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
+        //param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
         //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE;
-        //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
+        param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
         param.m = 10;
         param.max_linesearch = 40;
         //param.ftol = 0.000000000000001;
@@ -257,9 +265,9 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     scaled_scenes[current_level]->construct_triangulation(source_points, weights);
     current_source_vertices = scaled_scenes[current_level]->getVertices();
     // --- update UI (can be removed for improved performance)
-#ifdef LIVE_DEMO
-    win->update();
-#endif
+
+    std::vector<float> gradient;
+    std::vector<float> wasserstein;
 
     // fx = f(w)
     FT fx = 0.0;
@@ -276,9 +284,18 @@ lbfgsfloatval_t OptimalTransport::evaluate(
         fx += (x[i] * (initial_source_capacity) - integration_term);
 
         g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacity;
-
+        gradient.push_back(g[i]);
+        wasserstein.push_back(integration_term);
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
+
+    scaled_scenes[current_level]->update_gradient(g);
+    scaled_scenes[current_level]->store_old_weights();
+
+#ifdef LIVE_DEMO
+    win->update();
+    update_visibility();
+#endif
 
     std::cout << "integrated sum = " << integral_sum << std::endl;
     std::cout << "source_sum = " << source_sum << std::endl;
@@ -520,6 +537,29 @@ unsigned OptimalTransport::get_level_sites(unsigned level)
 {
     return site_amount / pow(5, level);
     //return m_scene->getVertices().size() / pow(5, level);
+}
+
+
+void OptimalTransport::update_visibility()
+{
+
+    if(scaled_scenes[current_level]->new_visibility.size() == scaled_scenes[current_level]->m_vertices.size())
+    {
+        scaled_scenes[current_level]->old_visibility.clear();
+
+        for (uint i=0; i<scaled_scenes[current_level]->m_vertices.size(); i++)
+        {
+            scaled_scenes[current_level]->old_visibility.push_back(scaled_scenes[current_level]->new_visibility[i]);
+        }
+    }
+
+    scaled_scenes[current_level]->new_visibility.clear();
+
+    for (uint i=0; i<scaled_scenes[current_level]->m_vertices.size(); i++)
+    {
+
+        scaled_scenes[current_level]->new_visibility.push_back(!(scaled_scenes[current_level]->m_vertices[i]->is_hidden()));
+    }
 }
 
 void OptimalTransport::clean()

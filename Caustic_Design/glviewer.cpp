@@ -90,6 +90,10 @@ void GlViewer::paintGL()
 
     m_scene->draw_point_singularity();
 
+    //m_scene->draw_new_visibility();
+
+    m_scene->draw_gradient();
+
     if (m_view_variance)
         m_scene->draw_variance();
     

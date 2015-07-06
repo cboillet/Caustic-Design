@@ -85,6 +85,87 @@ void Scene::draw_point_singularity() const
     glEnd();
 }
 
+
+void Scene::draw_new_visibility() const
+{
+
+    if(old_visibility.size() != m_vertices.size()) return;
+
+    for (uint i=0; i<m_vertices.size(); i++)
+    {
+        if(!m_vertices[i]->is_hidden() && !old_visibility[i])
+        {
+            Vertex_handle vertex = m_vertices[i];
+            double r = 0.0;
+            double g = 1.0;
+            double b = 0.0;
+            glColor3d(r, g, b);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
+            {
+                const Pixel& pixel = vertex->get_pixel(i);
+                const ConvexPolygon& shape = pixel.get_shape();
+                draw_polygon(shape.get_points());
+            }
+        }
+    }
+}
+
+void Scene::draw_gradient()  const
+{
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float g_max = 0.00001;
+    float g_min = -0.000001;
+
+    for (uint i=0; i<gradient.size(); i++)
+    {
+        if(gradient[i] > g_max)
+            g_max = gradient[i];
+        else if (gradient[i] < g_min)
+            g_min = gradient[i];
+    }
+
+    for (uint i=0; i<gradient.size(); i++)
+    {
+        if(m_vertices[i]->is_hidden()) continue;
+
+        Vertex_handle vertex = m_vertices[i];
+
+        double r,g,b,a=0.8;
+
+        r = gradient[i] / g_min;
+        b = gradient[i] / g_max;
+        g = (1.0 - r - b);
+
+
+        /*
+        if(gradient[i] < 0)
+        {
+
+            b = 0;
+        }else
+        {
+            b = gradient[i] / g_max;
+            r = 0;
+        }*/
+
+        glColor4d(r, g, b, a);
+        //glColor3d(r, g, b);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
+        {
+            const Pixel& pixel = vertex->get_pixel(i);
+            const ConvexPolygon& shape = pixel.get_shape();
+            draw_polygon(shape.get_points());
+        }
+    }
+
+    glDisable(GL_BLEND);
+}
+
 /////////////
 // OBJECTS //
 /////////////
