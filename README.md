@@ -109,8 +109,10 @@ Prerequisits:<br>
  *  openGL
  *  GLM header librairy
  *  glew
+ * SOIL
+ * assimp
 
 Debian dependencies as one-liner:<br>
-`sudo apt-get install libglew-dev `
+`sudo apt-get install libglew-dev libsoil-dev`
 <br>
 
