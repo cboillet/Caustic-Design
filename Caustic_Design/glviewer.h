@@ -39,6 +39,8 @@ private:
     bool m_view_capacity_histogram;
     bool m_view_Xrs;
     bool m_view_Xr;
+    bool m_view_newly_visible;
+    bool m_view_gradient;
 
     // rendering options
     double m_line_thickness;
@@ -129,6 +131,10 @@ public:
     void toggle_view_Xrs() {m_view_Xrs = !m_view_Xrs; }
 
     void toggle_view_Xr() {m_view_Xr = !m_view_Xr;}
+
+    void toggle_view_gradient() {m_view_gradient = !m_view_gradient;}
+
+    void toggle_view_newly_visible() {m_view_newly_visible = !m_view_newly_visible;}
 
     //void view_Xrs(std::vector<Point> points); //view light ray on the receiver before interpolation
 

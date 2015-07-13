@@ -14,7 +14,7 @@ OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow
     current_level = 0;
 }
 
-void OptimalTransport::runOptimalTransport()
+void OptimalTransport::runOptimalTransport(bool gradient_descent)
 {
 
 #if LBFGS_FLOAT == 32
@@ -24,11 +24,14 @@ void OptimalTransport::runOptimalTransport()
 #endif
 
 
-#ifdef DESCENT_GRADIENT
-    GradientDescent gd = GradientDescent(this);
-    gd.run();
-    return;
-#endif
+//#ifdef DESCENT_GRADIENT
+    if(gradient_descent)
+    {
+        GradientDescent gd = GradientDescent(this);
+        gd.run();
+        return;
+    }
+//#endif
 
     if (!prepare_data())
     {
@@ -61,9 +64,9 @@ void OptimalTransport::runOptimalTransport()
         }*/
         /* Initialize the parameters for the L-BFGS optimization. */
         lbfgs_parameter_init(&param);
-        //param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
+        param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
         //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE;
-        param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
+        //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
         param.m = 10;
         param.max_linesearch = 40;
         //param.ftol = 0.000000000000001;
@@ -124,6 +127,9 @@ std::string OptimalTransport::get_result_string(int ret)
     std::string resultString = "unknown";
     switch(ret)
     {
+    case 1:
+        resultString = "MANUAL TERMINATION";
+        break;
     case LBFGS_SUCCESS:
         resultString = "LBFGS_SUCCESS";
         break;
@@ -266,7 +272,7 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     current_source_vertices = scaled_scenes[current_level]->getVertices();
     // --- update UI (can be removed for improved performance)
 
-    std::vector<float> gradient;
+
     std::vector<float> wasserstein;
 
     // fx = f(w)
@@ -283,8 +289,12 @@ lbfgsfloatval_t OptimalTransport::evaluate(
         source_sum += x[i] * initial_source_capacity;
         fx += (x[i] * (initial_source_capacity) - integration_term);
 
-        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacity;
-        gradient.push_back(g[i]);
+        if(current_source_vertices[i]->is_hidden() && previous_gradient.size() == current_source_vertices.size())
+            g[i] = previous_gradient[i];
+        else
+            g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacity;
+
+        previous_gradient.push_back(g[i]);
         wasserstein.push_back(integration_term);
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
@@ -456,6 +466,7 @@ bool OptimalTransport::prepare_data()
 void OptimalTransport::prepare_level_data(lbfgsfloatval_t *initial_weights, unsigned n)
 {
 
+    previous_gradient.clear();
     source_viewer->set_scene(scaled_scenes[current_level]);
     source_points.clear();
     source_weights.clear();

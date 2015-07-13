@@ -51,10 +51,10 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
 
 
     //open(QString("/home/p/rect2958.png"), false);
-    open(QString("/home/p/Pictures/einstein.png"), false);
+    //open(QString("/home/p/Pictures/einstein_small.png"), false);
     //open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
-    open(QString("/home/p/Pictures/white.png"), true);
+    //open(QString("/home/p/Pictures/white_small.png"), true);
     //open(QString("/home/p/Pictures/white_2000.dat"), true);
 
 }
@@ -719,6 +719,20 @@ void MainWindow::on_actionViewCapacityHistogram_toggled()
     update();
 }
 
+void MainWindow::on_actionViewGradient_toggled()
+{
+    viewer->toggle_view_gradient();
+    viewer_2->toggle_view_gradient();
+    update();
+}
+
+void MainWindow::on_actionViewPopups_toggled()
+{
+    viewer->toggle_view_newly_visible();
+    viewer_2->toggle_view_newly_visible();
+    update();
+}
+
 void MainWindow::on_actionSetParameters_triggered()
 {
     Dialog dlg;
@@ -808,10 +822,29 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
     Timer::start_timer(m_timer, COLOR_BLUE, "OTM");
+    QMessageBox msgBox;
+    msgBox.setText("Running Optimal Transport Calculation.");
+    msgBox.setInformativeText("Do you want to run the gradient descent approach?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+
+    bool gradient_descent;
+
+    switch (ret) {
+      case QMessageBox::Yes:
+        gradient_descent = true;
+        break;
+      case QMessageBox::No:
+        gradient_descent = false;
+        break;
+      case QMessageBox::Cancel:
+        return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2);
-    ot.runOptimalTransport();
+    ot.runOptimalTransport(gradient_descent);
 
     Timer::stop_timer(m_timer, COLOR_BLUE);
 

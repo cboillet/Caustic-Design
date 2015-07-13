@@ -17,7 +17,7 @@ class OptimalTransport
 {
 public:
     OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer);
-    void runOptimalTransport();
+    void runOptimalTransport(bool gradient_descent);
 
     Scene* m_scene;
     Scene*source_scene;
@@ -104,6 +104,7 @@ private:
     std::vector<Vertex_handle> current_source_vertices;
     std::vector<FT> source_weights;
     std::vector<Point> source_points;
+    std::vector<FT> previous_gradient;
 
     std::vector<Vertex_handle> m_vertices;
     std::vector<Point> m_points;

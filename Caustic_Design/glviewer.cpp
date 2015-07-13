@@ -11,14 +11,14 @@ GlViewer::GlViewer(QWidget *pParent)
 {
     m_scene = NULL;
     
-    m_view_image = false;
+    m_view_image = true;
     m_view_image_grid = false;
     m_view_domain = true;
-    m_view_points = true;
+    m_view_points = false;
     m_view_vertices = false;
-    m_view_edges = true;
+    m_view_edges = false;
     m_view_faces = false;
-    m_view_weights = true;
+    m_view_weights = false;
     m_view_dual = false;
     m_view_capacity = false;
     m_view_variance = false;
@@ -26,9 +26,11 @@ GlViewer::GlViewer(QWidget *pParent)
     m_view_regular_sites = false;
     m_view_pixels = false;
     m_view_barycenter = false;
-    m_view_bounded_dual = true;;
+    m_view_bounded_dual = true;
     m_view_weight_histogram = false;
     m_view_capacity_histogram = false;
+    m_view_newly_visible = true;
+    m_view_gradient = true;
 
     m_line_thickness = 2.0;
     m_point_size = 2.0;
@@ -90,9 +92,11 @@ void GlViewer::paintGL()
 
     m_scene->draw_point_singularity();
 
-    //m_scene->draw_new_visibility();
+    if(m_view_gradient)
+        m_scene->draw_gradient();
 
-    m_scene->draw_gradient();
+    if(m_view_newly_visible)
+        m_scene->draw_new_visibility();
 
     if (m_view_variance)
         m_scene->draw_variance();

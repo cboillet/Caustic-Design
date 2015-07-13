@@ -109,6 +109,8 @@ protected slots:
     void on_actionViewBoundedDual_toggled();
     void on_actionViewWeightHistogram_toggled();
     void on_actionViewCapacityHistogram_toggled();
+    void on_actionViewGradient_toggled();
+    void on_actionViewPopups_toggled();
     
     // data
     void on_actionToggleInvert_toggled();

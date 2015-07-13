@@ -96,9 +96,9 @@ void Scene::draw_new_visibility() const
         if(!m_vertices[i]->is_hidden() && !old_visibility[i])
         {
             Vertex_handle vertex = m_vertices[i];
-            double r = 0.0;
+            double r = 1.0;
             double g = 1.0;
-            double b = 0.0;
+            double b = 1.0;
             glColor3d(r, g, b);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
@@ -140,20 +140,7 @@ void Scene::draw_gradient()  const
         b = gradient[i] / g_max;
         g = (1.0 - r - b);
 
-
-        /*
-        if(gradient[i] < 0)
-        {
-
-            b = 0;
-        }else
-        {
-            b = gradient[i] / g_max;
-            r = 0;
-        }*/
-
         glColor4d(r, g, b, a);
-        //glColor3d(r, g, b);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
         {
