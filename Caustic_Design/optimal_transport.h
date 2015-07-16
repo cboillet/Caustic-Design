@@ -16,12 +16,13 @@
 class OptimalTransport
 {
 public:
-    OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer);
+    OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer, int level_max, int site_amount);
     void runOptimalTransport(bool gradient_descent);
 
     Scene* m_scene;
     Scene*source_scene;
     Scene** scaled_scenes;
+    int current_level;
 
     MainWindow* win;
 
@@ -95,9 +96,11 @@ public:
     void clean();
     bool evaluate_results(int ret, lbfgsfloatval_t *x, int n);
     std::string get_result_string(int ret);
+    void fill_weights(lbfgsfloatval_t* weight_array, Scene* from_scene, int n);
     FT get_initial_weight(Point point, Scene* scene);
 
     void update_visibility();
+    void load_original_image();
 
 private:
 
@@ -116,8 +119,12 @@ private:
     GlViewer* source_viewer;
 
     int level_max;
-    int current_level;
     int site_amount;
+    int min_image_width;
+    int max_image_width;
+    bool m_gradient_descent;
+
+    double image_scale_factor;
 
 
 };

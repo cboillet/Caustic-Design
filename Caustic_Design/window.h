@@ -29,6 +29,8 @@ private:
     unsigned m_verbose;
     unsigned m_frequency;
     unsigned m_max_iters;
+    int m_site_amount;
+    int m_level_max;
     std::vector<double> m_timer;
 
 	unsigned maxNumRecentFiles;
@@ -74,7 +76,7 @@ protected slots:
 
     //
     void open(const QString& filename, const bool open_source);
-    void save(const QString& filename) const;
+    void save(const QString& filename, const bool target = true) const;
     bool is_image(const QString& filename) const;
     
     // file
@@ -86,6 +88,7 @@ protected slots:
     void on_actionOpenPoints_triggered();
     void on_actionSavePoints_triggered();
     void on_actionSaveEPS_triggered();
+    void on_actionSaveSourceDAT_triggered();
     void on_actionLoadWeights_triggered();
     void on_actionLoadSingularities_triggered();
         

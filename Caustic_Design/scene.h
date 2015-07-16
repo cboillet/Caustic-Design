@@ -77,21 +77,28 @@ public:
         clear_triangulation();
     }
 
-    void update_gradient(double* g)
+    void update_gradient(double* g, int n)
     {
-        gradient.clear();
-        for (uint i=0; i<m_vertices.size(); i++)
+        if (gradient.size() != n)
+            gradient.resize(n);
+
+
+        for (uint i=0; i<n; i++)
         {
-            gradient.push_back(g[i]);
+            gradient[i] = g[i];
         }
+
     }
 
     void store_old_weights()
     {
-        old_weights.clear();
-        for (uint i=0; i<m_vertices.size(); i++)
+        uint n = m_vertices.size();
+        if(old_weights.size() != n)
+            old_weights.resize(n);
+
+        for (uint i=0; i<n; i++)
         {
-            old_weights.push_back(m_vertices[i]->get_weight());
+            old_weights[i] = m_vertices[i]->get_weight();
         }
     }
 
@@ -103,11 +110,11 @@ public:
 
 
     // IO //
-    void load_image(const QString& filename);  
+    void load_image(const QString& filename, const int width=0);
     void load_points(const QString& filename);
     
     void load_dat(const QString& filename, std::vector<Point>& points) const;
-    void save_points(const QString& filename) const;   
+    void save_points(const QString& filename) const;
     std::vector<FT> load_weights(const QString& filename) const;
     void load_singularities(const QString& filename, std::vector<PointSingularity>& pSing, std::vector<CurveSingularity>& cSing) const;
 

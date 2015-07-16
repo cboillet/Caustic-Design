@@ -8,9 +8,9 @@
 #include "tinyxml.h"
 #include "console_color.h"
 
-void Scene::load_image(const QString& filename) 
+void Scene::load_image(const QString& filename, const int width)
 {
-    bool ok = m_domain.load(filename);
+    bool ok = m_domain.load(filename, width);
     if (!ok) return;
     
     m_rt.set_boundary(m_domain.get_dx(),

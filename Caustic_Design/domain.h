@@ -128,9 +128,18 @@ public:
         return 1.0;
     }
     
-    bool load(const QString& filename)
+    bool load(const QString& filename, const int width = 0)
     {
         bool ok = m_image.load(filename);
+
+        if(width != 0)
+        {
+            double scale = (double)width / double(m_image.width());
+            int height = (int)(((double)m_image.height()) * scale);
+
+            m_image = m_image.scaled(width, height);
+        }
+
         //bool ok = m_image.load(filename.toStdString());
         if (!ok) return false;
 

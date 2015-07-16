@@ -10,7 +10,7 @@ class GradientDescent
 {
 public:
     GradientDescent(OptimalTransport* ot);
-    void run();
+    void run(lbfgsfloatval_t* weights);
     lbfgsfloatval_t calc_norm(lbfgsfloatval_t* array, uint n);
 
 private:

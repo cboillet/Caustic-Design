@@ -59,6 +59,7 @@
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
     <addaction name="actionOpenSourceDAT"/>
+    <addaction name="actionSaveSourceDAT"/>
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
     <addaction name="separator"/>
@@ -597,6 +598,11 @@
    </property>
    <property name="text">
     <string>Popups</string>
+   </property>
+  </action>
+  <action name="actionSaveSourceDAT">
+   <property name="text">
+    <string>Save Source DAT</string>
    </property>
   </action>
  </widget>
