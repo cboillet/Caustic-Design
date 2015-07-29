@@ -109,6 +109,7 @@ Prerequisits:<br>
  *  openGL
  *  GLM header librairy
  *  glew
+ *  glfw
  * SOIL
  * assimp
 
