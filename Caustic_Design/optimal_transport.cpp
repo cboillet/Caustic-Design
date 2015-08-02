@@ -430,9 +430,11 @@ bool OptimalTransport::prepare_data()
 
 #ifdef LIVE_DEMO
         source_viewer->set_scene(scaled_scenes[i]);
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, source_viewer);
+#else
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, NULL);
 #endif
 
-        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, source_viewer);
         //voronoi_creator.init_points(scene_sites, scaled_scenes[i]);
 
         /*for(int j=0; j<10; j++)
