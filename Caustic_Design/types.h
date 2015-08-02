@@ -15,6 +15,7 @@
 #include "pixel.h"
 #include "grid.h"
 #include "rt2.h"
+#include "singularity.h"
 
 #undef min
 #undef max
@@ -43,6 +44,7 @@ typedef Traits::Weight Weight;
 typedef CGAL::Regular_triangulation_vertex_base_2<Traits> RVb;
 typedef My_vertex_base<Traits, RVb> MVb;
 typedef MVb::Pixel Pixel;
+typedef MVb::PointSingularity PointSingularity;
 
 // Face
 typedef CGAL::Regular_triangulation_face_base_2<Traits> RFb;

@@ -59,8 +59,11 @@
     <addaction name="separator"/>
     <addaction name="actionOpenPoints"/>
     <addaction name="actionOpenSourceDAT"/>
+    <addaction name="actionSaveSourceDAT"/>
     <addaction name="actionSavePoints"/>
     <addaction name="actionSaveEPS"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoadSingularities"/>
     <addaction name="separator"/>
     <addaction name="actionSnapshot"/>
     <addaction name="actionClear"/>
@@ -109,12 +112,12 @@
     <addaction name="actionViewDual"/>
     <addaction name="actionViewBarycenter"/>
     <addaction name="actionDrawMovement"/>
+    <addaction name="actionViewGradient"/>
+    <addaction name="actionViewPopups"/>
     <addaction name="separator"/>
     <addaction name="actionViewPixels"/>
     <addaction name="actionViewCapacity"/>
     <addaction name="actionViewVariance"/>
-    <addaction name="actionViewRegularity"/>
-    <addaction name="actionViewRegularSites"/>
     <addaction name="separator"/>
     <addaction name="actionViewCapacityHistogram"/>
     <addaction name="actionViewWeightHistogram"/>
@@ -151,7 +154,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Points</string>
@@ -179,7 +182,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Edges</string>
@@ -193,7 +196,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Weights</string>
@@ -383,6 +386,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Image</string>
    </property>
@@ -565,6 +571,38 @@
   <action name="actionLoadWeights">
    <property name="text">
     <string>Load Weights</string>
+   </property>
+  </action>
+  <action name="actionLoadSingularities">
+   <property name="text">
+    <string>Load Singularities</string>
+   </property>
+  </action>
+  <action name="actionViewGradient">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Gradient</string>
+   </property>
+  </action>
+  <action name="actionViewPopups">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Popups</string>
+   </property>
+  </action>
+  <action name="actionSaveSourceDAT">
+   <property name="text">
+    <string>Save Source DAT</string>
    </property>
   </action>
  </widget>

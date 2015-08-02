@@ -42,6 +42,8 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_epsilon = EPSILON;
     m_frequency = 0;
     m_max_iters = 500;
+    m_site_amount = 5000;
+    m_level_max = 3;
     
 	// accepts drop events
 	setAcceptDrops(true);
@@ -49,13 +51,15 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     connect(this, SIGNAL(openRecentFile(QString, bool)),
             this, SLOT(open(QString, bool)));
 
-    /*
-    open(QString("/home/p/Pictures/einstein.png"), false);
-    open(QString("/home/p/Pictures/einstein_2000.dat"), false);
 
-    open(QString("/home/p/Pictures/white.png"), true);
-    open(QString("/home/p/Pictures/white_2000.dat"), true);
-    */
+    //open(QString("/home/p/rect2958.png"), false);
+    //open(QString("/home/p/Pictures/einstein.png"), false);
+    //m_scene->load_image("/home/p/Pictures/einstein.png", false);
+    //open(QString("/home/p/Pictures/einstein_2000.dat"), false);
+
+    //open(QString("/home/p/Pictures/white_small.png"), true);
+    //open(QString("/home/p/Pictures/white_2000.dat"), true);
+
 }
 
 MainWindow::~MainWindow()
@@ -177,11 +181,14 @@ void MainWindow::open(const QString& filename, const bool open_source)
 	update();
 }
 
-void MainWindow::save(const QString& filename) const
+void MainWindow::save(const QString& filename, const bool target) const
 {
     std::cerr << "save ...";
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    m_scene->save_points(filename);
+    if(target)
+        m_scene->save_points(filename);
+    else
+        source_scene->save_points(filename);
     QApplication::restoreOverrideCursor();
     std::cerr << "done" << std::endl;
 }
@@ -216,6 +223,22 @@ void MainWindow::on_actionLoadWeights_triggered()
     std::vector<FT> weights = m_scene->load_weights(fileName);
     m_scene->update_weights(weights, false);
     m_scene->update_triangulation();
+    QApplication::restoreOverrideCursor();
+    update();
+}
+
+void MainWindow::on_actionLoadSingularities_triggered()
+{
+    QString fileName =
+            QFileDialog::getOpenFileName(this, tr("Open Singularities"), ".");
+
+    if(fileName.isEmpty()) return;
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    std::vector<PointSingularity> ps;
+    std::vector<CurveSingularity> cs;
+    m_scene->load_singularities(fileName, ps, cs);
+    m_scene->update_singularities(ps, cs);
     QApplication::restoreOverrideCursor();
     update();
 }
@@ -259,6 +282,14 @@ void MainWindow::on_actionSavePoints_triggered()
     QFileDialog::getSaveFileName(this, tr("Save pointset"), ".dat");
 	if (filename.isEmpty()) return;
     save(filename);
+}
+
+void MainWindow::on_actionSaveSourceDAT_triggered()
+{
+    QString filename =
+    QFileDialog::getSaveFileName(this, tr("Save pointset"), ".dat");
+    if (filename.isEmpty()) return;
+    save(filename, false);
 }
 
 void MainWindow::on_actionSaveEPS_triggered()
@@ -702,6 +733,20 @@ void MainWindow::on_actionViewCapacityHistogram_toggled()
     update();
 }
 
+void MainWindow::on_actionViewGradient_toggled()
+{
+    viewer->toggle_view_gradient();
+    viewer_2->toggle_view_gradient();
+    update();
+}
+
+void MainWindow::on_actionViewPopups_toggled()
+{
+    viewer->toggle_view_newly_visible();
+    viewer_2->toggle_view_newly_visible();
+    update();
+}
+
 void MainWindow::on_actionSetParameters_triggered()
 {
     Dialog dlg;
@@ -719,6 +764,8 @@ void MainWindow::on_actionSetParameters_triggered()
     dlg.set_hist_range(viewer->histogram_range());
     dlg.set_hist_nbins(viewer->histogram_nbins());
     dlg.set_tau(m_scene->get_tau());
+    dlg.set_site_amount(m_site_amount);
+    dlg.set_level_max(m_level_max);
     
     if (dlg.exec() == QDialog::Accepted)
     {
@@ -734,6 +781,8 @@ void MainWindow::on_actionSetParameters_triggered()
         viewer->histogram_range() = dlg.get_hist_range();
         viewer->histogram_nbins() = dlg.get_hist_nbins();
         m_scene->set_tau(dlg.get_tau());
+        m_level_max = dlg.get_level_max();
+        m_site_amount = dlg.get_site_amount();
         update();
     }
 }
@@ -772,7 +821,7 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
         voronoicreator->apply_lloyd_optimization(compute_scene);
     }*/
 
-    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon()))
+    if(voronoicreator->generate_voronoi(m_scene, nbpoints, epsilon(), viewer))
         this->on_actionSavePoints_triggered();
 }
 
@@ -790,11 +839,31 @@ void MainWindow::on_actionCalculateOptimalTransport_triggered()
 {
     std::cout << "onActionComputeOptimalTransport" << std::endl;
 
+    QMessageBox msgBox;
+    msgBox.setText("Running Optimal Transport Calculation.");
+    msgBox.setInformativeText("Do you want to run the gradient descent approach?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+
+    bool gradient_descent;
+
+    switch (ret) {
+      case QMessageBox::Yes:
+        gradient_descent = true;
+        break;
+      case QMessageBox::No:
+        gradient_descent = false;
+        break;
+      case QMessageBox::Cancel:
+        return;
+    }
+
     Timer::start_timer(m_timer, COLOR_BLUE, "OTM");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2);
-    ot.runOptimalTransport();
+    OptimalTransport ot = OptimalTransport(m_scene, source_scene, this, viewer_2, m_level_max, m_site_amount);
+    ot.runOptimalTransport(gradient_descent);
 
     Timer::stop_timer(m_timer, COLOR_BLUE);
 

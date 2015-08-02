@@ -61,6 +61,98 @@ void Scene::draw_circle(const Point& center,
     glPopMatrix();
 }
 
+void Scene::draw_point_singularity() const
+{
+
+    double line_length = m_domain.get_dx() / 100.0;
+
+    glLineWidth(2.0f);
+    glColor3d(0.0d, 0.0d, 1.0d);
+
+    glBegin(GL_LINES);
+
+    for (unsigned j = 0; j < m_point_singularities.size(); j++)
+    {
+        PointSingularity ps = m_point_singularities[j];
+        Point p = ps.get_position();
+        glVertex2d(p.x() - line_length, p.y() - line_length);
+        glVertex2d(p.x() + line_length, p.y() + line_length);
+
+        glVertex2d(p.x() + line_length, p.y() - line_length);
+        glVertex2d(p.x() - line_length, p.y() + line_length);
+    }
+
+    glEnd();
+}
+
+
+void Scene::draw_new_visibility() const
+{
+
+    if(old_visibility.size() != m_vertices.size()) return;
+
+    for (uint i=0; i<m_vertices.size(); i++)
+    {
+        if(!m_vertices[i]->is_hidden() && !old_visibility[i])
+        {
+            Vertex_handle vertex = m_vertices[i];
+            double r = 1.0;
+            double g = 1.0;
+            double b = 1.0;
+            glColor3d(r, g, b);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
+            {
+                const Pixel& pixel = vertex->get_pixel(i);
+                const ConvexPolygon& shape = pixel.get_shape();
+                draw_polygon(shape.get_points());
+            }
+        }
+    }
+}
+
+void Scene::draw_gradient()  const
+{
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float g_max = 0.00001;
+    float g_min = -0.000001;
+
+    for (uint i=0; i<gradient.size(); i++)
+    {
+        if(gradient[i] > g_max)
+            g_max = gradient[i];
+        else if (gradient[i] < g_min)
+            g_min = gradient[i];
+    }
+
+    for (uint i=0; i<gradient.size(); i++)
+    {
+        if(m_vertices[i]->is_hidden()) continue;
+
+        Vertex_handle vertex = m_vertices[i];
+
+        double r,g,b,a=0.8;
+
+        r = gradient[i] / g_min;
+        b = gradient[i] / g_max;
+        g = (1.0 - r - b);
+
+        glColor4d(r, g, b, a);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        for (unsigned i = 0; i < vertex->nb_pixels(); ++i)
+        {
+            const Pixel& pixel = vertex->get_pixel(i);
+            const ConvexPolygon& shape = pixel.get_shape();
+            draw_polygon(shape.get_points());
+        }
+    }
+
+    glDisable(GL_BLEND);
+}
+
 /////////////
 // OBJECTS //
 /////////////

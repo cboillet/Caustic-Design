@@ -18,6 +18,12 @@ LIBS        += -lblas
 LIBS        += -llapack
 # L-BFGS
 LIBS        += -llbfgs
+LIBS        += -ltinyxml
+LIBS += -lsuitesparseconfig
+
+CONFIG += warn_off
+
+QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -frounding-math -O3
 #optimization
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -53,7 +59,9 @@ HEADERS += \
     interpolation.h \
     optimal_transport.h \
     voronoi_creation.h \
-    config.h
+    singularity.h \
+    config.h \
+    gradientdescent.h
 
 SOURCES += \
     matrix/sparse_array.cpp \
@@ -72,7 +80,8 @@ SOURCES += \
     window.cpp \
     interpolation.cpp \
     optimal_transport.cpp \
-        voronoi_creation.cpp
+        voronoi_creation.cpp \
+    gradientdescent.cpp
 
 
 FORMS += \

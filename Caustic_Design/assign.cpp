@@ -111,6 +111,24 @@ void Scene::assign_pixels()
     if (m_timer_on) Timer::stop_timer(m_timer, COLOR_GREEN);
 }
 
+
+void Scene::assign_singularites()
+{
+
+    //FT intensity = m_domain.integrate_intensity();
+    FT intensity_per_cell = FT(1.0) / FT(m_vertices.size());
+    FT singularity_value = FT(0.75) * intensity_per_cell;
+
+    for (unsigned i = 0; i < m_point_singularities.size(); i++)
+    {
+        PointSingularity ps = m_point_singularities[i];
+        ps.set_value(singularity_value);
+        Vertex_handle vertex = m_rt.find_nearest_vertex(ps.get_position());
+        vertex->append_point_singularity(ps);
+    }
+}
+
+
 FT Scene::rasterize(const EnrichedSegment& enriched_segment, Grid& grid)
 {
     const Segment& segment = enriched_segment.segment();

@@ -7,6 +7,7 @@
 // local
 #include "convex_polygon.h"
 #include "pixel.h"
+#include "singularity.h"
 
 template <class Kernel, class Vbb>
 class My_vertex_base : public Vbb
@@ -30,30 +31,36 @@ public:
     
     typedef CConvexPolygon<Kernel> ConvexPolygon;
     typedef CPixel<Kernel> Pixel;
+    typedef PSingularity<Kernel> PointSingularity;
     
 private:
     int m_index;
     ConvexPolygon m_dual;
     std::vector<Pixel> m_pixels;
+    std::vector<PointSingularity> m_point_singularities;
     FT m_area;
+    FT old_wasserstein;
     
 public:
     My_vertex_base() : Vbb() 
     { 
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
    
     My_vertex_base(const Weighted_point& p) : Vbb(p)
     {
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
 
     My_vertex_base(const Weighted_point& p, Face_handle f) : Vbb(p, f)
     {
         m_index = -1;
         m_area = 0.0;
+        old_wasserstein = 0.0;
     }
 
     ~My_vertex_base()
@@ -112,6 +119,23 @@ public:
         m_pixels.push_back(pixel);
     }
     
+    // POINT SINGULARITIES //
+
+    void clear_singularities()
+    {
+        m_point_singularities.clear();
+    }
+
+    void append_point_singularity(const PointSingularity& singularity)
+    {
+        m_point_singularities.push_back(singularity);
+    }
+
+    const std::vector<PointSingularity> get_point_singularities()
+    {
+        return m_point_singularities;
+    }
+
     // ATTRIBUTES //
     
     FT compute_area() const
@@ -119,7 +143,7 @@ public:
         return m_area;
     }
     
-    void pre_compute_area()
+    void pre_compute_area(bool singularities = true)
     {
         m_area = 0.0;
         for (unsigned i = 0; i < nb_pixels(); ++i)
@@ -127,9 +151,17 @@ public:
             const Pixel& pixel = get_pixel(i);
             m_area += pixel.compute_area();
         }
+
+        if(singularities)
+        {
+            for (unsigned i = 0; i < m_point_singularities.size(); i++)
+            {
+                m_area += m_point_singularities[i].get_value();
+            }
+        }
     }
 
-    Point compute_centroid() const
+    Point compute_centroid(bool singularities = true) const
     {
         FT sum_area = 0.0;
         Vector sum_vector = CGAL::NULL_VECTOR;
@@ -142,11 +174,22 @@ public:
             sum_area += area;
             sum_vector = sum_vector + area*(centroid - CGAL::ORIGIN);
         }
+
+        if(singularities)
+        {
+            for (unsigned i = 0; i < m_point_singularities.size(); i++)
+            {
+                PointSingularity singularity = m_point_singularities[i];
+                sum_area += singularity.get_value();
+                sum_vector = sum_vector + singularity.get_value()* (singularity.get_position() - CGAL::ORIGIN);
+            }
+        }
+
         if (sum_area == 0.0) return get_position();
         return CGAL::ORIGIN + (sum_vector / sum_area);
     }
     
-    FT compute_variance() const
+    FT compute_variance(bool singularities = true) const
     {
         FT variance = 0.0;
         const Point& q = get_position();
@@ -155,19 +198,48 @@ public:
             const Pixel& pixel = get_pixel(i);
             variance += pixel.compute_variance(q);
         }
+
+        // TODO: compute variance -- do we need that?
+        /*
+        if(singularities)
+        {
+            variance +=
+        }*/
+
         return variance;
     }
 
-    FT compute_wasserstein(FT weight, FT integrated_intensity)
+    FT compute_wasserstein(FT weight, FT integrated_intensity, bool singularites = true)
     {
+
+        if(this->is_hidden())
+        {
+            return 0.0;
+//            return old_wasserstein;
+        }
+
 
         FT val = 0.0;
         Point site = get_position();
         for(uint i=0; i<nb_pixels(); i++)
         {
             val += ( CGAL::squared_distance(site, get_pixel(i).compute_centroid()) - weight )
-                   * (get_pixel(i).compute_area() / integrated_intensity);
+                   * (get_pixel(i).compute_area());
         }
+
+
+        if (singularites)
+        {
+            for (uint i = 0; i < m_point_singularities.size(); i++)
+            {
+                val += ( CGAL::squared_distance(site, m_point_singularities[i].get_position()) - weight )
+                        * (m_point_singularities[i].get_value());
+            }
+        }
+
+        val /= integrated_intensity;
+
+        old_wasserstein = val;
 
         return val;
     }

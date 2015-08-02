@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "ui_dialog.h"
+#include "config.h"
 
 class Dialog : public QDialog, private Ui::Dialog
 {
@@ -12,8 +13,9 @@ public:
     Dialog(QWidget *parent = 0)
     {
         setupUi(this);
+
     }
-    
+
     void set_all_ranges()
     {
         tau_spin->setRange(0.0, 1000.0);
@@ -25,8 +27,16 @@ public:
         max_iters_spin->setRange(1, 500);
         hist_nbins_spin->setRange(2, 4096);
         hist_range_spin->setRange(0.001, 1.0);
+        level_spin_box->setRange(1, 10);
+        site_amount_spin->setRange(1, 2000000);
     }
-    
+
+    int get_level_max() const { return level_spin_box->value(); }
+    void set_level_max(const int level_max) { level_spin_box->setValue(level_max); }
+
+    int get_site_amount() const { return site_amount_spin->value(); }
+    void set_site_amount(const int site_amount) { site_amount_spin->setValue(site_amount); }
+
     double get_line_thickness() const { return thickness_spinbox->value(); }
     void set_line_thickness(const double t) { thickness_spinbox->setValue(t); }
     

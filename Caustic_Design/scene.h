@@ -19,7 +19,11 @@ class Interpolation;
 class Scene
 {
 public:
-    
+
+    std::vector<Vertex_handle> m_vertices;
+
+    std::vector<bool> old_visibility;
+    std::vector<bool> new_visibility;
 private:
     RT m_rt;
     Domain m_domain;
@@ -28,7 +32,6 @@ private:
     double m_tau;
     std::map<Edge, FT> m_ratio;
     std::vector<double> m_r, m_g, m_b;
-    std::vector<Vertex_handle> m_vertices;
 
     std::vector<Point> lightpts; //incident light ray on m_scene before interpolation
     std::vector<Point> lightpt; //incident light ray after interpolation on source scene
@@ -37,7 +40,13 @@ private:
     std::vector<double> m_timer;    
     bool m_fixed_connectivity;
 
-    
+    std::vector<PointSingularity> m_point_singularities;
+    std::vector<CurveSingularity> m_curve_singularities;
+
+    std::vector<FT> gradient;
+
+    std::vector<FT> old_weights;
+
 public:
     Scene()
     {
@@ -68,6 +77,31 @@ public:
         clear_triangulation();
     }
 
+    void update_gradient(double* g, int n)
+    {
+        if (gradient.size() != n)
+            gradient.resize(n);
+
+
+        for (uint i=0; i<n; i++)
+        {
+            gradient[i] = g[i];
+        }
+
+    }
+
+    void store_old_weights()
+    {
+        uint n = m_vertices.size();
+        if(old_weights.size() != n)
+            old_weights.resize(n);
+
+        for (uint i=0; i<n; i++)
+        {
+            old_weights[i] = m_vertices[i]->get_weight();
+        }
+    }
+
     Domain& getDomain(){return m_domain;} //vieux getteur
     RT& getRT(){return m_rt;}
     std::vector<Point>& getLightPointsSource(){return lightpts;}
@@ -76,12 +110,14 @@ public:
 
 
     // IO //
-    void load_image(const QString& filename);  
+    void load_image(const QString& filename, const int width=0);
     void load_points(const QString& filename);
     
     void load_dat(const QString& filename, std::vector<Point>& points) const;
-    void save_points(const QString& filename) const;   
+    void save_points(const QString& filename) const;
     std::vector<FT> load_weights(const QString& filename) const;
+    void load_singularities(const QString& filename, std::vector<PointSingularity>& pSing, std::vector<CurveSingularity>& cSing) const;
+
     void save_dat(const QString& filename, const std::vector<Point>& points) const;
 
     void save_weights(const QString& filename) const;
@@ -112,6 +148,12 @@ public:
     void draw_circle(const Point& center,
                      const FT scale, 
                      const std::vector<Point>& pts) const;
+
+    void draw_point_singularity() const;
+
+    void draw_new_visibility() const;
+
+    void draw_gradient() const;
 
     void draw_image() const;
 
@@ -208,6 +250,9 @@ public:
     
     void collect_sites(std::vector<Point>& points,
                        std::vector<FT>& weights) const;
+
+    void collect_singularities(std::vector<PointSingularity> & pointSingularities,
+                               std::vector<CurveSingularity> & urveSingularities) const;
     
     void clear_triangulation();
     
@@ -230,6 +275,11 @@ public:
                           bool hidden = true);                  
     void update_weights(const std::vector<FT>& weights, 
                         bool hidden = true);
+
+    void update_singularities(const std::vector<PointSingularity>& pointSingularities,
+                              const std::vector<CurveSingularity>& curveSingularities);
+
+    FT integrate_singularities();
     
     void reset_weights();
     FT compute_value_integral() const;
@@ -292,6 +342,8 @@ public:
 
     void assign_pixels();
     
+    void assign_singularites();
+
     FT rasterize(const EnrichedSegment& enriched_segment, Grid& grid);
     bool move(const unsigned i, const unsigned j,
               const Point& source, const Vector& velocity,

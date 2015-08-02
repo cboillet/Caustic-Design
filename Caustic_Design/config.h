@@ -1,12 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
     /*Voronoi Generation*/
-    #define SITE_AMOUNT 10000
+    //int SITE_AMOUNT = 50000;
+    //#define SITE_AMOUNT 250000
     #define EPSILON 0.5
     #define LLYOD_STEPS 20
 
     /*Optimal Transport*/
-    #define LEVEL_MAX 3
+    //#define LEVEL_MAX 6
+    //int LEVEL_MAX = 6;
 
     /*Interpolation*/
     #define MESH_AMOUNT 50
@@ -14,4 +16,8 @@
     /* debug and demo */
     #define LIVE_DEMO
 
+    /* manual optimization implementation */
+    //#define DESCENT_GRADIENT
+
+    #define DOMAIN_WIDTH 0.5
 #endif // CONFIG_H

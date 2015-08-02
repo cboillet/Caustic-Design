@@ -56,6 +56,20 @@ void Scene::collect_sites(std::vector<Point>& points,
     }
 }
 
+void Scene::collect_singularities(std::vector<PointSingularity> &pointSingularities,
+                                  std::vector<CurveSingularity> &curveSingularities) const
+{
+    for (unsigned i = 0; i < m_point_singularities.size(); i++)
+    {
+        pointSingularities.push_back(m_point_singularities[i]);
+    }
+
+    for (unsigned i = 0; i < m_curve_singularities.size(); i++)
+    {
+        curveSingularities.push_back(m_curve_singularities[i]);
+    }
+}
+
 void Scene::clear_triangulation()
 {
     m_ratio.clear();
@@ -93,6 +107,7 @@ bool Scene::construct_triangulation(const std::vector<Point>& points,
     {
         pre_build_dual_cells();
         assign_pixels();
+        assign_singularites();
         pre_compute_area();
         compute_capacities(m_capacities);
     }
@@ -211,6 +226,12 @@ void Scene::update_weights(const std::vector<FT>& weights, bool hidden)
     }
 }
 
+void Scene::update_singularities(const std::vector<PointSingularity> &pointSingularities, const std::vector<CurveSingularity> &curveSingularities)
+{
+    m_point_singularities = pointSingularities;
+    m_curve_singularities = curveSingularities;
+}
+
 void Scene::reset_weights()
 {
     for (unsigned i = 0; i < m_vertices.size(); ++i)
@@ -249,4 +270,19 @@ void Scene::pre_compute_area()
         Vertex_handle vertex = m_vertices[i];
         vertex->pre_compute_area();
     }
+}
+
+FT Scene::integrate_singularities()
+{
+    FT val = 0.0;
+
+    std::vector<PointSingularity>::iterator it;
+
+    for (it = m_point_singularities.begin(); it != m_point_singularities.end(); it++)
+    {
+        PointSingularity ps = *it;
+        val += ps.get_value();
+    }
+
+    return val;
 }

@@ -5,11 +5,12 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "tinyxml.h"
 #include "console_color.h"
 
-void Scene::load_image(const QString& filename) 
+void Scene::load_image(const QString& filename, const int width)
 {
-    bool ok = m_domain.load(filename);
+    bool ok = m_domain.load(filename, width);
     if (!ok) return;
     
     m_rt.set_boundary(m_domain.get_dx(),
@@ -60,6 +61,77 @@ std::vector<FT> Scene::load_weights(const QString& filename) const
 
     return weights;
     //update_weights(weights);
+}
+
+void Scene::load_singularities(const QString& filename, std::vector<PointSingularity>& pSing, std::vector<CurveSingularity>& cSing) const
+{
+
+    if (!m_domain.is_valid())
+    {
+        std::cerr << "Domain not valid" << std::endl;
+        return;
+    }
+
+    FT dx = m_domain.get_dx();
+    FT dy = m_domain.get_dy();
+    FT width = m_domain.get_width();
+    FT height = m_domain.get_height();
+
+    std::cout << "loading singularities from file: " << filename.toStdString() << std::endl;
+
+    pSing.clear();
+    cSing.clear();
+
+    // convert qstring to char*
+    QByteArray ba = filename.toLatin1();
+    const char *file = ba.data();
+
+    // load document
+    TiXmlDocument doc(file);
+    if(!doc.LoadFile())
+    {
+        std::cerr << "error loading file" << std::endl;
+        return;
+    }
+
+    TiXmlHandle handle(&doc);
+    TiXmlElement* elem;
+    TiXmlHandle root(0);
+
+    // doc name (should be svg)
+    elem = handle.FirstChildElement().Element();
+    if(!elem)
+    {
+        std::cerr << "first element not found" << std::endl;
+        return;
+    }
+    root = TiXmlHandle(elem);
+
+    // read all circles
+    elem = root.FirstChild("circle").Element();
+    TiXmlAttribute* attr;
+
+    do{
+        FT x,y;
+        for(attr = elem->FirstAttribute(); attr != NULL; attr = attr->Next())
+        {
+            std::string name = std::string(attr->Name());
+            std::string value = std::string(attr->Value());
+
+            if( name == "cx" )
+            {
+                x = (FT(std::stod(value, NULL)) / width) - dx;
+            }else if( name == "cy")
+            {
+                y = (FT(std::stod(value, NULL)) / height) - dy;
+            }
+        }
+
+        PointSingularity ps = PointSingularity(Point(x,y), 0.0);
+        pSing.push_back(ps);
+    }while((elem = elem->NextSiblingElement()) != NULL);
+
+    // todo read paths (into curve-singularities)
 }
 
 void Scene::save_points(const QString& filename) const

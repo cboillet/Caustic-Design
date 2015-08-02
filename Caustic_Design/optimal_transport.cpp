@@ -1,19 +1,41 @@
 #include "optimal_transport.h"
 #include "config.h"
 #include "scene.h"
+#include "gradientdescent.h"
+#include "dialog.h"
 
-OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer):
+OptimalTransport::OptimalTransport(Scene*m_scene, Scene*source_scene, MainWindow* win, GlViewer* source_viewer, int level_max, int site_amount):
     m_scene(m_scene),
     source_scene(source_scene),
     win(win),
-    source_viewer(source_viewer)
+    source_viewer(source_viewer),
+    level_max(level_max),
+    site_amount(site_amount)
 {
-    level_max = LEVEL_MAX;
-    site_amount = SITE_AMOUNT;
+    current_level = 0;
+    min_image_width = 64;
+    max_image_width = QImage(m_scene->getDomain().get_filename()).width();
+
+    image_scale_factor = double(max_image_width - min_image_width) / (std::max(1, level_max-1));
 }
 
-void OptimalTransport::runOptimalTransport()
+void OptimalTransport::runOptimalTransport(bool gradient_descent)
 {
+    m_gradient_descent = gradient_descent;
+
+#if LBFGS_FLOAT == 32
+    std::cout << "precision is 32" << std::endl;
+#elif LBFGS_FLOAT == 64
+    std::cout << "precision is 64" << std::endl;
+#endif
+
+    // will be used to hint that last iteration failed
+    // we will change to gradient_descent if it failed
+    bool last_failed = false;
+    // we will redo last iteration with the image in original scale
+    bool large_image = false;
+
+    GradientDescent gd = GradientDescent(this);
 
     if (!prepare_data())
     {
@@ -36,47 +58,69 @@ void OptimalTransport::runOptimalTransport()
             printf("ERROR: Failed to allocate a memory block for variables.\n");
             return;
         }
-        prepare_level_data(x, n);
 
-
-        /* Initialize the variables. Initial weight vector is 0 for first try (TODO: make previous guess if multiscale-approach used) */
-        /*for (i = 0;i < n;i ++)
+        // prepare data for current level
+        if (last_failed)
         {
-            x[i] = 0.0;
-        }*/
-        /* Initialize the parameters for the L-BFGS optimization. */
-        lbfgs_parameter_init(&param);
-        param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
-        //param.m = 10;
-        //param.ftol = 0.000000000000001;
-        //param.epsilon = 0;
-        //param.delta = 0.0001;
-        /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
-        /*
-            Start the L-BFGS optimization; this will invoke the callback functions
-            evaluate() and progress() when necessary.
-         */
-        ret = lbfgs(n, x, &fx, evaluate, progress, this, &param);
+            last_failed = false;
 
-        if(!evaluate_results(ret, x, n))
+            // reinsert weights from same level
+            std::vector<Vertex_handle> vertices = scaled_scenes[current_level]->getVertices();
+            for (uint i=0; i<n; i++)
+            {
+                x[i] = vertices[i]->get_weight();
+            }
+        }
+        else
         {
-            std::cerr << "error in level " << current_level << ", stop." << std::endl;
-            lbfgs_free(x);
-            return;
+            // nothing special, prepare data of level
+            prepare_level_data(x, n);
         }
 
+        if(m_gradient_descent)
+        {
+            gd.run(x);
+        }
+        else
+        {
 
-        /* Report the result. */
-        printf("L-BFGS optimization on level %d terminated with status code = %d\n", current_level, ret);
-        printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
-        lbfgs_free(x);
+            /* Initialize the parameters for the L-BFGS optimization. */
+            lbfgs_parameter_init(&param);
+            param.linesearch = LBFGS_LINESEARCH_MORETHUENTE;
+            //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE;
+            //param.linesearch = LBFGS_LINESEARCH_BACKTRACKING_WOLFE;
+            param.m = 10;
+            param.max_linesearch = 40;
+            //param.ftol = 0.000000000000001;
+            param.epsilon = 0;
+            //param.delta = 0.0001;
+            /*param.linesearch = LBFGS_LINESEARCH_BACKTRACKING;*/
+            /*
+                Start the L-BFGS optimization; this will invoke the callback functions
+                evaluate() and progress() when necessary.
+             */
+            ret = lbfgs(n, x, &fx, evaluate, progress, this, &param);
+
+            if(!evaluate_results(ret, x, n))
+            {
+                m_gradient_descent = true;
+                current_level++;
+                last_failed = true;
+            }
 
 
-        std::cout << "done" << std::endl;
+            /* Report the result. */
+            printf("L-BFGS optimization on level %d terminated with status code = %d\n", current_level, ret);
+            printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
+            lbfgs_free(x);
+
+
+            std::cout << "done" << std::endl;
+        }
+
     }
 
     clean();
-
 }
 
 
@@ -106,6 +150,9 @@ std::string OptimalTransport::get_result_string(int ret)
     std::string resultString = "unknown";
     switch(ret)
     {
+    case 1:
+        resultString = "MANUAL TERMINATION";
+        break;
     case LBFGS_SUCCESS:
         resultString = "LBFGS_SUCCESS";
         break;
@@ -225,11 +272,21 @@ lbfgsfloatval_t OptimalTransport::evaluate(
 
     std::cout << "Eval.. step = " << step << std::endl;
     std::vector<FT> weights = std::vector<FT>(n);
+    FT min_weight = 1000;
+    FT max_weight = -1000;
     int i;
     for(i=0; i<n; i++)
     {
         weights[i] = x[i];
+
+        if(weights[i] < min_weight)
+            min_weight = weights[i];
+
+        if(weights[i] > max_weight)
+            max_weight = weights[i];
     }
+
+    //std::cout << "min-weight = " << min_weight << ", max-weight = " << max_weight << std::endl;
 
     // --- update the triangulation with the old points and the new weights
     //source_scene->update_weights(weights, false);
@@ -237,30 +294,56 @@ lbfgsfloatval_t OptimalTransport::evaluate(
     scaled_scenes[current_level]->construct_triangulation(source_points, weights);
     current_source_vertices = scaled_scenes[current_level]->getVertices();
     // --- update UI (can be removed for improved performance)
-#ifdef LIVE_DEMO
-    win->update();
-#endif
+
+
+    std::vector<float> wasserstein;
 
     // fx = f(w)
-    lbfgsfloatval_t fx = 0.0;
+    FT fx = 0.0;
 
     // f(w) = --- the convex function to be minimized
+    //FT integral_sum = 0.0;
+    //FT source_sum = 0.0;
     for(int i=0; i<n; i++)
     {
+
         FT integration_term = current_source_vertices[i]->compute_wasserstein( x[i], integrated_m_intensity );
-        fx += (x[i] * initial_source_capacities[i] - integration_term );
+        //integral_sum += integration_term;
+        //source_sum += x[i] * initial_source_capacity;
+        fx += (x[i] * (initial_source_capacity) - integration_term);
+
+        // TODO: This clause will (almost) always fail, as the previous_gradient is only cleared once per level
+        if(current_source_vertices[i]->is_hidden() && previous_gradient.size() == current_source_vertices.size())
+            g[i] = previous_gradient[i];
+        else
+            g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacity;
+
+        //previous_gradient.push_back(g[i]);
+        wasserstein.push_back(integration_term);
         //std::cout << "fx += " << x[i] << " * " << initial_source_capacities[i] << " - " << integration_term << std::endl;
     }
 
+
+    scaled_scenes[current_level]->store_old_weights();
+
+#ifdef LIVE_DEMO
+    scaled_scenes[current_level]->update_gradient(g, n);
+    update_visibility();
+    win->update();
+#endif
+
+    //std::cout << "integrated sum = " << integral_sum << std::endl;
+    //std::cout << "source_sum = " << source_sum << std::endl;
+
     //source_scene->compute_capacities(areas);
     // df/dwi = --- The derivative of the convex function
-    for (i=0; i<n; i++)
-    {
-        g[i] = ( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i];
+    //for (i=0; i<n; i++)
+    //{
+        //g[i] = 2*(( current_source_vertices[i]->compute_area() / integrated_m_intensity ) - initial_source_capacities[i]) * (x[i] * initial_source_capacities[i] - integration_term );
         //std::cout << "g[" << i << "] = " << g[i] << " = " << initial_source_capacities[i] << " - " << areas[i] << std::endl;
-    }
+    //}
 
-    std::cout << "evaluate done, fx = " << fx << std::endl;
+    //std::cout << "evaluate done, fx = " << fx << std::endl;
 
     return fx;
 }
@@ -278,12 +361,38 @@ int OptimalTransport::progress(
         )
 {
 
-    //return 1;
+    bool hidden_vertices = false;
+
+    double epsilon = current_level == 0 ? 3e-4 : 3e-3;
+    bool norm = gnorm < epsilon;
+    int hidden_vertices_amount = 0;
+
+    std::vector<Vertex_handle> vertices = scaled_scenes[current_level]->getVertices();
+
+    for (int i = 0; i<vertices.size(); i++)
+    {
+        if(vertices[i]->is_hidden())
+        {
+            hidden_vertices_amount++;
+        }
+    }
+
+    hidden_vertices = (hidden_vertices_amount != 0);
+
+    bool will_stop = norm & !hidden_vertices;
 
     printf("Iteration %d:\n", k);
     printf("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
     printf("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step);
+    printf("  hidden vertices: %d, norm reached: %s, will stop: %s", hidden_vertices_amount, norm ? "true" : "false", will_stop ? "true" : "false");
     printf("\n");
+
+
+
+    // returning 0 will continue, returning sth else will stop
+    if(will_stop)
+        return 1;
+
     return 0;
 }
 
@@ -321,9 +430,11 @@ bool OptimalTransport::prepare_data()
 
 #ifdef LIVE_DEMO
         source_viewer->set_scene(scaled_scenes[i]);
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, source_viewer);
+#else
+        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, NULL);
 #endif
 
-        voronoi_creator.generate_voronoi(scaled_scenes[i], scene_sites, EPSILON, source_viewer);
         //voronoi_creator.init_points(scene_sites, scaled_scenes[i]);
 
         /*for(int j=0; j<10; j++)
@@ -350,6 +461,8 @@ bool OptimalTransport::prepare_data()
 
     // --- integrate the intensities (areas)
     integrated_m_intensity = m_scene->getDomain().integrate_intensity();
+    integrated_m_intensity += m_scene->integrate_singularities();
+    // source does not have singularities
     integrated_source_intensity = source_scene->getDomain().integrate_intensity();
 
     return true;
@@ -389,22 +502,31 @@ void OptimalTransport::prepare_level_data(lbfgsfloatval_t *initial_weights, unsi
 
 
     // --- pre-compute the not-changing value of capacities (== probabilities)
-    initial_source_capacities.clear();
-    for (int i=0; i< current_source_vertices.size(); i++)
-    {
-        initial_source_capacities.push_back(FT(1.0 / ((FT)current_source_vertices.size())));
-        //initial_source_capacities.push_back(FT(current_source_vertices[i]->compute_area() / integrated_source_intensity));
-    }
+    initial_source_capacity = FT(1.0 / ((FT)current_source_vertices.size()));
 
     // --- load the target image into the source scene.
     // --- reinsert the points, update triangulation
     // --- points need to be re-inserted and re-read to have valid points
     QString filename = m_scene->getDomain().get_filename();
     std::cout << "loading image " << filename.toStdString() << "...";
-    scaled_scenes[current_level]->load_image(filename);
+
+    int w = int( max_image_width-current_level*image_scale_factor );
+    std::cout << "scaling image to width " << w << std::endl;
+    scaled_scenes[current_level]->load_image(filename, w);
+
+    m_scene->load_image(filename, w);
+    // --- integrate the intensities (areas)
+    integrated_m_intensity = m_scene->getDomain().integrate_intensity();
+    integrated_m_intensity += m_scene->integrate_singularities();
+
     std::cout << "re-inserting points...";
     source_weights.clear();
     source_points.clear();
+    // load the singularities of the target image
+    std::vector<PointSingularity> ps;
+    std::vector<CurveSingularity> cs;
+    m_scene->collect_singularities(ps, cs);
+    scaled_scenes[current_level]->update_singularities(ps, cs);
     scaled_scenes[current_level]->update_positions(source_points);
     scaled_scenes[current_level]->update_triangulation();
     scaled_scenes[current_level]->collect_sites(source_points, source_weights);
@@ -461,6 +583,44 @@ unsigned OptimalTransport::get_level_sites(unsigned level)
 {
     return site_amount / pow(5, level);
     //return m_scene->getVertices().size() / pow(5, level);
+}
+
+
+void OptimalTransport::update_visibility()
+{
+
+    if(scaled_scenes[current_level]->new_visibility.size() == scaled_scenes[current_level]->m_vertices.size())
+    {
+        scaled_scenes[current_level]->old_visibility.clear();
+
+        for (uint i=0; i<scaled_scenes[current_level]->m_vertices.size(); i++)
+        {
+            scaled_scenes[current_level]->old_visibility.push_back(scaled_scenes[current_level]->new_visibility[i]);
+        }
+    }
+
+    scaled_scenes[current_level]->new_visibility.clear();
+
+    for (uint i=0; i<scaled_scenes[current_level]->m_vertices.size(); i++)
+    {
+
+        scaled_scenes[current_level]->new_visibility.push_back(!(scaled_scenes[current_level]->m_vertices[i]->is_hidden()));
+    }
+}
+
+void OptimalTransport::load_original_image()
+{
+
+    Scene* sc = scaled_scenes[current_level];
+
+    int width = sc->getDomain().get_width();
+    sc->load_image(sc->getDomain().get_filename(), false);
+
+    m_scene->load_image(m_scene->getDomain().get_filename(), false);
+
+    // --- integrate the intensities (areas)
+    integrated_m_intensity = m_scene->getDomain().integrate_intensity();
+    integrated_m_intensity += m_scene->integrate_singularities();
 }
 
 void OptimalTransport::clean()

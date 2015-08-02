@@ -4,20 +4,21 @@
 // local
 #include "scene.h"
 #include "glviewer.h"
+#include "config.h"
 
 GlViewer::GlViewer(QWidget *pParent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent)
 {
     m_scene = NULL;
     
-    m_view_image = false;
+    m_view_image = true;
     m_view_image_grid = false;
     m_view_domain = true;
-    m_view_points = true;
+    m_view_points = false;
     m_view_vertices = false;
-    m_view_edges = true;
+    m_view_edges = false;
     m_view_faces = false;
-    m_view_weights = true;
+    m_view_weights = false;
     m_view_dual = false;
     m_view_capacity = false;
     m_view_variance = false;
@@ -25,9 +26,11 @@ GlViewer::GlViewer(QWidget *pParent)
     m_view_regular_sites = false;
     m_view_pixels = false;
     m_view_barycenter = false;
-    m_view_bounded_dual = true;;
+    m_view_bounded_dual = true;
     m_view_weight_histogram = false;
     m_view_capacity_histogram = false;
+    m_view_newly_visible = true;
+    m_view_gradient = true;
 
     m_line_thickness = 2.0;
     m_point_size = 2.0;
@@ -52,10 +55,12 @@ void GlViewer::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
     double aspect_ratio = double(height) / double(width);
-    
+
+    double domain_width = DOMAIN_WIDTH * 0.9;
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-1.0, 1.0, -aspect_ratio, aspect_ratio, -1.0, 1.0);
+    glOrtho(-domain_width, domain_width, -aspect_ratio*domain_width, aspect_ratio*domain_width, -1.0, 1.0);
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -84,7 +89,15 @@ void GlViewer::paintGL()
     
     if (m_view_image)
         m_scene->draw_image();
-    
+
+    m_scene->draw_point_singularity();
+
+    if(m_view_gradient)
+        m_scene->draw_gradient();
+
+    if(m_view_newly_visible)
+        m_scene->draw_new_visibility();
+
     if (m_view_variance)
         m_scene->draw_variance();
     
