@@ -9,10 +9,8 @@
 
 ## Dependencies
 
-Following dependencies are needed for this branch:
+Following dependencies are needed for the Caustic_Designer:<br>
 
-The Voronoi Diagram creator is located in the voronoi-creator.<br>
-Prerequisits:<br>
  *  cmake
  *  libqt4-dev (needs to be tested)
  *  libcgal-dev
