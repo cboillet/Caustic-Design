@@ -1,6 +1,7 @@
 #ifndef SURFACEMODEL_H
 #define SURFACEMODEL_H
 
+#include "global.h"
 #include <math.h>
 #include <vector>
 #include <string>
@@ -9,33 +10,43 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
-/*openGL*/
-#include <GL/glew.h>
-#include <GL/gl.h>
 /*local*/
 #include "SurfaceMesh.h"
+
+
 
 using namespace std;
 
 
 GLint TextureFromFile(const char* path, string directory);
 
-class Model{
+class Model {
     public:
         /*  Functions   */
         Model(GLchar* path);
+        Model(){}
         ~Model(){}
+        void loadModel(string path);
 //        void Draw(Shader shader);
-    private:
+        int findSurfaceMesh();
+        void printAllVertices();
         /*  Model Data  */
-        vector<Mesh> meshes;
-        Mesh mesh;
+        vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
+
+
+    protected:
+        Mesh SurfaceMesh;
+        //Mesh mesh;
         string directory;
         /*  Functions   */
-        void loadModel(string path);
-        void processNode(aiNode* node, const aiScene* scene);
-        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-        vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+        virtual void loadToSurface(int index){}
+        virtual void processNode(aiNode* node, const aiScene* scene);
+        virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+        virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+
+        void populateMesh(){}
+        void compute(){}
+        void exportModel(){}
 };
 
 #endif // SURFACEMODEL_H

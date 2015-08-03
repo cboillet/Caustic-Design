@@ -1,16 +1,15 @@
+#include "global.h"
 #include <math.h>
 /*Assimp Open Asset Import Librairy*/
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
 /*openGL*/
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include "SOIL.h"
-#include "glm/glm.hpp"
 
 /*local*/
 #include "SurfaceModel.h"
+#include "SurfaceMesh.h"
 
 
 Model::Model(GLchar* path){
@@ -29,6 +28,8 @@ void Model::loadModel(string path){
     this->directory = path.substr(0, path.find_last_of('/'));
 
     this->processNode(scene->mRootNode, scene);
+
+    //this->Draw();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){
@@ -96,8 +97,21 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
                                             aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
-
     return Mesh(vertices, indices, textures);
+}
+
+void loadToSurface(int index){
+//    double m_dx, m_dy;
+//    bool ok = m_image.load(filename);
+//    //bool ok = m_image.load(filename.toStdString());
+//    if (!ok) return false;
+
+//    this->filename = filename;
+
+//    unsigned w = get_width();
+//    unsigned h = get_height();
+//    m_dx = 0.5;
+//    m_dy = m_dx * double(h) / double(w);
 }
 
 vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName){
@@ -117,24 +131,48 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
 
 GLint TextureFromFile(const char* path, string directory)
 {
-     //Generate texture ID and load texture data
-    string filename = string(path);
-    filename = directory + '/' + filename;
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    int width,height;
-    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-    // Assign texture to ID
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
+//     //Generate texture ID and load texture data
+//    string filename = string(path);
+//    filename = directory + '/' + filename;
+//    GLuint textureID;
+//    glGenTextures(1, &textureID);
+//    int width,height;
+//    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+//    // Assign texture to ID
+//    glBindTexture(GL_TEXTURE_2D, textureID);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+//    glGenerateMipmap(GL_TEXTURE_2D);
 
-    // Parameters
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(image);
-    return textureID;
+//    // Parameters
+//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+//    SOIL_free_image_data(image);
+//    return textureID;
 }
+
+
+void Model::printAllVertices(){
+    for (int j=0; j<36; j++){
+        if(j%3 == 0) std::cout<<"\n"<<std::endl;
+        std::cout<<"vertice"<<j<<" x:"<<meshes[0].vertices[j].Position.x<<" y:"<<meshes[0].vertices[j].Position.y<<" z:"<<meshes[0].vertices[j].Position.z<<std::endl;
+        }
+    meshes[0].getSpatialLayout(0);
+}
+
+int Model::findSurfaceMesh(){
+    int area;
+    double temp;
+    for (int i=0; i<meshes.size(); i++){
+  //      meshes[i].getSurface();
+    }
+}
+
+
+
+//SurfaceModel::SurfaceModel(int w, int h, int d, string p):width(w),height(h),depth(d),path(p)
+//{
+        
+//}

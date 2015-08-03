@@ -1,11 +1,21 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+
+using namespace glm;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    glewExperimental = GL_TRUE;
+    glewInit();
+
+    ModelRendering mr;
+
+    //MainWindow w;
+    mr.show();
 
     return a.exec();
 }
+
+
