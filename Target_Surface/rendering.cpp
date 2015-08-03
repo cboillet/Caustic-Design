@@ -28,6 +28,9 @@ Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(
           connect(t_Timer, SIGNAL(timeout()), this, SLOT(timeOutSlot()));
           t_Timer->start( timerInterval );
       }
+
+      y_rotate = 0.0f;
+      mouse_is_down = false;
 }
 
 void Renderer::printVersion(){
@@ -40,6 +43,36 @@ void Renderer::keyPressEvent(QKeyEvent *keyEvent){
         case Qt::Key_Escape:
             close();
             break;
+    case Qt::Key_R:
+            y_rotate = 0.0f;
+            break;
+    }
+}
+
+void Renderer::mousePressEvent(QMouseEvent * evt)
+{
+    mouse_down = new QMouseEvent(*evt);
+    mouse_is_down = true;
+}
+
+void Renderer::mouseReleaseEvent(QMouseEvent *)
+{
+    mouse_is_down = false;
+    delete mouse_down;
+    mouse_down = NULL;
+    y_rotate += current_y_rotate;
+    current_y_rotate = 0;
+    x_rotate += current_x_rotate;
+    current_x_rotate = 0;
+}
+
+void Renderer::mouseMoveEvent(QMouseEvent * evt)
+{
+    if(mouse_is_down)
+    {
+        current_y_rotate = 0.5f* float(evt->pos().x() - mouse_down->pos().x());
+        current_x_rotate = 0.5f* float(evt->pos().y() - mouse_down->pos().y());
+        update();
     }
 }
 
@@ -85,22 +118,33 @@ void ModelRendering::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     Mesh meshToDraw = model.meshes[0];
+    //drawMesh(meshToDraw);
     Vertex v;
     int i=0;
 
-    glTranslatef(-1.5f, 0.0f, -6.0f);
-    while (i<36){
-        glBegin(GL_TRIANGLES);                                 //la ligne coupe le triangle et est partiellement cachée
-            glColor3f(0.0f,0.0f,1.0f);
-            glVertex3f(meshToDraw.vertices[i].Position.x,meshToDraw.vertices[i].Position.y,meshToDraw.vertices[i].Position.z);
-            glColor3f(0.0f,0.0f,1.0f);
-            glVertex3f(meshToDraw.vertices[i+1].Position.x,meshToDraw.vertices[i+1].Position.y,meshToDraw.vertices[i+1].Position.z);
-            glColor3f(1.0f,0.0f,0.0f);
-            glVertex3f(meshToDraw.vertices[i+2].Position.x,meshToDraw.vertices[i+2].Position.y,meshToDraw.vertices[i+2].Position.z);
-        glEnd();
-        glFlush();
+    glTranslatef(0.0f, 0.0f, -6.0f);
+    glRotatef(x_rotate+current_x_rotate, 1.0, 0.0, 0.0);
+    glRotatef(y_rotate+current_y_rotate, 0.0, 1.0, 0.0);
+
+    glBegin(GL_TRIANGLES);
+    while (i<meshToDraw.vertices.size()){                   //la ligne coupe le triangle et est partiellement cachée
+        v = meshToDraw.vertices[i];
+        glColor3f(0.0f,0.0f,1.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+
+        v = meshToDraw.vertices[i+1];
+        glColor3f(0.0f,1.0f,0.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+
+        v = meshToDraw.vertices[i+2];
+        glColor3f(1.0f,0.0f,0.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+
         i+=3;
      }
+
+    glEnd();
+    glFlush();
 
 //    Mesh meshToDraw = model.meshes[0];
 //    glGenVertexArrays(1, &meshToDraw.VAO);
@@ -154,6 +198,7 @@ void ModelRendering::setModel(){
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");
     if(modelToLoad.isEmpty()) return;
     model.loadModel(modelToLoad.toStdString());
+    //setUpMesh(model.meshes[0]);
     update();
     model.printAllVertices();
     initializeGLFunctions();

@@ -14,8 +14,15 @@ public:
     virtual void resizeGL(int width, int height) {}
     virtual void paintGL() {}
     virtual void keyPressEvent(QKeyEvent *keyEvent);
+    virtual void mouseMoveEvent(QMouseEvent * evt);
+    virtual void mousePressEvent(QMouseEvent * evt);
+    virtual void mouseReleaseEvent(QMouseEvent * evt);
     void printVersion();
 
+    float y_rotate;
+    float x_rotate;
+    float current_y_rotate;
+    float current_x_rotate;
 
 public slots:
     virtual void timeOutSlot();
@@ -23,6 +30,8 @@ public slots:
 private:
     QTimer *t_Timer;
     //Shader shader;
+    QMouseEvent* mouse_down;
+    bool mouse_is_down;
 
 };
 
