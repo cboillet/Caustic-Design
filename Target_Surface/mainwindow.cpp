@@ -45,6 +45,11 @@ void MainWindow::on_actionLoadModel_triggered()
     setModel();
 }
 
+void MainWindow::on_actionExit_triggered()
+{
+    QApplication::quit();
+}
+
 //void MainWindow::on_actionCreate_Object_triggered(){
 //    bool ok;
 //    int height = QInputDialog::getInt(this, tr("height surface (in mm)"), tr("h:"), 1000, 0, 1500000, 1, &ok);

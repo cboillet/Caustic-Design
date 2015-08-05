@@ -28,6 +28,7 @@ private:
 protected slots:
     void on_actionSaveModel_triggered();
     void on_actionLoadModel_triggered();
+    void on_actionExit_triggered();
     //void on_actionCreate_Object_triggered();
 };
 
