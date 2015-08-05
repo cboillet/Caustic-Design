@@ -47,7 +47,6 @@ void MainWindow::on_actionLoadModel_triggered()
 
 void MainWindow::on_actionGenerateTriangles_triggered()
 {
-    viewer->model.meshes[0].generateTriangles();
     viewer->repaint();
     //update();
 }

@@ -155,21 +155,21 @@ void ModelRendering::paintGL(){
     glEnd();
 
     glBegin(GL_TRIANGLES);
-    while (i<meshToDraw.vertices.size()){                   //la ligne coupe le triangle et est partiellement cachée
-        v = meshToDraw.vertices[i];
+
+    for (uint i=0; i<meshToDraw.indices.size(); i++)
+    {
+        v = meshToDraw.vertices[meshToDraw.indices[i].x];
         glColor3f(0.0f,0.0f,1.0f);
         glVertex3f(v.Position.x, v.Position.y, v.Position.z);
 
-        v = meshToDraw.vertices[i+1];
+        v = meshToDraw.vertices[meshToDraw.indices[i].y];
         glColor3f(0.0f,1.0f,0.0f);
         glVertex3f(v.Position.x, v.Position.y, v.Position.z);
 
-        v = meshToDraw.vertices[i+2];
+        v = meshToDraw.vertices[meshToDraw.indices[i].z];
         glColor3f(1.0f,0.0f,0.0f);
         glVertex3f(v.Position.x, v.Position.y, v.Position.z);
-
-        i+=3;
-     }
+    }
 
     glEnd();
     glFlush();

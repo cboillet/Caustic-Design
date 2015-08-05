@@ -33,7 +33,7 @@ public:
         vector<Vertex> vertices2;
         vector<Vertex> verticestemp;
         vector<Vertex> stopVertex;
-        vector<GLuint> indices;
+        vector<glm::uvec3> indices;
         vector<Texture> textures;
         int nbMeshLayout;
        //int nbTriangle;
@@ -41,11 +41,9 @@ public:
         GLuint VAO, VBO, EBO;
         /*  Functions  */
 
-        Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures);
+        Mesh(vector<Vertex> vertices, vector<Texture> textures);
         Mesh(){}
         //void Draw(Shader shader);
-        int getSpatialLayout(int nbFace);
-        void generateTriangles();
         void setUpMesh(int nbvertices);
         float vectorNorm(Vertex v0, Vertex v1);
         vector<int> longerSegment(Vertex v0, Vertex v1, Vertex v2, int first);
@@ -58,6 +56,8 @@ public:
         bool compareArea(vector<Vertex> vec1, vector<Vertex> vec2); //return true if vec2 bigger or equal than vec1
         void parseDiffMesh(vector<Vertex> v1, vector<Vertex> v2);
         //void findEqual(int[] v, vector<Vertex> v2, vector<Vertex>::iterator it);
+        void create_indices();
+        void shrink_vertices();
 };
 
 class TargetSurfaceMesh : public Mesh {

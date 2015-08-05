@@ -140,7 +140,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
                                             aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, textures);
 }
 
 void loadToSurface(int index){
@@ -202,7 +202,7 @@ void Model::printAllVertices(){
         if(j%3 == 0) std::cout<<"\n"<<std::endl;
         std::cout<<"vertice"<<j<<" x:"<<meshes[0].vertices[j].Position.x<<" y:"<<meshes[0].vertices[j].Position.y<<" z:"<<meshes[0].vertices[j].Position.z<<std::endl;
         }
-    meshes[0].getSpatialLayout(0);
+    //meshes[0].getSpatialLayout(0);
 }
 
 int Model::findSurfaceMesh(){

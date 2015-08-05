@@ -10,36 +10,90 @@
 
 
 
-Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures)
+Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures)
 {
-    Vertex vertex;
-    glm::vec3 vect;
     this->vertices = vertices;
-    this->indices = indices;
     this->textures = textures;
-    nbMeshLayout = 2; //nb of triangle mesh in the space layout
+    create_indices();
+    shrink_vertices();
+}
 
-    GLenum code = glewInit();
-    if(code != GLEW_OK)
+void Mesh::create_indices()
+{
+    // first we create an array with a 1:1 mapping
+    uint faces = vertices.size() / 3;
+
+    indices.resize(faces);
+    for (uint i=0; i<faces; i++)
     {
-        fprintf(stderr, "impossible d'initialiser GLEW : %s\n",
-                        glewGetErrorString(code));
-    }
-
-    for (int i = 0; i<3; i++){
-        vect.x = 0;
-        vect.y = 0;
-        vect.z = 0;
-        vertex.Position = vect;
-
-        vect.x = 0;
-        vect.y = 0;
-        vect.z = 0;
-        vertex.Normal = vect;
-        stopVertex.push_back(vertex);
+        uint base = 3*i;
+        indices[i] = glm::uvec3(base, base+1, base+2);
     }
 
 }
+
+void Mesh::shrink_vertices()
+{
+    // we (for each vertex in each face) check if there is a vertex with a lower index that we can take instead. And we keep track of maximum index used and what values are used
+    bool used[vertices.size()] = {0};
+    uint indexMax;
+
+    for (int i=vertices.size()-1; i >= 0; i--)
+    {
+        for (uint j=0; j<i; j++)
+        {
+
+            // if distance between the two vertices is small, we assume they are the same -> set higher index to lower one
+            if(glm::distance(vertices[i].Position, vertices[j].Position) < 0.00001){
+                uint indexBase = i/3;
+                uint indexOffset = i%3;
+
+                indices[indexBase][indexOffset] = j;
+                used[j] = true;
+
+
+                if(j>indexMax)
+                    indexMax = j;
+
+                break;
+            }
+        }
+    }
+
+    // we now always point to the vertex with the lowest index
+    // and we know the highest index we point to in the vertex-vector.
+    // So we can cut off everything that comes behind and remove everything that is unused
+
+    // first cut off
+    vertices.resize(indexMax);
+
+    // now removed unused.
+    // WARNING: Each index that is higher than the removed index needs to be decreased by one
+    // we start at max index, which is important since we then don't need to update the used[] array
+    for (int i=indexMax-1; i>=0; i--)
+    {
+        if(!used[i])
+        {
+            // remove from vertex-vector and decrease indices
+            vertices.erase(vertices.begin()+i);
+
+            // decrease if needed
+            for (uint index=0; index<indices.size(); index++)
+            {
+                // we use uvec3, so lenght is always 3
+                for (uint vIndex=0; vIndex<3; vIndex++)
+                {
+                    // no need to check for equality, since we know the vertex at current index is not used
+                    if(indices[index][vIndex] > i)
+                        indices[index][vIndex] = indices[index][vIndex]-1;
+                }
+            }
+        }
+    }
+
+    std::cout << "vertices.size reduced to " << vertices.size() << std::endl;
+}
+
 
 float Mesh::vectorNorm(Vertex v1, Vertex v2){
     int sum = pow((v2.Position.z-v1.Position.z),2)+pow((v2.Position.y-v1.Position.y),2)+pow((v2.Position.x-v1.Position.x),2);
