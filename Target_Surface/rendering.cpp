@@ -135,6 +135,25 @@ void ModelRendering::paintGL(){
     glRotatef(x_rotate+current_x_rotate, 1.0, 0.0, 0.0);
     glRotatef(y_rotate+current_y_rotate, 0.0, 1.0, 0.0);
 
+
+    // draw axis
+    glBegin(GL_LINES);
+        // x
+        glColor3f(0,0,1);
+        glVertex3f(0.f, 0.f, 0.f);
+        glVertex3f(2.0f, 0.f, 0.f);
+
+        // y
+        glColor3f(0, 1, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 2, 0);
+
+        // z
+        glColor3f(1, 0, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 2);
+    glEnd();
+
     glBegin(GL_TRIANGLES);
     while (i<meshToDraw.vertices.size()){                   //la ligne coupe le triangle et est partiellement cachée
         v = meshToDraw.vertices[i];

@@ -20,11 +20,39 @@ Model::Model(GLchar* path){
 void Model::exportModel(std::string filename)
 {
 
+    std::cout << "current number of meshes " << scene->mNumMeshes << std::endl;
+
+    // --- prepare scene for exportation. (re-write vertices)
+    // prepare mesh
+    uint nVertices = meshes[0].vertices.size();
+    uint nFaces = meshes[0].indices.size();
+    aiMesh* mesh = new aiMesh();
+    aiVector3D* vertices = new aiVector3D[nVertices];
+
+    for (uint i=0; i<nVertices; i++)
+    {
+        glm::vec3 pos = meshes[0].vertices[i].Position;
+        vertices[i] = aiVector3D(pos.x, pos.y, pos.z);
+    }
+
+    mesh->mVertices = vertices;
+    mesh->mNumVertices = nVertices;
+
+
+    for (uint i=0; i<scene->mRootNode->mNumMeshes; i++)
+    {
+        scene->mMeshes[scene->mRootNode->mMeshes[i]] = mesh;
+    }
+
+    // --- actually export
     Assimp::Exporter exporter;
     exporter.Export(scene, "obj", filename);
 
     std::cout << "exported to " << filename << std::endl;
 
+    //delete[] aiMeshes;
+    //delete[] vertices;
+    //delete mesh;
 }
 
 void Model::loadModel(string path){
@@ -76,10 +104,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
         vector.z = mesh->mVertices[i].z;
         vertex.Position = vector;
         //normals
-        vector.x = mesh->mNormals[i].x;
-        vector.y = mesh->mNormals[i].y;
-        vector.z = mesh->mNormals[i].z;
-        vertex.Normal = vector;
+        //vector.x = mesh->mNormals[i].x;
+        //vector.y = mesh->mNormals[i].y;
+        //vector.z = mesh->mNormals[i].z;
+        //vertex.Normal = vector;
 
         if(mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
         {
