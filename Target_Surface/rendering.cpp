@@ -16,6 +16,11 @@
 #include "SurfaceModel.h"
 #include <iostream>
 
+Renderer::Renderer(QWidget *parent):QGLWidget(parent){
+    y_rotate = 0.0f;
+    mouse_is_down = false;
+}
+
 Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(parent){
     setWindowTitle(QString::fromUtf8(name));
       if(framesPerSecond == 0)
@@ -37,7 +42,14 @@ void Renderer::printVersion(){
     std::cout<<"gpu"<<glGetString(GL_RENDERER)<<"opengl version:"<< glGetString(GL_VERSION) <<std::endl;
 }
 
-void Renderer::keyPressEvent(QKeyEvent *keyEvent){
+void Renderer::mousePressEvent(QMouseEvent * evt)
+{
+    mouse_down = new QMouseEvent(*evt);
+    mouse_is_down = true;
+}
+
+void Renderer::keyPressEvent(QKeyEvent *keyEvent)
+{
     switch(keyEvent->key())
     {
         case Qt::Key_Escape:
@@ -47,12 +59,6 @@ void Renderer::keyPressEvent(QKeyEvent *keyEvent){
             y_rotate = 0.0f;
             break;
     }
-}
-
-void Renderer::mousePressEvent(QMouseEvent * evt)
-{
-    mouse_down = new QMouseEvent(*evt);
-    mouse_is_down = true;
 }
 
 void Renderer::mouseReleaseEvent(QMouseEvent *)
@@ -84,8 +90,8 @@ void Renderer::timeOutSlot(){}
 
 ModelRendering::ModelRendering(QWidget *parent):Renderer(60,parent,"Model Rendering")
 {
-    setModel();
-    model.meshes[0].generateTriangles();
+    //setModel();
+    //model.meshes[0].generateTriangles();
 
 }
 
@@ -117,6 +123,9 @@ void ModelRendering::paintGL(){
     //glCullFace(GL_BACK);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+
+    if(model.meshes.empty()) return;
+
     Mesh meshToDraw = model.meshes[0];
     //drawMesh(meshToDraw);
     Vertex v;
@@ -191,7 +200,6 @@ void ModelRendering::paintGL(){
 
 
 }
-
 
 
 void ModelRendering::setModel(){

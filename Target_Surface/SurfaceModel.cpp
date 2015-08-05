@@ -2,6 +2,7 @@
 #include <math.h>
 /*Assimp Open Asset Import Librairy*/
 #include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/Exporter.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
 /*openGL*/
@@ -16,10 +17,21 @@ Model::Model(GLchar* path){
     this->loadModel(path);
 }
 
+void Model::exportModel(std::string filename)
+{
+
+    Assimp::Exporter exporter;
+    exporter.Export(scene, "obj", filename);
+
+    std::cout << "exported to " << filename << std::endl;
+
+}
+
 void Model::loadModel(string path){
+    clean();
+
     Assimp::Importer import;
     const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
     if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -29,7 +41,8 @@ void Model::loadModel(string path){
 
     this->processNode(scene->mRootNode, scene);
 
-    //this->Draw();
+    // copy the scene to a modifiable copy.
+    aiCopyScene(scene, &this->scene);
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){
@@ -50,6 +63,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;
+
+    std::cout << "loading mesh with " << mesh->mNumVertices << " vertices" << std::endl;
 
     for(GLuint i = 0; i < mesh->mNumVertices; i++)
     {

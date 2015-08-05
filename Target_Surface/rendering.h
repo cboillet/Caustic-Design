@@ -9,20 +9,23 @@ class Renderer : public QGLWidget, protected QGLFunctions{
 Q_OBJECT
 
 public:
+    Renderer(QWidget *parent);
     Renderer(int framesPerSecond, QWidget *parent, char *name);
     virtual void initializeGL(){printVersion();}
     virtual void resizeGL(int width, int height) {}
     virtual void paintGL() {}
-    virtual void keyPressEvent(QKeyEvent *keyEvent);
     virtual void mouseMoveEvent(QMouseEvent * evt);
     virtual void mousePressEvent(QMouseEvent * evt);
     virtual void mouseReleaseEvent(QMouseEvent * evt);
     void printVersion();
+    void keyPressEvent(QKeyEvent *keyEvent);
 
     float y_rotate;
     float x_rotate;
     float current_y_rotate;
     float current_x_rotate;
+
+    Model model;
 
 public slots:
     virtual void timeOutSlot();
@@ -44,7 +47,6 @@ public:
     void resizeGL(int width, int height);
     void paintGL();
 
-    Model model;
     void setModel();
     void setUpMesh(Mesh meshToDraw);
     void drawMesh(Mesh meshToDraw);

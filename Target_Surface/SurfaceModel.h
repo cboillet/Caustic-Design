@@ -30,11 +30,13 @@ class Model {
 //        void Draw(Shader shader);
         int findSurfaceMesh();
         void printAllVertices();
+        void exportModel(std::string filename);
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
 
-
     protected:
+        aiScene* scene;
+
         Mesh SurfaceMesh;
         //Mesh mesh;
         string directory;
@@ -46,7 +48,9 @@ class Model {
 
         void populateMesh(){}
         void compute(){}
-        void exportModel(){}
+        void clean(){
+            meshes.clear();
+        }
 };
 
 #endif // SURFACEMODEL_H

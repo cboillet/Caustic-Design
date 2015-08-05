@@ -10,11 +10,11 @@ int main(int argc, char *argv[])
     glewExperimental = GL_TRUE;
     glewInit();
 
-    ModelRendering mr;
+    //ModelRendering mr;
 
-    //MainWindow w;
-    mr.show();
-
+    MainWindow w;
+    //mr.show();
+    w.show();
     return a.exec();
 }
 

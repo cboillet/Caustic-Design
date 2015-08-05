@@ -5,12 +5,13 @@
 #include <QMainWindow>
 #include "SurfaceModel.h"
 #include "rendering.h"
+#include "ui_mainwindow.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public Ui_MainWindow
 {
     Q_OBJECT
 
@@ -21,10 +22,12 @@ public:
     void setModel();
 
 private:
-    Ui::MainWindow *ui;
-    Renderer* render;
+    //Ui::MainWindow *ui;
+    //Renderer* render;
 
 protected slots:
+    void on_actionSaveModel_triggered();
+    void on_actionLoadModel_triggered();
     //void on_actionCreate_Object_triggered();
 };
 
