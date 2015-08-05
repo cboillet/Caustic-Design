@@ -10,7 +10,7 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
-
+#include "utils.h"
 
 using namespace std;
 
@@ -30,9 +30,13 @@ class Mesh {
 public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
+        vector<Vertex> vertices2;
+        vector<Vertex> verticestemp;
+        vector<Vertex> stopVertex;
         vector<GLuint> indices;
         vector<Texture> textures;
         int nbMeshLayout;
+       //int nbTriangle;
         /*  Render data  */
         GLuint VAO, VBO, EBO;
         /*  Functions  */
@@ -44,9 +48,16 @@ public:
         void generateTriangles();
         void setUpMesh(int nbvertices);
         float vectorNorm(Vertex v0, Vertex v1);
-        vector<int> longerSegment(Vertex v0, Vertex v1, Vertex v2);
+        vector<int> longerSegment(Vertex v0, Vertex v1, Vertex v2, int first);
+        void recursiveInsert(vector<Vertex> vec, int nbTriangle, int up, int depth);
+        void recursiveInsert2(vector<Vertex> vecteurList, int nbTriangle, int up, int depth);
+        vector<Vertex> insertRecursiveVertex(vector<int> ind, Vertex v1,vector<Vertex> vec);
+        void insertVertex(int& i1, int& i2, Vertex v1, vector<Vertex> vec);
+        bool adjacent(vector<Vertex> vec1, vector<Vertex> vec2);
+        bool equal(vector<Vertex> vec1, vector<Vertex> vec2);
+        bool compareArea(vector<Vertex> vec1, vector<Vertex> vec2); //return true if vec2 bigger or equal than vec1
         void parseDiffMesh(vector<Vertex> v1, vector<Vertex> v2);
-        void findEqual(int[] v, vector<Vertex> v2, vector<Vertex>::iterator it);
+        //void findEqual(int[] v, vector<Vertex> v2, vector<Vertex>::iterator it);
 };
 
 class TargetSurfaceMesh : public Mesh {

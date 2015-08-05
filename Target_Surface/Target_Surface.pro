@@ -26,7 +26,8 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     SurfaceMesh.cpp \
     SurfaceModel.cpp \
-    rendering.cpp
+    rendering.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     SurfaceMesh.h \
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h \
     glew/internal/glcore.h \
     rendering.h \
     GLFW/glfw3.h \
-    GLFW/glfw3native.h
+    GLFW/glfw3native.h \
+    utils.h
 
 FORMS    += mainwindow.ui
 
