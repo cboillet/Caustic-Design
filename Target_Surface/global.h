@@ -20,6 +20,8 @@
 #include <cmath>
 #include <math.h>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #define MESH_AMOUNT 50 //amount of
 
 #endif // GLOBAL_H

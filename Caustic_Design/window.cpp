@@ -826,6 +826,10 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 }
 
 void MainWindow::on_actionComputeInterpolation_triggered(){
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load light origin points"), ".");
+    if (fileName.isEmpty()) return;
+    else m_scene->load_dat(fileName, m_scene->getLightPointsSource());
+
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);

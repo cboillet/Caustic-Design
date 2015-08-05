@@ -40,6 +40,14 @@ void MainWindow::on_actionSaveModel_triggered()
     viewer->model.exportModel(saveModelName.toUtf8().constData());
 }
 
+void MainWindow::on_actionSave_Vertices_triggered()
+{
+    std::cout << "save vertices" << std::endl;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save vertices"));
+    if(fileName.isEmpty()) return;
+    viewer->model.meshes[0].exportVertices(fileName);
+}
+
 void MainWindow::on_actionLoadModel_triggered()
 {
     setModel();

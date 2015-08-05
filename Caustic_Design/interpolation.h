@@ -36,7 +36,6 @@ public:
     ~Interpolation(){}
 
     void runInterpolation();
-
     std::vector<Point>& getXo(){return Xo;}
     void computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
     void findNaturalNeighbor(Point oP);

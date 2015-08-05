@@ -42,6 +42,7 @@ Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* w):s
     voronoi_creator.generate_voronoi(m_scene, scene_sites, EPSILON);
 }
 
+
 /*
 Method 1:
     - insert point

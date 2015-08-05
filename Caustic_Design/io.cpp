@@ -245,9 +245,8 @@ void Scene::save_eps(const QString& filename) const
     ofs.close();
 }
 
+
 void Scene::save_interpolation_dat(const QString &filename) const{
-//    std::ofstream ofs;
-//    ofs.open(filename);
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
 
@@ -257,3 +256,5 @@ void Scene::save_interpolation_dat(const QString &filename) const{
     }
     ofs.close();
 }
+
+

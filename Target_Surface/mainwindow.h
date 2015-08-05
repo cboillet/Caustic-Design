@@ -30,6 +30,7 @@ protected slots:
     void on_actionLoadModel_triggered();
     void on_actionExit_triggered();
     void on_actionGenerateTriangles_triggered();
+    void on_actionSave_Vertices_triggered();
     //void on_actionCreate_Object_triggered();
 };
 

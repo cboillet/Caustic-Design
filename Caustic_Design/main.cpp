@@ -1,6 +1,6 @@
 #include <QtGui>
 #include "window.h"
-#include "SurfaceModel.h"
+
 
 int main(int argv, char **args)
 {	
