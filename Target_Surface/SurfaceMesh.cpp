@@ -15,7 +15,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures)
     this->vertices = vertices;
     this->textures = textures;
     create_indices();
-    shrink_vertices_camille();
+    shrink_vertices();
 }
 
 void Mesh::create_indices()
@@ -32,79 +32,11 @@ void Mesh::create_indices()
 
 }
 
+
 void Mesh::shrink_vertices()
 {
     // we (for each vertex in each face) check if there is a vertex with a lower index that we can take instead. And we keep track of maximum index used and what values are used
-    //bool used[vertices.size()] = {0};
     bool* used=new bool[vertices.size()];
-    uint indexMax;
-
-
-    for (int i=vertices.size()-1; i >= 0; i--)
-    {
-
-        for (uint j=0; j<i; j++)
-        {
-
-            // if distance between the two vertices is small, we assume they are the same -> set higher index to lower one
-            if(glm::distance(vertices[i].Position, vertices[j].Position) < 0.00001){
-                uint indexBase = i/3;
-                uint indexOffset = i%3;
-
-                indices[indexBase][indexOffset] = j;
-                used[j] = true;
-
-
-                if(j>indexMax)
-                    indexMax = j;
-
-                break;
-            }
-        }
-
-    }
-
-    // we now always point to the vertex with the lowest index
-    // and we know the highest index we point to in the vertex-vector.
-    // So we can cut off everything that comes behind and remove everything that is unused
-
-    // first cut off
-    vertices.resize(indexMax);
-
-
-    // now removed unused.
-    // WARNING: Each index that is higher than the removed index needs to be decreased by one
-    // we start at max index, which is important since we then don't need to update the used[] array
-     for (int i=indexMax-1; i>=0; i--)
-    {
-        if(!used[i])
-        {
-            // remove from vertex-vector and decrease indices
-            vertices.erase(vertices.begin()+i);
-
-            // decrease if needed
-            for (uint index=0; index<indices.size(); index++)
-            {
-                // we use uvec3, so lenght is always 3
-                for (uint vIndex=0; vIndex<3; vIndex++)
-                {
-                    // no need to check for equality, since we know the vertex at current index is not used
-                    if(indices[index][vIndex] > i)
-                        indices[index][vIndex] = indices[index][vIndex]-1;
-                }
-            }
-        }
-    }
-
-    std::cout << "vertices.size reduced to " << vertices.size() << std::endl;
-}
-
-
-void Mesh::shrink_vertices_camille()
-{
-    // we (for each vertex in each face) check if there is a vertex with a lower index that we can take instead. And we keep track of maximum index used and what values are used
-    bool* used=new bool[vertices.size()];
-    int indexMax ;
 
     for (int i=vertices.size()-1; i >= 0; i--)
     {
@@ -119,10 +51,6 @@ void Mesh::shrink_vertices_camille()
                 indices[indexBase][indexOffset] = j;
                 used[j] = true;
 
-
-                if(j>indexMax)
-                    indexMax = j;
-
                 break;
             }
         }
@@ -130,16 +58,11 @@ void Mesh::shrink_vertices_camille()
 
     // we now always point to the vertex with the lowest index
     // and we know the highest index we point to in the vertex-vector.
-    // So we can cut off everything that comes behind and remove everything that is unused
+    // So we can remove everything that is unused
 
-    // first cut off
-    vertices.resize(indexMax);
-
-
-    // now removed unused.
     // WARNING: Each index that is higher than the removed index needs to be decreased by one
     // we start at max index, which is important since we then don't need to update the used[] array
-     for (int i=indexMax-1; i>=0; i--)
+     for (int i=vertices.size()-1; i>=0; i--)
     {
         if(!used[i])
         {
@@ -161,6 +84,8 @@ void Mesh::shrink_vertices_camille()
     }
 
     std::cout << "vertices.size reduced to " << vertices.size() << std::endl;
+
+    delete[] used;
 }
 
 

@@ -6,13 +6,34 @@
 
 QT       += core gui
 QT       += opengl
-LIBS     += -L/home/camille/projects/tools/libsoil/unix64 -lSOIL \
+INCLUDEPATH += /usr/include/
+INCLUDEPATH += /usr/include/eigen3
+
+LIBS    += -L/usr/include/
+LIBS     += -lSOIL \
             #-L/usr/local/lib -lglfw3 \
             -L/usr/lib/x86_64-linux-gnu -lGLEW \
-            -L/usr/local/lib -lglfw3 -lpthread \
-            -L/usr/lib/x86_64-linux-gnu -lglut -lGL -lGLU
+            -L/usr/local/lib -lglfw -lpthread \
+            -L/usr/lib/x86_64-linux-gnu -lglut -lGL -lGLU \
+            -lceres -lcholmod -fopenmp -lgflags -lglog \
+
+# suitesparse
+LIBS        += -lm
+LIBS        += -lamd
+LIBS        += -lcamd
+LIBS        += -lcolamd
+LIBS        += -lccolamd
+LIBS        += -lcholmod
+LIBS        += -lspqr
+LIBS        += -ltbb
+LIBS        += -lmetis
+LIBS        += -lblas
+LIBS        += -llapack
+LIBS        += -lsuitesparseconfig
 
 
+CFLAGS += -I/usr/include/eigen3
+CXXFLAGS += -I/usr/include/eigen3
 
 #-L/usr/local/bar/libs -lGLEW  -lglut -lGL -lGLU
 
@@ -27,7 +48,8 @@ SOURCES += main.cpp\
     SurfaceMesh.cpp \
     SurfaceModel.cpp \
     rendering.cpp \
-    utils.cpp
+    utils.cpp \
+    targetoptimization.cpp
 
 HEADERS  += mainwindow.h \
     SurfaceMesh.h \
@@ -59,7 +81,8 @@ HEADERS  += mainwindow.h \
     rendering.h \
     GLFW/glfw3.h \
     GLFW/glfw3native.h \
-    utils.h
+    utils.h \
+    targetoptimization.h
 
 FORMS    += mainwindow.ui
 

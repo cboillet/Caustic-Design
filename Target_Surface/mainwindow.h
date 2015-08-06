@@ -4,6 +4,7 @@
 #include "global.h"
 #include <QMainWindow>
 #include "SurfaceModel.h"
+#include "targetoptimization.h"
 #include "rendering.h"
 #include "ui_mainwindow.h"
 
@@ -24,6 +25,7 @@ public:
 private:
     //Ui::MainWindow *ui;
     //Renderer* render;
+    TargetOptimization *optimizer;
 
 protected slots:
     void on_actionSaveModel_triggered();
@@ -31,6 +33,7 @@ protected slots:
     void on_actionExit_triggered();
     void on_actionGenerateTriangles_triggered();
     void on_actionSave_Vertices_triggered();
+    void on_actionRunTargetOptimization_triggered();
     //void on_actionCreate_Object_triggered();
 };
 

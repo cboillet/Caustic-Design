@@ -17,11 +17,13 @@ MainWindow::MainWindow(QWidget *parent) :
     setupUi(this);
     //setModel();
     //viewer = new Renderer(5, this, "Target Surface");
+    optimizer = new TargetOptimization();
 }
 
 MainWindow::~MainWindow()
 {
     //delete ui;
+    delete optimizer;
 }
 
 void MainWindow::setModel()
@@ -57,6 +59,11 @@ void MainWindow::on_actionGenerateTriangles_triggered()
 {
     viewer->repaint();
     //update();
+}
+
+void MainWindow::on_actionRunTargetOptimization_triggered()
+{
+
 }
 
 void MainWindow::on_actionExit_triggered()

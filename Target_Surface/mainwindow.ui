@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>622</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -40,8 +40,15 @@
     </property>
     <addaction name="actionGenerateTriangles"/>
    </widget>
+   <widget class="QMenu" name="menuAlgorithm">
+    <property name="title">
+     <string>Algorithm</string>
+    </property>
+    <addaction name="actionRunTargetOptimization"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuAlgorithm"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -83,6 +90,14 @@
   <action name="actionSave_Vertices">
    <property name="text">
     <string>Save Vertices</string>
+   </property>
+  </action>
+  <action name="actionRunTargetOptimization">
+   <property name="text">
+    <string>Run Target Optimization</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
