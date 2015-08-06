@@ -114,6 +114,7 @@ public:
     void load_points(const QString& filename);
     
     void load_dat(const QString& filename, std::vector<Point>& points) const;
+    void load_interpolation_points(const QString& filename, std::vector<Point>& points) const;
     void save_points(const QString& filename) const;
     std::vector<FT> load_weights(const QString& filename) const;
     void load_singularities(const QString& filename, std::vector<PointSingularity>& pSing, std::vector<CurveSingularity>& cSing) const;

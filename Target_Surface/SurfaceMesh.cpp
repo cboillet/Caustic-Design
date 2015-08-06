@@ -230,9 +230,7 @@ void Mesh::exportVertices(const QString& filename){
     vector<Vertex> verticesMesh = selectVerticesMeshFace();
     for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
-        ofs << verticesMesh[i].Position.x << std::endl;
-        ofs << verticesMesh[i].Position.y << std::endl;
-        ofs << verticesMesh[i].Position.z << std::endl;
+        ofs << verticesMesh[i].Position.y << " " << verticesMesh[i].Position.z << std::endl;
     }
     ofs.close();
 }

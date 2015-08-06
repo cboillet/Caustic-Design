@@ -50,6 +50,10 @@ void Scene::load_dat(const QString& filename, std::vector<Point>& points) const
     ifs.close();
 }
 
+void Scene::load_interpolation_points(const QString& filename, std::vector<Point>& points) const{
+
+}
+
 std::vector<FT> Scene::load_weights(const QString& filename) const
 {
     std::vector<FT> weights = std::vector<FT>();
