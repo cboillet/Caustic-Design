@@ -38,6 +38,11 @@ void Mesh::shrink_vertices()
     // we (for each vertex in each face) check if there is a vertex with a lower index that we can take instead. And we keep track of maximum index used and what values are used
     bool* used=new bool[vertices.size()];
 
+    for (uint i=0; i<vertices.size(); i++)
+    {
+        used[i] = false;
+    }
+
     for (int i=vertices.size()-1; i >= 0; i--)
     {
         for (int j=0; j<i; j++)
