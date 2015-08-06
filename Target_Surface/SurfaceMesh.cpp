@@ -227,11 +227,28 @@ bool Mesh::compareArea(vector<Vertex> vec1, vector<Vertex> vec2){
 void Mesh::exportVertices(const QString& filename){
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
-    for (unsigned i = 0; i < vertices.size(); ++i)
+    vector<Vertex> verticesMesh = selectVerticesMeshFace();
+    for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
-        ofs << vertices[i].Position.x << std::endl;
-        ofs << vertices[i].Position.y << std::endl;
-        ofs << vertices[i].Position.z << std::endl;
+        ofs << verticesMesh[i].Position.x << std::endl;
+        ofs << verticesMesh[i].Position.y << std::endl;
+        ofs << verticesMesh[i].Position.z << std::endl;
     }
     ofs.close();
+}
+
+
+vector<Vertex>  Mesh::selectVerticesMeshFace(){
+    vector<Vertex> faceVertex;
+    int max =  0;
+    for (int i = 0; i < vertices.size(); ++i){
+        if (vertices[i].Position.x>max) max = vertices[i].Position.x;
+    }
+
+    for (int i = 0; i < vertices.size(); ++i){
+         if(abs(vertices[i].Position.x-max) < 0.00001){
+             faceVertex.push_back(vertices [i]);
+         }
+    }
+    return faceVertex;
 }

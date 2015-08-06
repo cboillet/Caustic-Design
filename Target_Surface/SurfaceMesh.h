@@ -30,7 +30,6 @@ class Mesh {
 public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
-        vector<Vertex> vertices2;
         vector<glm::uvec3> indices;
         vector<Texture> textures;
         int nbMeshLayout;
@@ -51,6 +50,7 @@ public:
         void create_indices();
         void shrink_vertices();
         void shrink_vertices_camille(); //reimplementation
+        vector<Vertex> selectVerticesMeshFace(); //sekect the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename);
 };
 
