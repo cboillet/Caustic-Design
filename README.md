@@ -58,7 +58,7 @@ To finally run the Optimal Transport:
 
 ### Interpolation-> Natural Neigbors CGAL 
 // Assigned to: Cam<br>
-To run the interpolation after computing the Optimal transport, load on the left scene (m_scene) the source irradiance, compute the interpolation, results appear on the left scene.
+algorithm->compute interpolation to load the source image, and points (.dat) and weights (.weights) data from the OTM and run the interpolation
 
 ------
 
