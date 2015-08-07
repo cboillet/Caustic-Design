@@ -50,8 +50,35 @@ void Scene::load_dat(const QString& filename, std::vector<Point>& points) const
     ifs.close();
 }
 
-void Scene::load_interpolation_points(const QString& filename, std::vector<Point>& points) const{
+void Scene::load_interpolation_points(const QString& filename, std::vector<Point>& vecPoints) const{
+    std::ifstream ifs(qPrintable(filename));
+    Point point;
+    FT x,y;
+    FT maxX,minX,maxY,minY;
+    std::vector<Point> points;
+    while (ifs >> point) {
 
+        points.push_back(point);
+    }
+
+    for(int i=0; i<points.size(); i++){
+        if (points[i].x()<minX) minX=i;
+        if (points[i].y()<minY) minY=i;
+        if (points[i].x()>maxX) maxX=i;
+        if (points[i].y()>maxY) maxY=i;
+
+    }
+    FT scalingXfactor = abs(maxX-minX) / m_domain.get_dx();
+    FT scalingYfactor = abs(maxY-minY) / m_domain.get_dy();
+
+
+    for(int i=0; i<points.size(); i++){
+        x=points[i].x()*scalingXfactor;
+        y=points[i].y()*scalingYfactor;
+        vecPoints.push_back(Point(x,y));
+    }
+
+    ifs.close();
 }
 
 std::vector<FT> Scene::load_weights(const QString& filename) const

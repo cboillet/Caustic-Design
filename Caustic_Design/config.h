@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
     /*Voronoi Generation*/
-    //int SITE_AMOUNT = 50000;
-    //#define SITE_AMOUNT 250000
+    //int SITE_AMOUNT = 20;
+    #define SITE_AMOUNT 500
     #define EPSILON 0.5
     #define LLYOD_STEPS 20
 

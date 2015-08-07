@@ -602,7 +602,7 @@ void Scene::draw_Xrs(){
 
 void Scene::draw_Xr(){
     int i;
-    glPointSize(3);
+    glPointSize(4);
     glColor3d(1.0,0.0,1.0);
     //Point p;
     for (i=0; i<lightpt.size(); ++i) {

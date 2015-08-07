@@ -42,7 +42,8 @@ MainWindow::MainWindow() : QMainWindow(), Ui_MainWindow(), maxNumRecentFiles(15)
     m_epsilon = EPSILON;
     m_frequency = 0;
     m_max_iters = 500;
-    m_site_amount = 5000;
+    m_site_amount = 5000; //camille test interpolation
+    //m_site_amount = 1000;
     m_level_max = 3;
     
 	// accepts drop events
@@ -826,13 +827,28 @@ void MainWindow::on_actionVoronoiCreation_triggered(){
 }
 
 void MainWindow::on_actionComputeInterpolation_triggered(){
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load light origin points"), ".");
-    if (fileName.isEmpty()) return;
-    else m_scene->load_dat(fileName, m_scene->getLightPointsSource());
+    QString image = QFileDialog::getOpenFileName(this, tr("Open image"), ".");
+    if (image.isEmpty()) return;
+    open(image, false);
+    open(image, true);
+    QString dats = QFileDialog::getOpenFileName(this, tr("Open pointset"), ".dat");
+    if (dats.isEmpty()) return;
+    source_scene->load_points(dats);
+    m_scene->load_points(dats);
+    compute_scene->load_points(dats);
+    on_actionLoadWeights_triggered();
+
+
+
+    // QString fileName = QFileDialog::getOpenFileName(this, tr("Load light origin points"), ".");
+    //if (fileName.isEmpty()) return;
+    //else m_scene->load_interpolation_points(fileName, m_scene->getLightPointsSource());
+
+
 
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Interpolation inter = Interpolation(source_scene, m_scene, compute_scene, this);
+    Interpolation inter = Interpolation(source_scene, m_scene, compute_scene,this);
     inter.runInterpolation();
     QApplication::restoreOverrideCursor();
     //viewer_2->toggle_view_Xr();
