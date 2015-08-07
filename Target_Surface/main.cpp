@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-
 using namespace glm;
 
 int main(int argc, char *argv[])
 {
+    google::InitGoogleLogging(argv[0]);
+
     QApplication a(argc, argv);
     glewExperimental = GL_TRUE;
     glewInit();

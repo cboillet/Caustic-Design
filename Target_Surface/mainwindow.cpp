@@ -63,7 +63,7 @@ void MainWindow::on_actionGenerateTriangles_triggered()
 
 void MainWindow::on_actionRunTargetOptimization_triggered()
 {
-
+    optimizer->runCeresTest();
 }
 
 void MainWindow::on_actionExit_triggered()
