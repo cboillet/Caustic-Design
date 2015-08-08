@@ -59,9 +59,12 @@ Current: method 1
 */
 void Interpolation::runInterpolation(){
    int i;
+   std::cout<<"light point source size"<<source_scene->getLightPointsSource().size()<<std::endl;
+
    for(i=0; i<source_scene->getLightPointsSource().size(); ++i)
    {
-        findNaturalNeighbor(Xo[i]);
+       std::cout<<"processing Light point source"<<i<<std::endl;
+       findNaturalNeighbor(Xo[i]);
    }
 
    // std::vector<Point> computeLightOnDistribution = computeXr(vertices_weight);
@@ -86,7 +89,6 @@ void Interpolation::findNaturalNeighbor(Point oP){
     /*Insert new vertex/oP as centroids as in the computational Scene*/
     std::vector<Vertex_handle>& cs_vertex = compute_scene->getVertices();
     size = compute_scene->getVertices().size();
-    std::cout << "vertices size before insertion =" << size << std::endl;
     for (i = 0; i < size; ++i)
     {
        Vertex_handle vi = source_scene->getVertices()[i];

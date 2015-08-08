@@ -50,7 +50,7 @@ void Scene::load_dat(const QString& filename, std::vector<Point>& points) const
     ifs.close();
 }
 
-void Scene::load_interpolation_points(const QString& filename, std::vector<Point>& vecPoints) const{
+bool Scene::load_interpolation_points(const QString& filename){
     std::ifstream ifs(qPrintable(filename));
     Point point;
     FT x,y;
@@ -68,17 +68,28 @@ void Scene::load_interpolation_points(const QString& filename, std::vector<Point
         if (points[i].y()>maxY) maxY=i;
 
     }
-    FT scalingXfactor = abs(maxX-minX) / m_domain.get_dx();
-    FT scalingYfactor = abs(maxY-minY) / m_domain.get_dy();
+    // FT scalingXfactor = (1 / abs(points[maxX].x())) * m_domain.get_dx();
+    // FT scalingYfactor = (1 / abs(points[maxY].y())) * m_domain.get_dy();
+    // std::cout<<"scalginXfactor"<<scalingXfactor<<std::endl;
+     //std::cout<<"scalginYfactor"<<scalingYfactor<<std::endl;
 
 
     for(int i=0; i<points.size(); i++){
-        x=points[i].x()*scalingXfactor;
-        y=points[i].y()*scalingYfactor;
-        vecPoints.push_back(Point(x,y));
+        x=points[i].x()*SCALING_X;
+        y=points[i].y()*SCALING_Y;
+        lightpts.push_back(Point(x,y));
+//        if(x<=m_domain.get_dx() && y<=m_domain.get_dy()) lightpts.push_back(Point(x,y));
+//        else {
+//            std::cout<<"x uninserted"<<x<<std::endl;
+//            std::cout<<"y uninserted"<<x<<std::endl;
+//            return false;
+//        }
+
+
     }
 
     ifs.close();
+    return true;
 }
 
 std::vector<FT> Scene::load_weights(const QString& filename) const
@@ -283,8 +294,8 @@ void Scene::save_interpolation_dat(const QString &filename) const{
     FT y;
 
     for(int i=0; i<lightpt.size(); i++){
-        x=lightpt[i].x()*2;
-        y=lightpt[i].y()*2;
+        x=lightpt[i].x()*SCALING_X;
+        y=lightpt[i].y()*SCALING_Y;
         ofs << Point(x,y) << std::endl;
     }
 

@@ -12,6 +12,8 @@
 
     /*Interpolation*/
     #define MESH_AMOUNT 50
+    #define SCALING_X 0.5
+    #define SCALING_Y 0.5
 
     /* debug and demo */
     #define LIVE_DEMO
