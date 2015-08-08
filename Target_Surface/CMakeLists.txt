@@ -46,7 +46,7 @@ include_directories (
 	${GLEW_INDLUDE_DIRS}
 	/usr/include/
 	/usr/local/lib
-	/usr/include/eigen3)
+)
 
 set ( Target_Surface_Headers
     mainwindow.h
