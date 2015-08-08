@@ -118,7 +118,8 @@ std::vector<Vertex_handle> Scene::find_neighbors(Vertex_handle vi){
             }
 
         return neighbors;
-    }
+}
+
 
 int Scene::findIndexVerticeBySite (Vertex_handle vi){
     int i;

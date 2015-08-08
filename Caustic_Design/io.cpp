@@ -279,12 +279,15 @@ void Scene::save_eps(const QString& filename) const
 
 void Scene::save_interpolation_dat(const QString &filename) const{
     std::ofstream ofs(qPrintable(filename));
-    ofs.precision(20);
+    FT x;
+    FT y;
 
-    for (unsigned i = 0; i < lightpt.size(); ++i)
-    {
-        ofs << lightpt[i] << std::endl;
+    for(int i=0; i<lightpt.size(); i++){
+        x=lightpt[i].x()*2;
+        y=lightpt[i].y()*2;
+        ofs << Point(x,y) << std::endl;
     }
+
     ofs.close();
 }
 

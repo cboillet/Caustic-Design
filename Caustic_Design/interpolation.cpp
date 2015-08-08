@@ -4,36 +4,36 @@
 #include "config.h"
 #include <math.h>
 
-Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* w):m_scene(sc),source_scene(tsc),compute_scene(csc), win(w){
+Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, int sitesAmount, MainWindow* w):m_scene(sc),source_scene(tsc),compute_scene(csc), win(w){
     if (!sc->getDomain().is_valid()) return;
     if (!tsc->getDomain().is_valid()) return;
-    int nbWith = floor(MESH_AMOUNT) / 3;
-    int nbHeight = MESH_AMOUNT / nbWith;
-    FT stepx = 2.0 * tsc->getDomain().get_dx() / nbWith;
-    FT stepy = 2.0 * tsc->getDomain().get_dy() / nbHeight;
-    std::cout << "dx" << tsc->getDomain().get_dy() << std::endl;
-    std::cout << "dy " << tsc->getDomain().get_dy() << std::endl;
-    std::cout << "stepx" << stepx << std::endl;
-    std::cout << "stepy" << stepy << std::endl;
-    int nbpoints = 0;
-    int scene_sites = 500;
-    for (unsigned i = 0; i < nbWith; ++i)
-    {
-        FT x = (i + 0.5)*stepx - tsc->getDomain().get_dx();
-        x += EPS;
-        for (unsigned j = 0; j < nbHeight; ++j)
-        {
-            FT y = (j + 0.5)*stepy - tsc->getDomain().get_dy();
-            y += EPS;
-            Xo.push_back(Point(x, y));
-            source_scene->getLightPointsSource().push_back(Point(x,y));
-            std::cout << "inserted point Xrs x" << x << std::endl;
-            std::cout << "inserted point Xrs y" << y << std::endl;
-            nbpoints++;
-        }
-    }
+//    int nbWith = floor(MESH_AMOUNT) / 3;
+//    int nbHeight = MESH_AMOUNT / nbWith;
+//    FT stepx = 2.0 * tsc->getDomain().get_dx() / nbWith;
+//    FT stepy = 2.0 * tsc->getDomain().get_dy() / nbHeight;
+//    std::cout << "dx" << tsc->getDomain().get_dy() << std::endl;
+//    std::cout << "dy " << tsc->getDomain().get_dy() << std::endl;
+//    std::cout << "stepx" << stepx << std::endl;
+//    std::cout << "stepy" << stepy << std::endl;
+//    int nbpoints = 0;
+    int scene_sites = sitesAmount;
+//    for (unsigned i = 0; i < nbWith; ++i)
+//    {
+//        FT x = (i + 0.5)*stepx - tsc->getDomain().get_dx();
+//        x += EPS;
+//        for (unsigned j = 0; j < nbHeight; ++j)
+//        {
+//            FT y = (j + 0.5)*stepy - tsc->getDomain().get_dy();
+//            y += EPS;
+//            Xo.push_back(Point(x, y));
+//            source_scene->getLightPointsSource().push_back(Point(x,y));
+//            std::cout << "inserted point Xrs x" << x << std::endl;
+//            std::cout << "inserted point Xrs y" << y << std::endl;
+//            nbpoints++;
+//        }
+//    }
     std::cout << "nbpoints" << source_scene->getLightPointsSource().size() << std::endl;
-
+    Xo=source_scene->getLightPointsSource();
     //prepare compute scene
     VoronoiCreator voronoi_creator;
     voronoi_creator.generate_voronoi(source_scene, scene_sites, EPSILON);
@@ -115,8 +115,7 @@ void Interpolation::findNaturalNeighbor(Point oP){
 
 void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point oP){
     unsigned int i;
-    unsigned int mscIndex;
-    unsigned int cscIndex;
+    unsigned int mscIndex, cscIndex;
     std::vector<std::pair<Vertex_handle, FT> > vertices_weight;
     std::pair<Vertex_handle, FT> p;
     Vertex_handle vn;
@@ -137,10 +136,17 @@ void Interpolation::computeWeights(std::vector<Vertex_handle> neighbors, Point o
         vn = neighbors[i];
         mscIndex = source_scene->findIndexVerticeBySite(vn);
         cscIndex = compute_scene->findIndexVerticeByCentroid(vn);
-        Point cm = source_scene->getVertices()[cscIndex]->get_position();
-        Point cp = compute_scene->getVertices()[cscIndex]->get_position();
-        FT area_source_scene = source_scene->getVertices()[mscIndex]->compute_area();
+        std::cout<<"index source scene"<<mscIndex<<std::endl;
+        std::cout<<"index compute scene"<<cscIndex<<std::endl;
+
+        // FT area_source_scene = source_scene->getVertices()[mscIndex]->compute_area();
+       // FT area_c_scene = compute_scene->getVertices()[cscIndex]->compute_area();
+
+        FT area_source_scene = source_scene->getVertices()[cscIndex]->compute_area();
         FT area_c_scene = compute_scene->getVertices()[cscIndex]->compute_area();
+        std::cout<<"area_source_scene: "<<area_source_scene<<std::endl;
+        std::cout<<"area_c_scene: "<<area_c_scene<<std::endl;
+
         FT areaOnFace= area_source_scene-area_c_scene;
         /*compute ratio*/
         FT temp = source_scene->getVertices()[mscIndex]->compute_area();

@@ -32,7 +32,7 @@ public:
     Scene* compute_scene;
     MainWindow* win;
 
-    Interpolation(Scene* sc, Scene* tsc, Scene* csc, MainWindow* win);
+    Interpolation(Scene* sc, Scene* tsc, Scene* csc, int sitesAmount, MainWindow* win);
     ~Interpolation(){}
 
     void runInterpolation();
