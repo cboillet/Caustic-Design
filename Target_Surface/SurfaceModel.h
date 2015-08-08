@@ -32,19 +32,18 @@ class Model {
         int findSurfaceMesh();
         void printAllVertices();
         void exportModel(std::string filename);
-        /*  Model Data  */
-        vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
         vector<glm::vec3> getLightRayPositions(){ return receiverLightPositions; }
         float getFocalLength() { return focalLength; }
         void rescaleMeshes(float oldScale, float newScale);
+        /*  Model Data  */
+        vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
+        vector<glm::vec3> desiredNormals;
+        vector<glm::vec3> currentNormals;
 
     protected:
         aiScene* scene;
         float focalLength;
         vector<glm::vec3> receiverLightPositions;
-
-        vector<glm::vec3> desiredNormals;
-        vector<glm::vec3> currentNormals;
 
         Mesh SurfaceMesh;
         //Mesh mesh;
