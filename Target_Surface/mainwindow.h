@@ -36,6 +36,8 @@ protected slots:
     void on_actionRunTargetOptimization_triggered();
     void on_actionLoadLightRayReceiverPosition_triggered();
     /* line edit slots */
+    void newMeshHeight();
+    void newFocalLength(QString text);
 
     //void on_actionCreate_Object_triggered();
 };

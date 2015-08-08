@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), Ui_MainWindow()//,render(new Renderer(5, this, "Target Surface"))
 {
     setupUi(this);
+
+    connect(meshHeightLineEdit, SIGNAL(returnPressed()), this, SLOT(newMeshHeight()));
+    //connect(focalLengthLineEdit, SIGNAL(textChanged(QString)), newFocalLength(QString));
+
     //setModel();
     //viewer = new Renderer(5, this, "Target Surface");
     optimizer = new TargetOptimization();
@@ -72,6 +76,34 @@ void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()
     if(filename.isEmpty()) return;
     viewer->model.loadReceiverLightPoints(filename);
     viewer->sceneUpdate();
+}
+
+void MainWindow::newMeshHeight()
+{
+    std::string txt = meshHeightLineEdit->text().toStdString();
+    bool ok;
+
+    float newScale = meshHeightLineEdit->text().toFloat(&ok);
+    if(!ok)
+    {
+        std::cerr << "illegal value" << std::endl;
+        return;
+    }
+
+    newScale *= 0.5; // we go from -0.5 to 0.5
+
+    std::cout << "New Mesh Height: " << newScale << std::endl;
+
+
+    viewer->model.rescaleMeshes(viewer->surfaceSize, newScale);
+    viewer->surfaceSize = newScale;
+
+    viewer->update();
+}
+
+void MainWindow::newFocalLength(QString text)
+{
+
 }
 
 void MainWindow::on_actionExit_triggered()

@@ -50,6 +50,7 @@ public:
         bool compareArea(vector<Vertex> vec1, vector<Vertex> vec2); //return true if vec2 bigger or equal than vec1
         void create_indices();
         void shrink_vertices();
+        void rescale(float oldScale, float newScale);
         void calcMaxX();
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex> selectVerticesMeshFace(); //sekect the vertex on the face the furthest on x axis

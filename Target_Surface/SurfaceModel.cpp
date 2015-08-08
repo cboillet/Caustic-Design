@@ -170,6 +170,23 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, float scaling){
     return Mesh(vertices, textures);
 }
 
+void Model::rescaleMeshes(float oldScale, float newScale)
+{
+    for (uint i=0; i<meshes.size(); i++)
+    {
+
+        std::cout << "rescale mesh " << i << std::endl;
+        for (uint j=0; j<0; j++)
+        {
+            glm::vec3 buf = meshes[i].vertices[j].Position;
+            buf /= oldScale;
+            buf *= newScale;
+            meshes[i].vertices[j].Position = buf;
+            //meshes[i].vertices[j].Position = glm::vec3((meshes[i].vertices[j].Position / oldScale) * newScale);
+        }
+    }
+}
+
 void loadToSurface(int index){
 //    double m_dx, m_dy;
 //    bool ok = m_image.load(filename);

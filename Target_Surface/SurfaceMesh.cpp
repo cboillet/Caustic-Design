@@ -113,6 +113,14 @@ float Mesh::vectorNorm(Vertex v1, Vertex v2){
     return sqrt(sum);
 }
 
+void Mesh::rescale(float oldScale, float newScale)
+{
+    for (uint i=0; i<vertices.size(); i++)
+    {
+        //vertices[i].Position = (vertices[i].Position)
+    }
+}
+
 vector<int> Mesh::longerSegment(Vertex v0, Vertex v1, Vertex v2, int first){
     vector<int> ind;
     int max = vectorNorm(v0,v1);
