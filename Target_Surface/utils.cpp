@@ -7,3 +7,8 @@ int outTriplet(vector<int> vec, int begin, int end){
 
     }
 }
+
+bool floatEquals(float val1, float val2)
+{
+    return (fabs(val1 - val2) < 0.00001);
+}

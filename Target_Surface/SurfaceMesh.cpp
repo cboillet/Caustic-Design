@@ -16,6 +16,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures)
     this->textures = textures;
     create_indices();
     shrink_vertices();
+    calcMaxX();
 }
 
 void Mesh::create_indices()
@@ -93,6 +94,19 @@ void Mesh::shrink_vertices()
     delete[] used;
 }
 
+void Mesh::calcMaxX()
+{
+    maxX = -std::numeric_limits<float>::max();
+
+    foreach (Vertex v, vertices)
+    {
+        if(v.Position.x > maxX)
+            maxX = v.Position.x;
+    }
+
+    std::cout << "maxX = " << maxX << std::endl;
+}
+
 
 float Mesh::vectorNorm(Vertex v1, Vertex v2){
     int sum = pow((v2.Position.z-v1.Position.z),2)+pow((v2.Position.y-v1.Position.y),2)+pow((v2.Position.x-v1.Position.x),2);
@@ -158,9 +172,12 @@ void Mesh::exportVertices(const QString& filename){
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
     vector<Vertex> verticesMesh = selectVerticesMeshFace();
+    int exported = 0, excluded = 0;
     for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
+        // don't export vertices on the edge
         ofs << verticesMesh[i].Position.y << " " << verticesMesh[i].Position.z << std::endl;
+
     }
     ofs.close();
 }
@@ -175,8 +192,11 @@ vector<Vertex>  Mesh::selectVerticesMeshFace(){
 
     for (int i = 0; i < vertices.size(); ++i){
          if(abs(vertices[i].Position.x-max) < 0.00001){
+             // we are on side with max x-values. now exclude min/max y- and z- values
+             if(!floatEquals(fabs(vertices[i].Position.y), 1.0f) && !floatEquals(fabs(vertices[i].Position.z), 1.0f))
              faceVertex.push_back(vertices [i]);
          }
     }
     return faceVertex;
 }
+

@@ -33,6 +33,7 @@ public:
         vector<glm::uvec3> indices;
         vector<Texture> textures;
         int nbMeshLayout;
+        float maxX;
        //int nbTriangle;
         /*  Render data  */
         GLuint VAO, VBO, EBO;
@@ -49,9 +50,11 @@ public:
         bool compareArea(vector<Vertex> vec1, vector<Vertex> vec2); //return true if vec2 bigger or equal than vec1
         void create_indices();
         void shrink_vertices();
+        void calcMaxX();
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex> selectVerticesMeshFace(); //sekect the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename);
+        float getMaxX(){return maxX;};
 };
 
 class TargetSurfaceMesh : public Mesh {

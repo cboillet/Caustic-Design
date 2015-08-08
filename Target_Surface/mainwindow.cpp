@@ -30,7 +30,7 @@ void MainWindow::setModel()
 {
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");
     if(modelToLoad.isEmpty()) return;
-    viewer->model.loadModel(modelToLoad.toStdString());
+    viewer->model.loadModel(modelToLoad.toStdString(), viewer->surfaceSize);
     update();
 }
 
@@ -64,6 +64,14 @@ void MainWindow::on_actionGenerateTriangles_triggered()
 void MainWindow::on_actionRunTargetOptimization_triggered()
 {
     optimizer->runCeresTest();
+}
+
+void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open .dat File"), ".");
+    if(filename.isEmpty()) return;
+    viewer->model.loadReceiverLightPoints(filename);
+    viewer->sceneUpdate();
 }
 
 void MainWindow::on_actionExit_triggered()

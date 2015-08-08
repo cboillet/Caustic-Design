@@ -34,6 +34,9 @@ protected slots:
     void on_actionGenerateTriangles_triggered();
     void on_actionSave_Vertices_triggered();
     void on_actionRunTargetOptimization_triggered();
+    void on_actionLoadLightRayReceiverPosition_triggered();
+    /* line edit slots */
+
     //void on_actionCreate_Object_triggered();
 };
 

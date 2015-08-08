@@ -24,26 +24,31 @@ class Model {
     public:
         /*  Functions   */
         Model(GLchar* path);
-        Model(){}
+        Model();
         ~Model(){}
-        void loadModel(string path);
+        void loadModel(string path, float scaling);
+        void loadReceiverLightPoints(QString path);
 //        void Draw(Shader shader);
         int findSurfaceMesh();
         void printAllVertices();
         void exportModel(std::string filename);
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
+        vector<glm::vec3> getLightRayPositions(){ return receiverLightPositions; }
+        float getFocalLength() { return focalLength; }
 
     protected:
         aiScene* scene;
+        float focalLength;
+        vector<glm::vec3> receiverLightPositions;
 
         Mesh SurfaceMesh;
         //Mesh mesh;
         string directory;
         /*  Functions   */
         virtual void loadToSurface(int index){}
-        virtual void processNode(aiNode* node, const aiScene* scene);
-        virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+        virtual void processNode(aiNode* node, const aiScene* scene, float scaling);
+        virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene, float scaling);
         virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 
         void populateMesh(){}

@@ -13,6 +13,7 @@ using namespace std;
 
 
 int outTriplet(vector<int> vec, int begin, int end);
+bool floatEquals(float val1, float val2);
 
 
 #endif // UTILS_H

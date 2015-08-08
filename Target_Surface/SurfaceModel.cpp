@@ -7,6 +7,10 @@
 #include <assimp/postprocess.h>     // Post processing fla
 /*openGL*/
 #include "SOIL.h"
+/* io */
+#include <iostream>
+#include <fstream>
+
 
 /*local*/
 #include "SurfaceModel.h"
@@ -14,7 +18,13 @@
 
 
 Model::Model(GLchar* path){
-    this->loadModel(path);
+    //this->loadModel(path);
+    this->focalLength = 5;
+}
+
+Model::Model()
+{
+    this->focalLength = 5;
 }
 
 void Model::exportModel(std::string filename)
@@ -55,7 +65,23 @@ void Model::exportModel(std::string filename)
     //delete mesh;
 }
 
-void Model::loadModel(string path){
+void Model::loadReceiverLightPoints(QString path)
+{
+    if(meshes.empty())
+        std::cerr << "Load mesh first" << std::endl;
+
+    receiverLightPositions.clear();
+
+    // load 2D Point as 3D point (focal_length is x-coordinate)
+    std::ifstream ifs(qPrintable(path));
+    float y,z;
+
+    while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), z, y));
+
+    std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
+}
+
+void Model::loadModel(string path, float scaling){
     clean();
 
     Assimp::Importer import;
@@ -67,27 +93,27 @@ void Model::loadModel(string path){
     }
     this->directory = path.substr(0, path.find_last_of('/'));
 
-    this->processNode(scene->mRootNode, scene);
+    this->processNode(scene->mRootNode, scene, scaling);
 
     // copy the scene to a modifiable copy.
     aiCopyScene(scene, &this->scene);
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene){
+void Model::processNode(aiNode *node, const aiScene *scene, float scaling){
     // Process all the node's meshes (if any)
     for(GLuint i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        this->meshes.push_back(this->processMesh(mesh, scene));
+        this->meshes.push_back(this->processMesh(mesh, scene, scaling));
     }
     // Then do the same for each of its children
     for(GLuint i = 0; i < node->mNumChildren; i++)
     {
-        this->processNode(node->mChildren[i], scene);
+        this->processNode(node->mChildren[i], scene, scaling);
     }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
+Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, float scaling){
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;
@@ -102,6 +128,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
+        vector *= scaling;
         vertex.Position = vector;
         //normals
         //vector.x = mesh->mNormals[i].x;

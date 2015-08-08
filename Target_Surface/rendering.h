@@ -17,13 +17,21 @@ public:
     virtual void mouseMoveEvent(QMouseEvent * evt);
     virtual void mousePressEvent(QMouseEvent * evt);
     virtual void mouseReleaseEvent(QMouseEvent * evt);
+    void wheelEvent(QWheelEvent * event);
     void printVersion();
     void keyPressEvent(QKeyEvent *keyEvent);
+    void updateCamera();
+    void sceneUpdate();
 
     float y_rotate;
     float x_rotate;
     float current_y_rotate;
     float current_x_rotate;
+
+    float zPosition;
+    float xCenter;
+
+    float surfaceSize;
 
     Model model;
 
