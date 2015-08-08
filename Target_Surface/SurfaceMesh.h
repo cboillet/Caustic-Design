@@ -1,6 +1,6 @@
 #ifndef SURFACEMESH_H
 #define SURFACEMESH_H
-#pragma comment(lib, \"assimp.lib\")
+//#pragma comment(lib, \"assimp.lib\")
 
 #include "global.h"
 #include <math.h>
