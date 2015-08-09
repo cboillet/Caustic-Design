@@ -26,7 +26,7 @@ class Model {
         Model(GLchar* path);
         Model();
         ~Model(){}
-        void loadModel(string path, float scaling);
+        void loadModel(string path);
         void loadReceiverLightPoints(QString path);
 //        void Draw(Shader shader);
         int findSurfaceMesh();
@@ -34,11 +34,15 @@ class Model {
         void exportModel(std::string filename);
         vector<glm::vec3> getLightRayPositions(){ return receiverLightPositions; }
         float getFocalLength() { return focalLength; }
-        void rescaleMeshes(float oldScale, float newScale);
+        void setFocalLength(float newLength);
+        void rescaleMeshes(float newScale);
+        void modifyMesh();
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
         vector<glm::vec3> desiredNormals;
         vector<glm::vec3> currentNormals;
+
+        float surfaceSize;
 
     protected:
         aiScene* scene;
@@ -50,8 +54,8 @@ class Model {
         string directory;
         /*  Functions   */
         virtual void loadToSurface(int index){}
-        virtual void processNode(aiNode* node, const aiScene* scene, float scaling);
-        virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene, float scaling);
+        virtual void processNode(aiNode* node, const aiScene* scene);
+        virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene);
         virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 
         void populateMesh(){}

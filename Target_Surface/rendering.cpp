@@ -36,9 +36,10 @@ Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(
 
       y_rotate = 0.0f;
       mouse_is_down = false;
-      zPosition = 30;
-      surfaceSize = 1;
+      zPosition = 45;
       xCenter = 0;
+      drawAxis = true;
+      drawNormals = true;
 }
 
 void Renderer::printVersion(){
@@ -98,7 +99,7 @@ void Renderer::updateCamera()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (GLfloat)this->width()/(GLfloat)this->height(), 0.1f, 100.0f);
+    gluPerspective(45.0f, (GLfloat)this->width()/(GLfloat)this->height(), 0.1f, 1000.0f);
     gluLookAt(xCenter, 0, zPosition, // eye (where camera is at)
               xCenter, 0, 0, // center (where to look at)
               0, 1, 0  // up-vector
@@ -116,8 +117,6 @@ void Renderer::sceneUpdate()
         xCenter = 0.0f;
     else
         xCenter = 0.5 * model.getFocalLength();
-
-    // TODO: call this when focal length changes
 
     updateCamera();
 }
@@ -164,71 +163,21 @@ void ModelRendering::paintGL(){
     Vertex v;
     int i=0;
 
-
+    // apply rotation around middle between mesh and receiver
     glTranslatef(xCenter, 0, 0);
     glRotatef(x_rotate+current_x_rotate, 1.0, 0.0, 0.0);
     glRotatef(y_rotate+current_y_rotate, 0.0, 1.0, 0.0);
     glTranslatef(-xCenter, 0, 0);
 
-    // draw axis
-    glBegin(GL_LINES);
-        // x
-        glColor3f(0,0,1);
-        glVertex3f(0.f, 0.f, 0.f);
-        glVertex3f(2.0f * surfaceSize, 0.f, 0.f);
+    if(drawAxis)
+        paintAxis();
 
-        // y
-        glColor3f(0, 1, 0);
-        glVertex3f(0, 0, 0);
-        glVertex3f(0, 2.0f * surfaceSize, 0);
+    paintMesh(meshToDraw);
 
-        // z
-        glColor3f(1, 0, 0);
-        glVertex3f(0, 0, 0);
-        glVertex3f(0, 0, 2.0f * surfaceSize);
-    glEnd();
+    if(drawNormals)
+        paintNormals(meshToDraw);
 
-    glBegin(GL_TRIANGLES);
-
-    for (uint i=0; i<meshToDraw.indices.size(); i++)
-    {
-        v = meshToDraw.vertices[meshToDraw.indices[i].x];
-        glColor3f(0.0f,0.0f,1.0f);
-        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
-
-        v = meshToDraw.vertices[meshToDraw.indices[i].y];
-        glColor3f(0.0f,1.0f,0.0f);
-        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
-
-        v = meshToDraw.vertices[meshToDraw.indices[i].z];
-        glColor3f(1.0f,0.0f,0.0f);
-        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
-    }
-    glEnd();
-
-
-    glPointSize(3.0f);
-    glBegin(GL_POINTS);
-    glColor3f(0, 1, 1);
-    std::vector<glm::vec3> light_pos = model.getLightRayPositions();
-    for (uint i=0; i<light_pos.size(); i++)
-    {
-        glm::vec3 p = light_pos[i];
-        glVertex3f(p.x, p.y, p.z);
-    }
-    glEnd();
-
-    if(!light_pos.empty())
-    {
-        float f = model.getFocalLength() + meshToDraw.getMaxX();
-        glBegin(GL_QUADS);
-            glColor3f(1,1,1);
-            glVertex3f(f, -1, -1);
-            glVertex3f(f, -1, 1);
-            glVertex3f(f, 1, 1);
-            glVertex3f(f, 1, -1);
-        glEnd();
-    }
+    paintReceiver();
 
     glFlush();
 
@@ -278,11 +227,97 @@ void ModelRendering::paintGL(){
 
 }
 
+void ModelRendering::paintAxis()
+{
+    // draw axis
+    glBegin(GL_LINES);
+        // x
+        glColor3f(0,0,1);
+        glVertex3f(0.f, 0.f, 0.f);
+        glVertex3f(2.0f * model.surfaceSize, 0.f, 0.f);
+
+        // y
+        glColor3f(0, 1, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 2.0f * model.surfaceSize, 0);
+
+        // z
+        glColor3f(1, 0, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 2.0f * model.surfaceSize);
+    glEnd();
+}
+
+
+void ModelRendering::paintMesh(Mesh mesh)
+{
+    Vertex v;
+    glBegin(GL_TRIANGLES);
+
+    for (uint i=0; i<mesh.indices.size(); i++)
+    {
+        v = mesh.vertices[mesh.indices[i].x];
+        glColor3f(0.0f,0.0f,1.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+
+        v = mesh.vertices[mesh.indices[i].y];
+        glColor3f(0.0f,1.0f,0.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+
+        v = mesh.vertices[mesh.indices[i].z];
+        glColor3f(1.0f,0.0f,0.0f);
+        glVertex3f(v.Position.x, v.Position.y, v.Position.z);
+    }
+    glEnd();
+
+}
+
+
+void ModelRendering::paintReceiver()
+{
+    glPointSize(3.0f);
+    glBegin(GL_POINTS);
+    glColor3f(0, 1, 1);
+    std::vector<glm::vec3> light_pos = model.getLightRayPositions();
+    for (uint i=0; i<light_pos.size(); i++)
+    {
+        glm::vec3 p = light_pos[i];
+        glVertex3f(p.x, p.y, p.z);
+    }
+    glEnd();
+
+    if(!light_pos.empty())
+    {
+        float surfaceSize = model.surfaceSize;
+        float f = model.getFocalLength() + model.meshes[0].getMaxX();
+        glBegin(GL_QUADS);
+            glColor3f(1,1,1);
+            glVertex3f(f, -surfaceSize, -surfaceSize);
+            glVertex3f(f, -surfaceSize, surfaceSize);
+            glVertex3f(f, surfaceSize, surfaceSize);
+            glVertex3f(f, surfaceSize, -surfaceSize);
+        glEnd();
+    }
+}
+
+void ModelRendering::paintNormals(Mesh mesh)
+{
+    glBegin(GL_LINES);
+    glColor3f(1,1,1);
+    for (uint i=0; i<mesh.vertices.size(); i++)
+    {
+        glm::vec3 pos = mesh.vertices[i].Position;
+        glm::vec3 end = pos + mesh.vertices[i].Normal;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glVertex3f(end.x, end.y, end.z);
+    }
+    glEnd();
+}
 
 void ModelRendering::setModel(){
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");
     if(modelToLoad.isEmpty()) return;
-    model.loadModel(modelToLoad.toStdString(), surfaceSize);
+    model.loadModel(modelToLoad.toStdString());
     //setUpMesh(model.meshes[0]);
     update();
     model.printAllVertices();

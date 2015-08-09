@@ -23,6 +23,9 @@ public:
     void updateCamera();
     void sceneUpdate();
 
+    void toggleDrawNormals(){drawNormals=!drawNormals;}
+    void toggleDrawAxis(){drawAxis=!drawAxis;}
+
     float y_rotate;
     float x_rotate;
     float current_y_rotate;
@@ -31,12 +34,14 @@ public:
     float zPosition;
     float xCenter;
 
-    float surfaceSize;
-
     Model model;
 
 public slots:
     virtual void timeOutSlot();
+
+protected:
+    bool drawNormals;
+    bool drawAxis;
 
 private:
     QTimer *t_Timer;
@@ -54,6 +59,10 @@ public:
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
+    void paintAxis();
+    void paintMesh(Mesh mesh);
+    void paintReceiver();
+    void paintNormals(Mesh mesh);
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

@@ -11,6 +11,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
 #include "utils.h"
+#include "glm/gtx/vector_angle.hpp"
 
 using namespace std;
 
@@ -52,9 +53,12 @@ public:
         void shrink_vertices();
         void rescale(float oldScale, float newScale);
         void calcMaxX();
+        void expandVertices(std::vector<Vertex>& outVertices);
+        void calculateVertexNormals();
+        void calculateFaceNormals(std::vector<glm::vec3>& normals);
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex> selectVerticesMeshFace(); //sekect the vertex on the face the furthest on x axis
-        void exportVertices(const QString& filename);
+        void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
 };
 

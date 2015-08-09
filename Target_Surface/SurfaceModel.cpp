@@ -19,12 +19,14 @@
 
 Model::Model(GLchar* path){
     //this->loadModel(path);
-    this->focalLength = 5;
+    this->focalLength = 40;
+    this->surfaceSize = 5;
 }
 
 Model::Model()
 {
-    this->focalLength = 5;
+    this->focalLength = 40;
+    this->surfaceSize = 5;
 }
 
 void Model::exportModel(std::string filename)
@@ -34,14 +36,18 @@ void Model::exportModel(std::string filename)
 
     // --- prepare scene for exportation. (re-write vertices)
     // prepare mesh
-    uint nVertices = meshes[0].vertices.size();
     uint nFaces = meshes[0].indices.size();
     aiMesh* mesh = new aiMesh();
-    aiVector3D* vertices = new aiVector3D[nVertices];
+
+    std::vector<Vertex> verts;
+    meshes[0].expandVertices(verts);
+
+    uint nVertices = verts.size();
+    aiVector3D* vertices = new aiVector3D[verts.size()];
 
     for (uint i=0; i<nVertices; i++)
     {
-        glm::vec3 pos = meshes[0].vertices[i].Position;
+        glm::vec3 pos = verts[i].Position;
         vertices[i] = aiVector3D(pos.x, pos.y, pos.z);
     }
 
@@ -76,12 +82,12 @@ void Model::loadReceiverLightPoints(QString path)
     std::ifstream ifs(qPrintable(path));
     float y,z;
 
-    while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), z, y));
+    while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), z*surfaceSize/CAUSTIC_DOMAIN, y*surfaceSize/CAUSTIC_DOMAIN));
 
     std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
 }
 
-void Model::loadModel(string path, float scaling){
+void Model::loadModel(string path){
     clean();
 
     Assimp::Importer import;
@@ -93,27 +99,27 @@ void Model::loadModel(string path, float scaling){
     }
     this->directory = path.substr(0, path.find_last_of('/'));
 
-    this->processNode(scene->mRootNode, scene, scaling);
+    this->processNode(scene->mRootNode, scene);
 
     // copy the scene to a modifiable copy.
     aiCopyScene(scene, &this->scene);
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene, float scaling){
+void Model::processNode(aiNode *node, const aiScene *scene){
     // Process all the node's meshes (if any)
     for(GLuint i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        this->meshes.push_back(this->processMesh(mesh, scene, scaling));
+        this->meshes.push_back(this->processMesh(mesh, scene));
     }
     // Then do the same for each of its children
     for(GLuint i = 0; i < node->mNumChildren; i++)
     {
-        this->processNode(node->mChildren[i], scene, scaling);
+        this->processNode(node->mChildren[i], scene);
     }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, float scaling){
+Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;
@@ -128,7 +134,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, float scaling){
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
-        vector *= scaling;
+        vector *= surfaceSize;
         vertex.Position = vector;
         //normals
         //vector.x = mesh->mNormals[i].x;
@@ -170,20 +176,56 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, float scaling){
     return Mesh(vertices, textures);
 }
 
-void Model::rescaleMeshes(float oldScale, float newScale)
+void Model::rescaleMeshes(float newScale)
 {
+
+    // rescale mesh itself
     for (uint i=0; i<meshes.size(); i++)
     {
-
-        std::cout << "rescale mesh " << i << std::endl;
-        for (uint j=0; j<0; j++)
+        for (uint j=0; j<meshes[i].vertices.size(); j++)
         {
-            glm::vec3 buf = meshes[i].vertices[j].Position;
+            /*glm::vec3 buf = meshes[i].vertices[j].Position;
             buf /= oldScale;
             buf *= newScale;
-            meshes[i].vertices[j].Position = buf;
-            //meshes[i].vertices[j].Position = glm::vec3((meshes[i].vertices[j].Position / oldScale) * newScale);
+            meshes[i].vertices[j].Position = buf;*/
+            meshes[i].vertices[j].Position = (meshes[i].vertices[j].Position / surfaceSize) * newScale;
         }
+    }
+
+    // rescale light-ray-pos
+
+    for (uint i=0; i<receiverLightPositions.size(); i++)
+    {
+        receiverLightPositions[i] = glm::vec3(receiverLightPositions[i].x,
+                                            newScale*receiverLightPositions[i].y / surfaceSize,
+                                            newScale*receiverLightPositions[i].z / surfaceSize);
+    }
+}
+
+void Model::modifyMesh()
+{
+    if(meshes.empty()) return;
+
+    int modifyIndex = meshes[0].vertices.size()/3;
+    glm::vec3 oldVal =  meshes[0].vertices[modifyIndex].Position;
+    meshes[0].vertices[modifyIndex].Position = 2.0f * meshes[0].vertices[modifyIndex].Position;
+    glm::vec3 newVal = meshes[0].vertices[modifyIndex].Position;
+
+    std::cout << "modified vertex " << modifyIndex << " from (" <<
+                 oldVal.x << ", " << oldVal.y << ", " << oldVal.z  << ") to ("  <<
+              newVal.x << ", " << newVal.y << ", " << newVal.z  << ")" << std::endl;
+
+    // update normals
+    meshes[0].calculateVertexNormals();
+}
+
+void Model::setFocalLength(float newLength)
+{
+    this->focalLength = newLength;
+
+    for (uint i=0; i<receiverLightPositions.size(); i++)
+    {
+        receiverLightPositions[i].x = newLength + meshes[0].getMaxX();
     }
 }
 

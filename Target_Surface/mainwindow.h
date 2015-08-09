@@ -35,9 +35,11 @@ protected slots:
     void on_actionSave_Vertices_triggered();
     void on_actionRunTargetOptimization_triggered();
     void on_actionLoadLightRayReceiverPosition_triggered();
+    void on_actionNormals_toggled();
+    void on_actionAxis_toggled();
     /* line edit slots */
     void newMeshHeight();
-    void newFocalLength(QString text);
+    void newFocalLength();
 
     //void on_actionCreate_Object_triggered();
 };

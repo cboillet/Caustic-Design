@@ -23,5 +23,6 @@
 #include <fstream>
 #include <iostream>
 #define MESH_AMOUNT 50 //amount of
+#define CAUSTIC_DOMAIN 0.5
 
 #endif // GLOBAL_H

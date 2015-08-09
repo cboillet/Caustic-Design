@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setupUi(this);
 
     connect(meshHeightLineEdit, SIGNAL(returnPressed()), this, SLOT(newMeshHeight()));
-    //connect(focalLengthLineEdit, SIGNAL(textChanged(QString)), newFocalLength(QString));
+    connect(focalLengthLineEdit, SIGNAL(returnPressed()), this, SLOT(newFocalLength()));
 
     //setModel();
     //viewer = new Renderer(5, this, "Target Surface");
@@ -34,7 +34,7 @@ void MainWindow::setModel()
 {
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");
     if(modelToLoad.isEmpty()) return;
-    viewer->model.loadModel(modelToLoad.toStdString(), viewer->surfaceSize);
+    viewer->model.loadModel(modelToLoad.toStdString());
     update();
 }
 
@@ -51,7 +51,7 @@ void MainWindow::on_actionSave_Vertices_triggered()
     std::cout << "save vertices" << std::endl;
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save vertices"));
     if(fileName.isEmpty()) return;
-    viewer->model.meshes[0].exportVertices(fileName);
+    viewer->model.meshes[0].exportVertices(fileName, viewer->model.surfaceSize);
 }
 
 void MainWindow::on_actionLoadModel_triggered()
@@ -61,8 +61,8 @@ void MainWindow::on_actionLoadModel_triggered()
 
 void MainWindow::on_actionGenerateTriangles_triggered()
 {
-    viewer->repaint();
-    //update();
+    viewer->model.modifyMesh();
+    viewer->update();
 }
 
 void MainWindow::on_actionRunTargetOptimization_triggered()
@@ -78,6 +78,18 @@ void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()
     viewer->sceneUpdate();
 }
 
+void MainWindow::on_actionAxis_toggled()
+{
+    viewer->toggleDrawAxis();
+    viewer->update();
+}
+
+void MainWindow::on_actionNormals_toggled()
+{
+    viewer->toggleDrawNormals();
+    viewer->update();
+}
+
 void MainWindow::newMeshHeight()
 {
     std::string txt = meshHeightLineEdit->text().toStdString();
@@ -90,19 +102,31 @@ void MainWindow::newMeshHeight()
         return;
     }
 
-    newScale *= 0.5; // we go from -0.5 to 0.5
+    meshWidthLineEdit->setText(meshHeightLineEdit->text());
 
+    newScale *= 0.5; // we go from -0.5 to 0.5
     std::cout << "New Mesh Height: " << newScale << std::endl;
 
-
-    viewer->model.rescaleMeshes(viewer->surfaceSize, newScale);
-    viewer->surfaceSize = newScale;
+    viewer->model.rescaleMeshes(newScale);
+    viewer->model.surfaceSize = newScale;
 
     viewer->update();
 }
 
-void MainWindow::newFocalLength(QString text)
+void MainWindow::newFocalLength()
 {
+    std::string txt = focalLengthLineEdit->text().toStdString();
+    bool ok;
+
+    float newLength = focalLengthLineEdit->text().toFloat(&ok);
+    if(!ok)
+    {
+        std::cerr << "illegal value" << std::endl;
+        return;
+    }
+
+    viewer->model.setFocalLength(newLength);
+    viewer->sceneUpdate();
 
 }
 
