@@ -6,12 +6,45 @@ using ceres::Problem;
 using ceres::Solver;
 using ceres::Solve;
 
-struct CostFunctor {
+struct CostFunctorTest {
   template <typename T> bool operator()(const T* const x, T* residual) const {
     residual[0] = T(10.0) - x[0];
     return true;
   }
 };
+
+struct CostFunctorEint {
+  template <typename T> bool operator()(const T* const x, T* residual, Model& model) const {
+    //x position on the surface
+    glm::vec3 n = glm::vec3(1,0,0); //incident light ray
+
+
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+struct CostFunctorEdir {
+  template <typename T> bool operator()(const T* const x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+struct CostFunctorEflux {
+  template <typename T> bool operator()(const T* const x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+struct CostFunctorEbar {
+  template <typename T> bool operator()(const T* x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
 
 TargetOptimization::TargetOptimization()
 {
@@ -26,7 +59,7 @@ void TargetOptimization::runCeresTest()
     Problem problem;
 
     CostFunction* cost_function =
-        new AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor);
+        new AutoDiffCostFunction<CostFunctorTest, 1, 1>(new CostFunctorTest);
     problem.AddResidualBlock(cost_function, NULL, &x);
 
     // Run the solver!
@@ -38,5 +71,9 @@ void TargetOptimization::runCeresTest()
     std::cout << summary.BriefReport() << "\n";
     std::cout << "x : " << initial_x
               << " -> " << x << "\n";
+
+}
+
+void TargetOptimization::runOptimization(Model& model){
 
 }
