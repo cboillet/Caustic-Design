@@ -842,7 +842,7 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 
      QString fileName = QFileDialog::getOpenFileName(this, tr("Load light origin points"), ".");
     if (fileName.isEmpty()) return;
-    bool test = source_scene->load_interpolation_points(fileName);
+    source_scene->load_dat(fileName,source_scene->getLightPointsSource());
     std::cout << "light points source size" << source_scene->getLightPointsSource().size() << std::endl;
 
 
@@ -854,7 +854,7 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
 
     QString results = QFileDialog::getOpenFileName(this, tr("Saving interpolation resultst"), ".dat");
     if (results.isEmpty()) return;
-    m_scene->save_interpolation_dat(results);
+    m_scene->save_dat(results, m_scene->getLightPointsTarget());
 
     QApplication::restoreOverrideCursor();
     //viewer_2->toggle_view_Xr();

@@ -12,6 +12,7 @@ INCLUDEPATH += /usr/include/eigen3
 LIBS    += -L/usr/include/
 LIBS     += -lSOIL \
             #-L/usr/local/lib -lglfw3 \
+            -lcxsparse \
             -L/usr/lib/x86_64-linux-gnu -lGLEW \
             -L/usr/local/lib -lglfw -lpthread \
             -L/usr/lib/x86_64-linux-gnu -lglut -lGL -lGLU \

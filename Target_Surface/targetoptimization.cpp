@@ -23,6 +23,28 @@ private:
     int numX;
 };
 
+struct CostFunctorEdir {
+  template <typename T> bool operator()(const T* const x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+struct CostFunctorEflux {
+  template <typename T> bool operator()(const T* const x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+struct CostFunctorEbar {
+  template <typename T> bool operator()(const T* x, T* residual) const {
+    residual[0] = T(10.0) - x[0];
+    return true;
+  }
+};
+
+
 TargetOptimization::TargetOptimization()
 {
 }
@@ -30,7 +52,27 @@ TargetOptimization::TargetOptimization()
 void TargetOptimization::runCeresTest()
 {
 
-    double *x = new double[1];
+    double x = 0.5;
+    const double initial_x = x;
+
+    Problem problem;
+
+    CostFunction* cost_function =
+        new AutoDiffCostFunction<CostFunctorTest, 1, 1>(new CostFunctorTest);
+    problem.AddResidualBlock(cost_function, NULL, &x);
+
+    // Run the solver!
+    Solver::Options options;
+    options.minimizer_progress_to_stdout = true;
+    Solver::Summary summary;
+    Solve(options, &problem, &summary);
+
+    std::cout << summary.BriefReport() << "\n";
+    std::cout << "x : " << initial_x
+              << " -> " << x << "\n";
+
+/*
+ double *x = new double[1];
     x[0] = 3;
     //x[1] = 2;
     double *initial_x = new double[1];
@@ -54,4 +96,10 @@ void TargetOptimization::runCeresTest()
 
     //delete[] x;
     //delete[] initial_x;
+*/
 }
+
+void TargetOptimization::runOptimization(Model& model){
+
+}
+
