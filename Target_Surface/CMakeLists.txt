@@ -3,6 +3,8 @@ set ( CMAKE_BUILD_TYPE Release )
 #add_definitions ( -Wall )
 find_package ( Qt4 REQUIRED )
 
+
+
 ##########################
 # OpenGL, GLUT
 #########################
@@ -36,7 +38,7 @@ include_directories(${CERES_INCLUDE_DIRS})
 set(ASSIMP_FLAGS "-lassimp")
 
 set(QT_USE_QTOPENGL TRUE)
-set (CMAKE_CXX_FLAGS "-frounding-math -O3 ${ASSIMP_FLAGS}")
+set (CMAKE_CXX_FLAGS "-g -frounding-math -O3 ${ASSIMP_FLAGS}")
 include ( ${QT_USE_FILE} )
 include_directories (
 	${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}

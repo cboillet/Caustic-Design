@@ -7,11 +7,15 @@
 
 class TargetOptimization
 {
-public:
-    TargetOptimization();
+    vector<glm::vec3> computeNormals;
 
-    void runOptimization(Model& model);
+public:
+    TargetOptimization(Model& m);
+
+    void runOptimization(Model& m);
     void runCeresTest();
+    void optimize(Model& m);
+    bool converged(Model& m);
 };
 
 #endif // TARGETOPTIMIZATION_H

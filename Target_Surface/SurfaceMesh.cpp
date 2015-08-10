@@ -143,7 +143,7 @@ void Mesh::calculateVertexNormals()
 
             // find out which vertex of the current face is the vertex we are currently looking at
             // aF[i] is a list of faces (aka a list of indices of the indices-vector)
-            // so indices[aF[i][j]] is a glm::uvec3 that contains one face
+            // so indices[aF[i][j]] is a glm::vec3 that contains one face
             // and the current vertex is vertex[i]
             int thisVertexIndex = -1;
             for(int vIndex=0; vIndex < 3; vIndex++)
@@ -264,7 +264,7 @@ bool Mesh::compareArea(vector<Vertex> vec1, vector<Vertex> vec2){
 void Mesh::exportVertices(const QString& filename, float scaling){
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
-    vector<Vertex> verticesMesh = selectVerticesMeshFace();
+    vector<Vertex> verticesMesh = selectVerticesMeshFaceNoEdge();
     int exported = 0, excluded = 0;
     for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
@@ -276,7 +276,7 @@ void Mesh::exportVertices(const QString& filename, float scaling){
 }
 
 
-vector<Vertex>  Mesh::selectVerticesMeshFace(){
+vector<Vertex>  Mesh::selectVerticesMeshFaceNoEdge(){
     vector<Vertex> faceVertex;
     int max =  0;
     for (int i = 0; i < vertices.size(); ++i){
@@ -293,3 +293,17 @@ vector<Vertex>  Mesh::selectVerticesMeshFace(){
     return faceVertex;
 }
 
+vector<Vertex> Mesh::selectVerticesMeshFaceEdge(){
+    vector<Vertex> faceVertex;
+    int max =  0;
+    for (int i = 0; i < vertices.size(); ++i){
+        if (vertices[i].Position.x>max) max = vertices[i].Position.x;
+    }
+
+    for (int i = 0; i < vertices.size(); ++i){
+         if(abs(vertices[i].Position.x-max) < 0.00001){
+             faceVertex.push_back(vertices [i]);
+         }
+    }
+    return faceVertex;
+}

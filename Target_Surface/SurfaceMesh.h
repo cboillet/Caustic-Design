@@ -57,7 +57,8 @@ public:
         void calculateVertexNormals();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         //void shrink_vertices_camille(); //reimplementation
-        vector<Vertex> selectVerticesMeshFace(); //sekect the vertex on the face the furthest on x axis
+        vector<Vertex> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
+        vector<Vertex> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
 };

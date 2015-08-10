@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //setModel();
     //viewer = new Renderer(5, this, "Target Surface");
-    optimizer = new TargetOptimization();
+    optimizer = new TargetOptimization(viewer->model);
 }
 
 MainWindow::~MainWindow()
