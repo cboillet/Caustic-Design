@@ -331,6 +331,11 @@ vector<glm::vec3> Model::computeNormalsScreenSurface(){
 
 }
 
+//compute the positions on the surface to fit the desired normals
+void Model::fresnelMapping(){
+
+}
+
 //SurfaceModel::SurfaceModel(int w, int h, int d, string p):width(w),height(h),depth(d),path(p)
 //{
         

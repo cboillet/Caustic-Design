@@ -6,20 +6,21 @@ using ceres::Problem;
 using ceres::Solver;
 using ceres::Solve;
 
-class MyCostFunctor{
+class CostFunctorEint{
 public:
-    MyCostFunctor(int numX): numX(numX){}
+    CostFunctorEint(int numX, vector<glm::vec3> nt): numX(numX),nT(nt){}
 
     template <typename T>
-    bool operator()(const T* const x, T* e) const{
+    bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const{
         //e[0] = T(0);
         for (int i=0; i<numX; i++)
-            e[i] = T(i*10.0) - x[i];
+            e[i] = T(i*10.0) - x1[i];
         return true;
     }
 
 private:
     int numX;
+    vector<glm::vec3> nT;
 };
 
 struct CostFunctorTest {
@@ -30,19 +31,6 @@ struct CostFunctorTest {
 };
 
 
-class CostFunctorEint{
-public:
-    CostFunctorEint(){}
-    template <typename T>
-    bool operator() (const T* x, T* residual) const{
-          //x positions on the surface
-           for (int i=0; i<4; i++){
-           //residual[i] = T(10.0) - x[0];
-           }
-           return true;
-    }
-
-};
 
 struct CostFunctorEdir {
   template <typename T> bool operator()(const T* const x, T* residual) const {
@@ -103,43 +91,55 @@ void TargetOptimization::runOptimization(Model& m){
     m.meshes[0].calculateVertexNormals();
 
     while(!converged(m) &&  numberIteration<1){
-        optimize(m);
+
+        //STEP 1: Normalize
+        vector<glm::vec3> Dt = m.computeNormalsScreenSurface();
+
+        //STEP 2: hypothese 1: no Fersnel Diffraction mechanism -> Dt=Nt
+        //m.fresnelMapping();
+
+
+        //STEP 3: 3D optimization
+        optimize(m,Dt);
+
+
+        //STEP 4: update normals of position
         m.meshes[0].calculateVertexNormals();
         m.setNormals(true);
+
         numberIteration++;
     }
 }
 
-void TargetOptimization::optimize(Model& m){
-//    vector<Vertex> x = m.meshes[0].selectVerticesMeshFaceEdge();
-//    const vector<Vertex> inital_x = x;
-//    double x = 0.5;
-//    const double initial_x = x;
-//    double x[] = {1.0, 2.0, 3.0};
-//    Problem problem;
-//    CostFunction* cost_function =
-//        new AutoDiffCostFunction<CostFunctorEint, 1, 1>(new CostFunctorEint);
-//    problem.AddResidualBlock(cost_function, NULL, x);
-//    Solver::Options options;
-//    options.minimizer_progress_to_stdout = true;
-//    Solver::Summary summary;
-//    Solve(options, &problem, &summary);
+void TargetOptimization::optimize(Model& m, vector<glm::vec3> nt){
 
     int n = NORMALS;
-    double *x = new double[n];
-    double *initial_x = new double[n];
+
+    //no vector<glm::vec3> can be passed to the cost function, but we can run it on each coordinates
+    double *x1 = new double[n];
+    double *initial_x1 = new double[n];
+    double *x2 = new double[n];
+    double *initial_x2 = new double[n];
+    double *x3 = new double[n];
+    double *initial_x3 = new double[n];
 
     for (int i=0; i<n; i++)
     {
-        x[i] = i+1;
-        initial_x[i] = i+1;
+        x1[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.x;
+        x2[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.y;
+        x3[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.z;
+        initial_x1[i] = x1[i];
+        initial_x2[i] = x2[i];
+        initial_x3[i] = x3[i];
     }
+
     Problem problem;
 
-    CostFunction* cost_function =
-        new AutoDiffCostFunction<MyCostFunctor, ceres::DYNAMIC, NORMALS>(new MyCostFunctor(n), n);
+    CostFunction* cost_function_Eint =
+        new AutoDiffCostFunction<CostFunctorEint, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(n, nt));
     //for (int i=0; i<n; i++)
-        problem.AddResidualBlock(cost_function, NULL, x);
+
+    problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
 
     // Run the solver!
     Solver::Options options;
@@ -149,11 +149,16 @@ void TargetOptimization::optimize(Model& m){
 
    // std::cout << summary.BriefReport() << std::endl;
 
-    for (int i=0; i<n; i++)
-        std::cout << "x[" << i << "] : " << initial_x[i] << " -> " << x[i] << std::endl;
+//    for (int i=0; i<n; i++)
+//        std::cout << "x[" << i << "] : " << initial_x[i] << " -> " << x[i] << std::endl;
 
-    delete[] x;
-    delete[] initial_x;
+
+    delete[] x1;
+    delete[] initial_x1;
+    delete[] x2;
+    delete[] initial_x2;
+    delete[] x3;
+    delete[] initial_x3;
 
 
 }
@@ -170,4 +175,5 @@ bool TargetOptimization::converged(Model& m){
     }
     return converged;
 }
+
 

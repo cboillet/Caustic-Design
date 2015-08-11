@@ -39,6 +39,7 @@ class Model {
         void modifyMesh();
         void setNormals(bool edge);
         vector<glm::vec3> computeNormalsScreenSurface();
+        void fresnelMapping(); //compute the position on the surface to for the desired normals
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
         vector<glm::vec3> desiredNormals;

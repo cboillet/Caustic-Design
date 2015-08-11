@@ -14,7 +14,7 @@ public:
 
     void runOptimization(Model& m);
     void runCeresTest();
-    void optimize(Model& m);
+    void optimize(Model& m, vector<glm::vec3> nt);
     bool converged(Model& m);
 };
 
