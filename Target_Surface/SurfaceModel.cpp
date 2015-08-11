@@ -85,6 +85,9 @@ void Model::loadReceiverLightPoints(QString path)
     while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), z*surfaceSize/CAUSTIC_DOMAIN, y*surfaceSize/CAUSTIC_DOMAIN));
 
     std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
+
+    //calculate and load the desired normals
+    desiredNormals = computeNormalsScreenSurface();
 }
 
 void Model::loadModel(string path){
@@ -300,6 +303,33 @@ int Model::findSurfaceMesh(){
 }
 
 
+void Model::setNormals(bool edge){
+    int limit;
+    if (edge) limit = meshes[0].selectVerticesMeshFaceEdge().size();
+    else limit = meshes[0].selectVerticesMeshFaceNoEdge().size();
+    for (int i=0; i<meshes[0].selectVerticesMeshFaceNoEdge().size(); i++){
+        glm::vec3 norm;
+        norm.x = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.x;
+        norm.y = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.y;
+        norm.z = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.z;
+        currentNormals.push_back(norm);
+    }
+}
+
+vector<glm::vec3> Model::computeNormalsScreenSurface(){
+    //get the position on the surface without the corner vertices
+    vector<Vertex> faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
+    vector<glm::vec3> normals;
+    glm::vec3 vecNorm;
+    for(int i=0; i<faceVertices.size(); i++){
+        //compute vector surface to screen
+        vecNorm = receiverLightPositions[i] - faceVertices[i].Position ;
+        normals.push_back(glm::normalize(vecNorm));
+    }
+    return normals;
+
+
+}
 
 //SurfaceModel::SurfaceModel(int w, int h, int d, string p):width(w),height(h),depth(d),path(p)
 //{

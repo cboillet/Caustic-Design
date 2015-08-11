@@ -93,7 +93,7 @@
      <x>0</x>
      <y>0</y>
      <width>607</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -127,6 +127,7 @@
     </property>
     <addaction name="actionNormals"/>
     <addaction name="actionAxis"/>
+    <addaction name="actionDesired_Normals"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -208,6 +209,20 @@
    </property>
    <property name="text">
     <string>Axis</string>
+   </property>
+  </action>
+  <action name="actionDesired_Normals">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Desired Normals</string>
+   </property>
+   <property name="toolTip">
+    <string>DesiredNormals</string>
    </property>
   </action>
  </widget>

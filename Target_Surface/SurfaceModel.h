@@ -37,6 +37,8 @@ class Model {
         void setFocalLength(float newLength);
         void rescaleMeshes(float newScale);
         void modifyMesh();
+        void setNormals(bool edge);
+        vector<glm::vec3> computeNormalsScreenSurface();
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
         vector<glm::vec3> desiredNormals;

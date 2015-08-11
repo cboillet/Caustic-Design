@@ -25,5 +25,6 @@
 #define MESH_AMOUNT 50 //amount of
 #define CAUSTIC_DOMAIN 0.5
 #define CONVERGENCE_LIMIT 0.0001
+#define NORMALS 3
 
 #endif // GLOBAL_H

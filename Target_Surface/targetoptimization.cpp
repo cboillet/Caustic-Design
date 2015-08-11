@@ -12,10 +12,9 @@ public:
 
     template <typename T>
     bool operator()(const T* const x, T* e) const{
+        //e[0] = T(0);
         for (int i=0; i<numX; i++)
-        {
-            e[0] += T(10.0) - x[i];
-        }
+            e[i] = T(i*10.0) - x[i];
         return true;
     }
 
@@ -96,65 +95,78 @@ void TargetOptimization::runCeresTest()
 }
 
 
-/*
- double *x = new double[1];
-    x[0] = 3;
-    //x[1] = 2;
-    double *initial_x = new double[1];
-    initial_x[0] = 3;
-
-    Problem problem;
-
-    CostFunction* cost_function =
-        new AutoDiffCostFunction<MyCostFunctor, 1, ceres::DYNAMIC>(new MyCostFunctor(1));
-    problem.AddResidualBlock(cost_function, NULL, x);
-
-    // Run the solver!
-    Solver::Options options;
-    //options.minimizer_progress_to_stdout = true;
-    Solver::Summary summary;
-    Solve(options, &problem, &summary);
-
-    std::cout << summary.BriefReport() << "\n";
-    std::cout << "x[0] : " << initial_x[0] //<< ", x[1]:" << initial_x[1]
-              << " -> " << x[0] << /*", " << x[1] << */ //std::endl;
-
-    //delete[] x;
-    //delete[] initial_x;
-
 void TargetOptimization::runOptimization(Model& m){
-    while(!converged(m)){
-        m.meshes[0].calculateVertexNormals();
+    int numberIteration = 0;
+
+    //load the values of the calculated vertex in vector<glm::vec3> currentNormals we take the edges
+    m.setNormals(true);
+    m.meshes[0].calculateVertexNormals();
+
+    while(!converged(m) &&  numberIteration<1){
         optimize(m);
+        m.meshes[0].calculateVertexNormals();
+        m.setNormals(true);
+        numberIteration++;
     }
 }
 
-void TargetOptimization::optimize(Model& m){   
-    vector<Vertex> x = m.meshes[0].selectVerticesMeshFaceEdge();
-    const vector<Vertex> inital_x = x;
-    //double y = 0.5;
-    //int Eint;
-    int para = x.size();
+void TargetOptimization::optimize(Model& m){
+//    vector<Vertex> x = m.meshes[0].selectVerticesMeshFaceEdge();
+//    const vector<Vertex> inital_x = x;
+//    double x = 0.5;
+//    const double initial_x = x;
+//    double x[] = {1.0, 2.0, 3.0};
+//    Problem problem;
+//    CostFunction* cost_function =
+//        new AutoDiffCostFunction<CostFunctorEint, 1, 1>(new CostFunctorEint);
+//    problem.AddResidualBlock(cost_function, NULL, x);
+//    Solver::Options options;
+//    options.minimizer_progress_to_stdout = true;
+//    Solver::Summary summary;
+//    Solve(options, &problem, &summary);
+
+    int n = NORMALS;
+    double *x = new double[n];
+    double *initial_x = new double[n];
+
+    for (int i=0; i<n; i++)
+    {
+        x[i] = i+1;
+        initial_x[i] = i+1;
+    }
     Problem problem;
-    //CostFunction* cost_function = new AutoDiffCostFunction<CostFunctorEint, 1, ceres::DYNAMIC>(new CostFunctorEint());
-    //problem.AddResidualBlock(cost_function, NULL, y);
+
+    CostFunction* cost_function =
+        new AutoDiffCostFunction<MyCostFunctor, ceres::DYNAMIC, NORMALS>(new MyCostFunctor(n), n);
+    //for (int i=0; i<n; i++)
+        problem.AddResidualBlock(cost_function, NULL, x);
+
+    // Run the solver!
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     Solver::Summary summary;
     Solve(options, &problem, &summary);
+
+   // std::cout << summary.BriefReport() << std::endl;
+
+    for (int i=0; i<n; i++)
+        std::cout << "x[" << i << "] : " << initial_x[i] << " -> " << x[i] << std::endl;
+
+    delete[] x;
+    delete[] initial_x;
 
 
 }
 
 bool TargetOptimization::converged(Model& m){
     bool converged = true;
-    glm::vec3 norm0;
-    glm::vec3 norm1;
-    vector<Vertex> vec = m.meshes[0].selectVerticesMeshFaceEdge();
-    for(int i = 0; i<m.meshes[0].indices.size(); i++){
-        norm0 = vec[i].Normal;
-        norm1 = computeNormals[i];
-        if(glm::distance(norm0,norm1) >  CONVERGENCE_LIMIT) converged = false;
+    vector<glm::vec3> vecC = m.currentNormals;
+    vector<glm::vec3> vecD = m.desiredNormals;
+    std::cout<<"currentNormals size"<<m.currentNormals.size()<<std::endl;
+    std::cout<<"desiredNormals size"<<m.desiredNormals.size()<<std::endl;
+
+    for(int i = 0; i<vecC.size(); i++){
+        if(glm::distance(vecC[i],vecD[i]) >  CONVERGENCE_LIMIT) converged = false;
     }
     return converged;
 }

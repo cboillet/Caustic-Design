@@ -24,7 +24,9 @@ public:
     void sceneUpdate();
 
     void toggleDrawNormals(){drawNormals=!drawNormals;}
+    void toggleDrawDesiredNormals(){drawDesiredNormals=!drawDesiredNormals;}
     void toggleDrawAxis(){drawAxis=!drawAxis;}
+
 
     float y_rotate;
     float x_rotate;
@@ -41,6 +43,7 @@ public slots:
 
 protected:
     bool drawNormals;
+    bool drawDesiredNormals;
     bool drawAxis;
 
 private:
@@ -63,6 +66,7 @@ public:
     void paintMesh(Mesh mesh);
     void paintReceiver();
     void paintNormals(Mesh mesh);
+    void paintDesiredNormals();
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

@@ -78,6 +78,7 @@ void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()
     viewer->sceneUpdate();
 }
 
+
 void MainWindow::on_actionAxis_toggled()
 {
     viewer->toggleDrawAxis();
@@ -89,6 +90,12 @@ void MainWindow::on_actionNormals_toggled()
     viewer->toggleDrawNormals();
     viewer->update();
 }
+
+void MainWindow::on_actionDesired_Normals_toggled(){
+    viewer->toggleDrawDesiredNormals();
+    viewer->update();
+}
+
 
 void MainWindow::newMeshHeight()
 {
