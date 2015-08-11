@@ -22,9 +22,12 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <Eigen/Dense>
 #define MESH_AMOUNT 50 //amount of
 #define CAUSTIC_DOMAIN 0.5
 #define CONVERGENCE_LIMIT 0.0001
-#define NORMALS 3
+#define NORMALS 1089 //size of vertex in the front face without the edges
+#define AIR_REFRACTIV_INDEX 1
+#define MATERIAL_REFRACTIV_INDEX 1.49//value for acrylic used in the paper to do test experimently
 
 #endif // GLOBAL_H

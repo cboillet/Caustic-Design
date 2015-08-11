@@ -34,6 +34,11 @@ link_directories(${GLEW_LIBRARIES})
 find_package(Ceres REQUIRED)
 include_directories(${CERES_INCLUDE_DIRS})
 
+####################################
+# Eigen
+####################################
+find_package(Eigen3 REQUIRED)
+include_directories(/home/camille/projects/tools/eigen/cmake)
 
 set(ASSIMP_FLAGS "-lassimp")
 

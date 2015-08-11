@@ -87,16 +87,22 @@ void TargetOptimization::runOptimization(Model& m){
     int numberIteration = 0;
 
     //load the values of the calculated vertex in vector<glm::vec3> currentNormals we take the edges
-    m.setNormals(true);
     m.meshes[0].calculateVertexNormals();
+    m.setNormals(true);
+    for(int i=0; i<m.currentNormals.size(); i++){
+        glm::vec3 iN = m.currentNormals[i];
+        iN.x = - iN.x;
+        m.incidentNormals.push_back(iN);
+    }
+    m.desiredNormals.reserve(m.meshes[0].selectVerticesMeshFaceNoEdge().size());
 
     while(!converged(m) &&  numberIteration<1){
 
-        //STEP 1: Normalize
-        vector<glm::vec3> Dt = m.computeNormalsScreenSurface();
+        //STEP 1: find light direction
+        vector<glm::vec3> Dt = m.computeLightDirectionsScreenSurface();
 
-        //STEP 2: hypothese 1: no Fersnel Diffraction mechanism -> Dt=Nt
-        //m.fresnelMapping();
+        //STEP 2: hypothese 1: find desired normals
+        m.fresnelMapping();
 
 
         //STEP 3: 3D optimization
@@ -106,6 +112,7 @@ void TargetOptimization::runOptimization(Model& m){
         //STEP 4: update normals of position
         m.meshes[0].calculateVertexNormals();
         m.setNormals(true);
+        m.updateIncidentNormals();
 
         numberIteration++;
     }
@@ -122,12 +129,14 @@ void TargetOptimization::optimize(Model& m, vector<glm::vec3> nt){
     double *initial_x2 = new double[n];
     double *x3 = new double[n];
     double *initial_x3 = new double[n];
+    
+    
 
     for (int i=0; i<n; i++)
     {
-        x1[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.x;
-        x2[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.y;
-        x3[i] = m.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position.z;
+        x1[i] = m.meshes[0].selectVerticesMeshFaceEdge()[i].Position.x;
+        x2[i] = m.meshes[0].selectVerticesMeshFaceEdge()[i].Position.y;
+        x3[i] = m.meshes[0].selectVerticesMeshFaceEdge()[i].Position.z;
         initial_x1[i] = x1[i];
         initial_x2[i] = x2[i];
         initial_x3[i] = x3[i];
@@ -165,6 +174,9 @@ void TargetOptimization::optimize(Model& m, vector<glm::vec3> nt){
 
 bool TargetOptimization::converged(Model& m){
     bool converged = true;
+
+    //we check the normals of the face outside the edges
+
     vector<glm::vec3> vecC = m.currentNormals;
     vector<glm::vec3> vecD = m.desiredNormals;
     std::cout<<"currentNormals size"<<m.currentNormals.size()<<std::endl;

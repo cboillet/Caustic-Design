@@ -87,7 +87,7 @@ void Model::loadReceiverLightPoints(QString path)
     std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
 
     //calculate and load the desired normals
-    desiredNormals = computeNormalsScreenSurface();
+    screenDirections = computeLightDirectionsScreenSurface();
 }
 
 void Model::loadModel(string path){
@@ -316,7 +316,7 @@ void Model::setNormals(bool edge){
     }
 }
 
-vector<glm::vec3> Model::computeNormalsScreenSurface(){
+vector<glm::vec3> Model::computeLightDirectionsScreenSurface(){
     //get the position on the surface without the corner vertices
     vector<Vertex> faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
     vector<glm::vec3> normals;
@@ -333,6 +333,24 @@ vector<glm::vec3> Model::computeNormalsScreenSurface(){
 
 //compute the positions on the surface to fit the desired normals
 void Model::fresnelMapping(){
+    vector<Vertex> vert = meshes[0].selectVerticesMeshFaceNoEdge();
+    //calculate sin(i1)/sin(i2)
+    float refraction = MATERIAL_REFRACTIV_INDEX;
+
+    for(int i = 0; i<screenDirections.size(); i++){
+        glm::vec3 incidentLight;
+        incidentLight.x = 1;
+        incidentLight.y = 0;
+        incidentLight.z = 0;
+
+        //normal of the surface
+        glm::vec3 norm;
+
+       // glm::sin(glm::acos(glm::dot(glm::normalize(incidentLight),glm::normalize(-norm))))/glm::sin(glm::acos(glm::dot(glm::normalize(screenDirections[i]),glm::normalize(norm)))) = refraction;
+
+    }
+
+
 
 }
 
