@@ -16,7 +16,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures)
     this->textures = textures;
     create_indices();
     shrink_vertices();
-    calcMaxX();
+    calcMax();
     calculateVertexNormals();
 }
 
@@ -179,17 +179,25 @@ void Mesh::calculateVertexNormals()
 }
 
 
-void Mesh::calcMaxX()
+void Mesh::calcMax()
 {
     maxX = -std::numeric_limits<float>::max();
+    maxY = -std::numeric_limits<float>::max();
+    maxZ = -std::numeric_limits<float>::max();
 
     foreach (Vertex v, vertices)
     {
-        if(v.Position.x > maxX)
-            maxX = v.Position.x;
+        if(abs(v.Position.x) > maxX)
+            maxX = abs(v.Position.x);
+
+        if(abs(v.Position.y) > maxY)
+            maxY = abs(v.Position.y);
+
+        if(abs(v.Position.z) > maxZ)
+            maxZ = abs(v.Position.z);
     }
 
-    std::cout << "maxX = " << maxX << std::endl;
+    std::cout << "maxX = " << maxX << ", maxX = " << maxY << ", maxZ = " << maxZ << std::endl;
 }
 
 
@@ -264,33 +272,53 @@ bool Mesh::compareArea(vector<Vertex> vec1, vector<Vertex> vec2){
 void Mesh::exportVertices(const QString& filename, float scaling){
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
-    vector<Vertex> verticesMesh = selectVerticesMeshFaceNoEdge();
+    vector<Vertex*> verticesMesh = selectVerticesMeshFaceNoEdge();
     int exported = 0, excluded = 0;
     for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
         // don't export vertices on the edge
-        ofs << verticesMesh[i].Position.y * CAUSTIC_DOMAIN / scaling << " " << verticesMesh[i].Position.z  * CAUSTIC_DOMAIN / scaling << std::endl;
+        ofs << verticesMesh[i]->Position.y * CAUSTIC_DOMAIN / scaling << " " << verticesMesh[i]->Position.z  * CAUSTIC_DOMAIN / scaling << std::endl;
 
     }
     ofs.close();
 }
 
+void printVertex(Vertex v)
+{
+    std::cout << "[" << v.Position.x << ", " << v.Position.y << ", " << v.Position.z << "]";
+}
 
-vector<Vertex>  Mesh::selectVerticesMeshFaceNoEdge(){
+vector<Vertex*>  Mesh::selectVerticesMeshFaceNoEdge(){
+
+    vector<Vertex*> retVal;
+
+    for(uint i=0; i<vertices.size(); i++)
+    {
+        if(floatEquals(vertices[i].Position.x, maxX) && !floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ))
+        {
+            retVal.push_back(&vertices[i]);
+            std::cout << "added ";
+            printVertex(vertices[i]);
+            std::cout << std::endl;
+        }
+    }
+
+    return retVal;
+
+    /*
     vector<Vertex> faceVertex;
-    int max =  0;
     for (int i = 0; i < vertices.size(); ++i){
-        if (vertices[i].Position.x>max) max = vertices[i].Position.x;
+        if (vertices[i].Position.x>maxX) maxX = vertices[i].Position.x;
     }
 
     for (int i = 0; i < vertices.size(); ++i){
-         if(abs(vertices[i].Position.x-max) < 0.00001){
+         if(abs(vertices[i].Position.x-maxX) < 0.00001){
              // we are on side with max x-values. now exclude min/max y- and z- values
-             if(!floatEquals(fabs(vertices[i].Position.y), 1.0f) && !floatEquals(fabs(vertices[i].Position.z), 1.0f))
+             if(!floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ))
              faceVertex.push_back(vertices [i]);
          }
     }
-    return faceVertex;
+    return faceVertex;*/
 }
 
 vector<Vertex> Mesh::selectVerticesMeshFaceEdge(){

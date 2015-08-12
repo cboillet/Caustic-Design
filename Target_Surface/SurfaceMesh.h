@@ -34,7 +34,7 @@ public:
         vector<glm::uvec3> indices;
         vector<Texture> textures;
         int nbMeshLayout;
-        float maxX;
+        float maxX, maxY, maxZ;
        //int nbTriangle;
         /*  Render data  */
         GLuint VAO, VBO, EBO;
@@ -52,12 +52,12 @@ public:
         void create_indices();
         void shrink_vertices();
         void rescale(float oldScale, float newScale);
-        void calcMaxX();
+        void calcMax();
         void expandVertices(std::vector<Vertex>& outVertices);
         void calculateVertexNormals();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         //void shrink_vertices_camille(); //reimplementation
-        vector<Vertex> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
+        vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
         vector<Vertex> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
