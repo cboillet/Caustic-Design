@@ -37,17 +37,7 @@ public:
 
     template <typename T>
     bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const{
-        vector<Vertex*> surfaceVertices = model->meshes[0].faceVertices;
-        //load the positions
-        for (int i=0; i<NORMALS; i++){
-//            surfaceVertices[i]->Position.x=(float)x1;
-//            surfaceVertices[i]->Position.x=x2;
-//            surfaceVertices[i]->Position.x=x3;
-        }
-        model->meshes[0].calculateVertexNormals();
-        //e[0] = T(0);
-        for (int i=0; i<NORMALS; i++)
-            e[i] = glm::length(surfaceVertices[i]->Normal-model->desiredNormals[i]);
+        e[0] = T(10.0) - x1[0];
         return true;
     }
 
