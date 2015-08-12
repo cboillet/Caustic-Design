@@ -94,25 +94,28 @@ void TargetOptimization::runOptimization(Model& m){
         iN.x = - iN.x;
         m.incidentNormals.push_back(iN);
     }
-    m.desiredNormals.reserve(m.meshes[0].selectVerticesMeshFaceNoEdge().size());
+    //STEP 1: find light direction
+    vector<glm::vec3> Dt = m.computeLightDirectionsScreenSurface();
+
+    //STEP 2: hypothese 1: find desired normals
+    m.fresnelMapping();
+
 
     while(!converged(m) &&  numberIteration<1){
-
-        //STEP 1: find light direction
-        vector<glm::vec3> Dt = m.computeLightDirectionsScreenSurface();
-
-        //STEP 2: hypothese 1: find desired normals
-        m.fresnelMapping();
-
-
-        //STEP 3: 3D optimization
+        //STEP 1: 3D optimization
         optimize(m,Dt);
 
 
-        //STEP 4: update normals of position
+        //STEP 2: update normals of position
         m.meshes[0].calculateVertexNormals();
         m.setNormals(true);
         m.updateIncidentNormals();
+
+        //STEP 3: find light direction
+        Dt = m.computeLightDirectionsScreenSurface();
+
+        //STEP 4: hypothese 1: find desired normals
+        m.fresnelMapping();
 
         numberIteration++;
     }

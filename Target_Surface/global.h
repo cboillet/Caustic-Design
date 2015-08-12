@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <Eigen/Dense>
 #define MESH_AMOUNT 50 //amount of
 #define CAUSTIC_DOMAIN 0.5
 #define CONVERGENCE_LIMIT 0.0001
