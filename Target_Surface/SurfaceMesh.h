@@ -39,6 +39,7 @@ public:
         /*  Render data  */
         GLuint VAO, VBO, EBO;
         /*  Functions  */
+        vector<Vertex*> faceVertices;
 
         Mesh(vector<Vertex> vertices, vector<Texture> textures);
         Mesh(){}

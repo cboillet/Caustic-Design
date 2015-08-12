@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //setModel();
     //viewer = new Renderer(5, this, "Target Surface");
-    optimizer = new TargetOptimization(viewer->model);
+    optimizer = new TargetOptimization();
 }
 
 MainWindow::~MainWindow()
@@ -67,7 +67,7 @@ void MainWindow::on_actionGenerateTriangles_triggered()
 
 void MainWindow::on_actionRunTargetOptimization_triggered()
 {
-    optimizer->runOptimization(viewer->model);
+    optimizer->runOptimization(&(viewer->model));
 }
 
 void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()

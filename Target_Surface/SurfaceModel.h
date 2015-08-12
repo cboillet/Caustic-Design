@@ -38,9 +38,7 @@ class Model {
         void rescaleMeshes(float newScale);
         void modifyMesh();
         void setNormals(bool edge);
-        vector<glm::vec3> computeLightDirectionsScreenSurface();
-        vector<glm::vec3> computeNormalsScreenSurface(){}
-        void updateIncidentNormals(){}
+        void computeLightDirectionsScreenSurface();
         void fresnelMapping(); //compute the position on the surface to for the desired normals
         /*  Model Data  */
         vector<Mesh> meshes; //in our case just one Mesh -> this is for more complex models
@@ -68,7 +66,7 @@ class Model {
         void populateMesh(){}
         void compute(){}
         void clean(){
-            meshes.clear();
+        meshes.clear();
         }
 };
 

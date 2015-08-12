@@ -87,7 +87,7 @@ void Model::loadReceiverLightPoints(QString path)
     std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
 
     //calculate and load the desired normals
-    screenDirections = computeLightDirectionsScreenSurface();
+    computeLightDirectionsScreenSurface();
 }
 
 void Model::loadModel(string path){
@@ -106,6 +106,7 @@ void Model::loadModel(string path){
 
     // copy the scene to a modifiable copy.
     aiCopyScene(scene, &this->scene);
+    meshes[0].faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){
@@ -193,6 +194,7 @@ void Model::rescaleMeshes(float newScale)
             meshes[i].vertices[j].Position = buf;*/
             meshes[i].vertices[j].Position = (meshes[i].vertices[j].Position / surfaceSize) * newScale;
         }
+        meshes[i].calcMax();
     }
 
     // rescale light-ray-pos
@@ -305,62 +307,45 @@ int Model::findSurfaceMesh(){
 
 void Model::setNormals(bool edge){
     int limit;
+    currentNormals.clear();
     if (edge) limit = meshes[0].selectVerticesMeshFaceEdge().size();
-    else limit = meshes[0].selectVerticesMeshFaceNoEdge().size();
-    for (int i=0; i<meshes[0].selectVerticesMeshFaceNoEdge().size(); i++){
+    else limit = meshes[0].faceVertices.size();
+    for (int i=0; i<meshes[0].faceVertices.size(); i++){
         glm::vec3 norm;
-        norm.x = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.x;
-        norm.y = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.y;
-        norm.z = meshes[0].selectVerticesMeshFaceNoEdge()[i].Normal.z;
+        norm.x = meshes[0].faceVertices[i]->Normal.x;
+        norm.y = meshes[0].faceVertices[i]->Normal.y;
+        norm.z = meshes[0].faceVertices[i]->Normal.z;
         currentNormals.push_back(norm);
     }
 }
 
-vector<glm::vec3> Model::computeLightDirectionsScreenSurface(){
+void Model::computeLightDirectionsScreenSurface(){
     //get the position on the surface without the corner vertices
-    vector<Vertex> faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
-    vector<glm::vec3> normals;
+    screenDirections.clear();
     glm::vec3 vecNorm;
-    for(int i=0; i<faceVertices.size(); i++){
+    for(int i=0; i<meshes[0].faceVertices.size(); i++){
         //compute vector surface to screen
-        vecNorm = receiverLightPositions[i] - faceVertices[i].Position ;
-        normals.push_back(glm::normalize(vecNorm));
+        vecNorm = receiverLightPositions[i] - meshes[0].faceVertices[i]->Position ;
+        screenDirections.push_back(glm::normalize(vecNorm));
     }
-    return normals;
-
-
 }
 
 //compute the desired normals
 void Model::fresnelMapping(){
-    //positions
-    vector<Vertex> vert = meshes[0].selectVerticesMeshFaceNoEdge();
     //calculate sin(i1)/sin(i2)
     float refraction = MATERIAL_REFRACTIV_INDEX;
-    glm::vec3 refractiv_index;
-    refractiv_index.x = MATERIAL_REFRACTIV_INDEX;
-    refractiv_index.y = MATERIAL_REFRACTIV_INDEX;
-    refractiv_index.z = MATERIAL_REFRACTIV_INDEX;
-
-
+    desiredNormals.clear();
     for(int i = 0; i<screenDirections.size(); i++){
         glm::vec3 incidentLight;
         incidentLight.x = 1;
         incidentLight.y = 0;
         incidentLight.z = 0;
 
-        vert[i].Position *= refraction;
+        glm::vec3 vert = meshes[0].faceVertices[i]->Position;
+        vert *= refraction;
 
         //normal of the surface see Kiser and Pauly
-        glm::vec3 norm = incidentLight +  vert[i].Position/(glm::length(incidentLight+refraction*screenDirections[i]));
+        glm::vec3 norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[i]));
         desiredNormals.push_back(norm);
     }
-
-
-
 }
-
-//SurfaceModel::SurfaceModel(int w, int h, int d, string p):width(w),height(h),depth(d),path(p)
-//{
-        
-//}

@@ -324,7 +324,7 @@ void ModelRendering::paintDesiredNormals()
     glColor3f(0,1,1);
     for (uint i=0; i<model.desiredNormals.size(); i++)
     {
-        glm::vec3 pos = model.meshes[0].selectVerticesMeshFaceNoEdge()[i].Position;
+        glm::vec3 pos = model.meshes[0].faceVertices[i]->Position;
         glm::vec3 end = model.desiredNormals[i];
         glVertex3f(pos.x, pos.y, pos.z);
         glVertex3f(end.x, end.y, end.z);

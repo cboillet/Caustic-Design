@@ -7,6 +7,7 @@
 Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, int sitesAmount, MainWindow* w):m_scene(sc),source_scene(tsc),compute_scene(csc), win(w){
     if (!sc->getDomain().is_valid()) return;
     if (!tsc->getDomain().is_valid()) return;
+
 //    int nbWith = floor(MESH_AMOUNT) / 3;
 //    int nbHeight = MESH_AMOUNT / nbWith;
 //    FT stepx = 2.0 * tsc->getDomain().get_dx() / nbWith;
@@ -15,8 +16,10 @@ Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, int sitesAmount,
 //    std::cout << "dy " << tsc->getDomain().get_dy() << std::endl;
 //    std::cout << "stepx" << stepx << std::endl;
 //    std::cout << "stepy" << stepy << std::endl;
-//    int nbpoints = 0;
+    int nbpoints = 0;
     int scene_sites = sitesAmount;
+
+//    source_scene->getLightPointsSource().clear();
 //    for (unsigned i = 0; i < nbWith; ++i)
 //    {
 //        FT x = (i + 0.5)*stepx - tsc->getDomain().get_dx();
@@ -36,7 +39,6 @@ Interpolation::Interpolation(Scene* sc, Scene* tsc, Scene* csc, int sitesAmount,
     Xo=source_scene->getLightPointsSource();
     //prepare compute scene
     VoronoiCreator voronoi_creator;
-    voronoi_creator.generate_voronoi(source_scene, scene_sites, EPSILON);
 }
 
 

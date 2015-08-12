@@ -272,7 +272,7 @@ bool Mesh::compareArea(vector<Vertex> vec1, vector<Vertex> vec2){
 void Mesh::exportVertices(const QString& filename, float scaling){
     std::ofstream ofs(qPrintable(filename));
     ofs.precision(20);
-    vector<Vertex*> verticesMesh = selectVerticesMeshFaceNoEdge();
+    vector<Vertex*> verticesMesh = faceVertices;
     int exported = 0, excluded = 0;
     for (unsigned i = 0; i < verticesMesh.size(); ++i)
     {
