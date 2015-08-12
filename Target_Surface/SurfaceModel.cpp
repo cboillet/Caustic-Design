@@ -331,11 +331,17 @@ vector<glm::vec3> Model::computeLightDirectionsScreenSurface(){
 
 }
 
-//compute the positions on the surface to fit the desired normals
+//compute the desired normals
 void Model::fresnelMapping(){
+    //positions
     vector<Vertex> vert = meshes[0].selectVerticesMeshFaceNoEdge();
     //calculate sin(i1)/sin(i2)
     float refraction = MATERIAL_REFRACTIV_INDEX;
+    glm::vec3 refractiv_index;
+    refractiv_index.x = MATERIAL_REFRACTIV_INDEX;
+    refractiv_index.y = MATERIAL_REFRACTIV_INDEX;
+    refractiv_index.z = MATERIAL_REFRACTIV_INDEX;
+
 
     for(int i = 0; i<screenDirections.size(); i++){
         glm::vec3 incidentLight;
@@ -343,11 +349,11 @@ void Model::fresnelMapping(){
         incidentLight.y = 0;
         incidentLight.z = 0;
 
-        //normal of the surface
-        glm::vec3 norm;
+        vert[i].Position *= refraction;
 
-       // glm::sin(glm::acos(glm::dot(glm::normalize(incidentLight),glm::normalize(-norm))))/glm::sin(glm::acos(glm::dot(glm::normalize(screenDirections[i]),glm::normalize(norm)))) = refraction;
-
+        //normal of the surface see Kiser and Pauly
+        glm::vec3 norm = incidentLight +  vert[i].Position/(glm::length(incidentLight+refraction*screenDirections[i]));
+        desiredNormals.push_back(norm);
     }
 
 
