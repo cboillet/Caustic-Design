@@ -46,13 +46,14 @@ class Model {
         vector<glm::vec3> screenDirections;
         vector<glm::vec3> currentNormals;
         vector<glm::vec3> incidentNormals;
+        vector<glm::vec3> receiverLightPositions;
 
         float surfaceSize;
 
     protected:
         aiScene* scene;
         float focalLength;
-        vector<glm::vec3> receiverLightPositions;
+
 
         Mesh SurfaceMesh;
         //Mesh mesh;

@@ -288,6 +288,13 @@ void printVertex(Vertex v)
     std::cout << "[" << v.Position.x << ", " << v.Position.y << ", " << v.Position.z << "]";
 }
 
+bool Mesh::isEdge(Vertex * v){
+    bool edge = false;
+    if(floatEquals(fabs(v->Position.y), maxY) || floatEquals(fabs(v->Position.z), maxZ)) edge=true;
+    return edge;
+
+}
+
 vector<Vertex*>  Mesh::selectVerticesMeshFaceNoEdge(){
 
     vector<Vertex*> retVal;
@@ -321,17 +328,20 @@ vector<Vertex*>  Mesh::selectVerticesMeshFaceNoEdge(){
     return faceVertex;*/
 }
 
-vector<Vertex> Mesh::selectVerticesMeshFaceEdge(){
-    vector<Vertex> faceVertex;
-    int max =  0;
-    for (int i = 0; i < vertices.size(); ++i){
-        if (vertices[i].Position.x>max) max = vertices[i].Position.x;
+vector<Vertex*> Mesh::selectVerticesMeshFaceEdge(){
+
+    vector<Vertex*> retVal;
+
+    for(uint i=0; i<vertices.size(); i++)
+    {
+        if(floatEquals(vertices[i].Position.x, maxX))
+        {
+            retVal.push_back(&vertices[i]);
+            std::cout << "added ";
+            printVertex(vertices[i]);
+            std::cout << std::endl;
+        }
     }
 
-    for (int i = 0; i < vertices.size(); ++i){
-         if(abs(vertices[i].Position.x-max) < 0.00001){
-             faceVertex.push_back(vertices [i]);
-         }
-    }
-    return faceVertex;
+    return retVal;
 }

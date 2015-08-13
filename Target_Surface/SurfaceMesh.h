@@ -40,6 +40,7 @@ public:
         GLuint VAO, VBO, EBO;
         /*  Functions  */
         vector<Vertex*> faceVertices;
+        vector<Vertex*> faceVerticesEdge;
 
         Mesh(vector<Vertex> vertices, vector<Texture> textures);
         Mesh(){}
@@ -57,9 +58,10 @@ public:
         void expandVertices(std::vector<Vertex>& outVertices);
         void calculateVertexNormals();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
+        bool isEdge(Vertex*); //return true if the vertex is an edge
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
-        vector<Vertex> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
+        vector<Vertex*> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
 };

@@ -33,31 +33,69 @@ void Model::exportModel(std::string filename)
 {
 
     std::cout << "current number of meshes " << scene->mNumMeshes << std::endl;
+    //scene->mNumMeshes = 0;
+    //scene->mMeshes[0] = NULL;
+    scene->mMeshes = new aiMesh*[1];
+    scene->mMeshes[0] = new aiMesh();
+
+    aiMesh* mesh = scene->mMeshes[0];
 
     // --- prepare scene for exportation. (re-write vertices)
     // prepare mesh
-    uint nFaces = meshes[0].indices.size();
-    aiMesh* mesh = new aiMesh();
+    std::vector<glm::uvec3> faces = meshes[0].indices;
+    uint nFaces = faces.size();
+    uint nIndices = 3;
+    //aiMesh* mesh = new aiMesh();
 
-    std::vector<Vertex> verts;
-    meshes[0].expandVertices(verts);
+    std::vector<Vertex> verts = meshes[0].vertices;
+    //meshes[0].expandVertices(verts);
+
+    int maxAxis;
+    float max = 0.0f;
+    for (uint i=0; i<verts.size(); i++)
+    {
+        for (uint j=0; j<3; j++)
+        {
+            if(fabs(verts[i].Position[j]) > max)
+            {
+                max = fabs(verts[i].Position[j]);
+                maxAxis = j;
+            }
+        }
+    }
+
+    std::cout << "max = " << max << ", on axis " << maxAxis << std::endl;
 
     uint nVertices = verts.size();
-    aiVector3D* vertices = new aiVector3D[verts.size()];
+    mesh->mVertices = new aiVector3D[nVertices];
+    mesh->mNormals = new aiVector3D[nVertices];
+    mesh->mNumVertices = nVertices;
 
     for (uint i=0; i<nVertices; i++)
     {
-        glm::vec3 pos = verts[i].Position;
-        vertices[i] = aiVector3D(pos.x, pos.y, pos.z);
+        glm::vec3 pos = verts[i].Position;// * scaling;
+        mesh->mVertices[i] = aiVector3D(pos.x, pos.y, pos.z);//verts[i].Position.x, verts[i].Position.y, verts[i].Position.z);
+        mesh->mNormals[i] = aiVector3D(verts[i].Normal.x, verts[i].Normal.y, verts[i].Normal.z);
     }
 
-    mesh->mVertices = vertices;
-    mesh->mNumVertices = nVertices;
+    //mesh->mVertices = vertices;
+    //mesh->mNormals = normals;
 
 
-    for (uint i=0; i<scene->mRootNode->mNumMeshes; i++)
+
+    mesh->mFaces = new aiFace[ nFaces ];
+    mesh->mNumFaces = nFaces;
+
+    for (uint i=0; i<nFaces; i++)
     {
-        scene->mMeshes[scene->mRootNode->mMeshes[i]] = mesh;
+        aiFace& face = mesh->mFaces[i];
+        face.mIndices = new uint[nIndices];
+        face.mNumIndices = nIndices;
+
+        for (uint j=0; j<nIndices; j++)
+        {
+            face.mIndices[j] = faces[i][j];
+        }
     }
 
     // --- actually export
@@ -66,8 +104,12 @@ void Model::exportModel(std::string filename)
 
     std::cout << "exported to " << filename << std::endl;
 
+    //for(uint i=0; i<verts.size(); i++)
+    //    delete verts[i];
+
     //delete[] aiMeshes;
     //delete[] vertices;
+    //delete[] normals;
     //delete mesh;
 }
 
@@ -107,6 +149,7 @@ void Model::loadModel(string path){
     // copy the scene to a modifiable copy.
     aiCopyScene(scene, &this->scene);
     meshes[0].faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
+    meshes[0].faceVerticesEdge = meshes[0].selectVerticesMeshFaceEdge();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){
@@ -309,24 +352,35 @@ void Model::setNormals(bool edge){
     int limit;
     currentNormals.clear();
     if (edge) limit = meshes[0].selectVerticesMeshFaceEdge().size();
-    else limit = meshes[0].faceVertices.size();
-    for (int i=0; i<meshes[0].faceVertices.size(); i++){
-        glm::vec3 norm;
-        norm.x = meshes[0].faceVertices[i]->Normal.x;
-        norm.y = meshes[0].faceVertices[i]->Normal.y;
-        norm.z = meshes[0].faceVertices[i]->Normal.z;
+    else limit = meshes[0].faceVerticesEdge.size();
+    for (int i=0; i<meshes[0].faceVerticesEdge.size(); i++){
+        glm::vec3 norm ;
+        norm.x = meshes[0].faceVerticesEdge[i]->Normal.x;
+        norm.y = meshes[0].faceVerticesEdge[i]->Normal.y;
+        norm.z = meshes[0].faceVerticesEdge[i]->Normal.z;
+
         currentNormals.push_back(norm);
     }
 }
 
 void Model::computeLightDirectionsScreenSurface(){
     //get the position on the surface without the corner vertices
+    int j=0;
     screenDirections.clear();
     glm::vec3 vecNorm;
     for(int i=0; i<meshes[0].faceVertices.size(); i++){
         //compute vector surface to screen
-        vecNorm = receiverLightPositions[i] - meshes[0].faceVertices[i]->Position ;
-        screenDirections.push_back(glm::normalize(vecNorm));
+//         if(!meshes[0].isEdge(meshes[0].faceVerticesEdge[i])){
+//            vecNorm = receiverLightPositions[j] - meshes[0].faceVerticesEdge[i]->Position ;
+//            j++;
+//            std::cout<<"load point: "<<i<<"from light receiver position"<<j<<std::endl;
+//         }
+//         else {
+//             vecNorm = meshes[0].faceVerticesEdge[i]->Normal;
+//             std::cout<<"load edge: "<<i<<std::endl;
+//         }
+        vecNorm = receiverLightPositions[j] - meshes[0].faceVerticesEdge[i]->Position ;
+        screenDirections.push_back(vecNorm);
     }
 }
 
@@ -335,7 +389,8 @@ void Model::fresnelMapping(){
     //calculate sin(i1)/sin(i2)
     float refraction = MATERIAL_REFRACTIV_INDEX;
     desiredNormals.clear();
-    for(int i = 0; i<screenDirections.size(); i++){
+    int j=0;
+    for(int i = 0; i<meshes[0].faceVertices.size(); i++){
         glm::vec3 incidentLight;
         incidentLight.x = 1;
         incidentLight.y = 0;
@@ -343,9 +398,15 @@ void Model::fresnelMapping(){
 
         glm::vec3 vert = meshes[0].faceVertices[i]->Position;
         vert *= refraction;
+        glm::vec3 norm;
 
-        //normal of the surface see Kiser and Pauly
-        glm::vec3 norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[i]));
+//        if(!meshes[0].isEdge(meshes[0].faceVerticesEdge[i])){
+//            //normal of the surface see Kiser and Pauly
+//            norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[j]));
+//            j++;
+//        }
+        //else norm = meshes[0].faceVerticesEdge[i]->Normal;
+        norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[j]));
         desiredNormals.push_back(norm);
     }
 }
