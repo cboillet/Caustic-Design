@@ -22,8 +22,8 @@ public:
             vertices[i]->Position.z=x3[i];
         }
         model->meshes[0].calculateVertexNormals();
-        model->computeLightDirectionsScreenSurface();
-        model->fresnelMapping();
+        //model->computeLightDirectionsScreenSurface();
+        //model->fresnelMapping();
 
         for (int i=0; i<NORMALS; i++)
                 //if(!model->meshes[0].isEdge(vertices[i])){
@@ -39,35 +39,32 @@ private:
 };
 
 
-//class CostFunctorEdir{
-//public:
-//    CostFunctorEdir(Model* m): model(m){
-//        vertices = m->meshes[0].faceVertices;
-//    }
+class CostFunctorEdir{
+public:
+    CostFunctorEdir(Model* m): model(m){
+        vertices = m->meshes[0].faceVertices;
+    }
 
-//    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
-//        //load the positions
-//        for (int i=0; i<NORMALS; i++){
-//            vertices[i]->Position.x=x1[i];
-//            vertices[i]->Position.y=x2[i];
-//            vertices[i]->Position.z=x3[i];
-//        }
-//        model->meshes[0].calculateVertexNormals();
-//        model->computeLightDirectionsScreenSurface();
-//        model->fresnelMapping();
+    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
+        //load the positions
+        for (int i=0; i<NORMALS; i++){
+            vertices[i]->Position.x=x1[i];
+            vertices[i]->Position.y=x2[i];
+            vertices[i]->Position.z=x3[i];
+        }
 
-//        for (int i=0; i<NORMALS; i++)
-//                //if(!model->meshes[0].isEdge(vertices[i])){
-//                e[i] = glm::length(vertices[i]->Normal-model->desiredNormals[i]);
-//           // }
-//           // else e[i]=0;
-//        return true;
-//    }
+        for (int i=0; i<NORMALS; i++)
+                //if(!model->meshes[0].isEdge(vertices[i])){
+                //e[i] = vertices[i]->Position
+           // }
+           // else e[i]=0;
+        return true;
+    }
 
-//private:
-//    Model* model;
-//    vector<Vertex*> vertices;
-//};
+private:
+    Model* model;
+    vector<Vertex*> vertices;
+};
 
 class CostFunctorTest {
   public:
@@ -85,14 +82,6 @@ private:
     vector<Vertex*> vertices;
 };
 
-
-
-struct CostFunctorEdir {
-  template <typename T> bool operator()(const T* const x, T* residual) const {
-    residual[0] = T(10.0) - x[0];
-    return true;
-  }
-};
 
 struct CostFunctorEflux {
   template <typename T> bool operator()(const T* const x, T* residual) const {
@@ -155,29 +144,23 @@ void TargetOptimization::runOptimization(Model* m){
     //load the values of the calculated vertex in vector<glm::vec3> currentNormals we take the edges
     model->meshes[0].calculateVertexNormals();
     model->setNormals(true); //set current Normals
-//    for(int i=0; i<model->currentNormals.size(); i++){
-//        glm::vec3 iN = model->currentNormals[i];
-//        iN.x = - iN.x;
-//        model->incidentNormals.push_back(iN);
-//    }
 
-    //STEP 2: hypothese 1: find desired normals
+    //for testing the convergence we compute the desired normals one time first
     model->fresnelMapping();
 
 
     while(!converged() &&  numberIteration<1){
+
+        //STEP 1: Compute light direction
+        model->computeLightDirectionsScreenSurface();
+        //STEP 2: update normals of position
+//        model->meshes[0].calculateVertexNormals();
+//        model->setNormals(true);
+        model->fresnelMapping();
+
         //STEP 1: 3D optimization
         optimize();
 
-
-        //STEP 2: update normals of position
-        model->meshes[0].calculateVertexNormals();
-        model->setNormals(true);
-       // model->computeLightDirectionsScreenSurface();
-
-
-        //STEP 4: hypothese 1: find desired normals
-       // model->fresnelMapping();
         numberIteration++;
     }
 }
