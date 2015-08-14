@@ -32,6 +32,7 @@ public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
         vector<glm::uvec3> indices;
+        vector<vector<uint> > adjacentFaces;
         vector<Texture> textures;
         int nbMeshLayout;
         float maxX, maxY, maxZ;
@@ -57,7 +58,11 @@ public:
         void calcMax();
         void expandVertices(std::vector<Vertex>& outVertices);
         void calculateVertexNormals();
+        void calculateVertexNormal(std::vector<glm::vec3> & faceNormals, uint vertexIndex);
+        void getAdjacentFacesVector();
+        void updateNormal(Vertex* v);
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
+        void calculateFaceNormal(glm::vec3 & normal, uint faceIndex);
         bool isEdge(Vertex*); //return true if the vertex is an edge
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
