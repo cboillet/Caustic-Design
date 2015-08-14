@@ -63,7 +63,7 @@ class CostFunctorEbar {
 public:
     CostFunctorEbar (Model* m): model(m){}
     bool operator()(const double* x1,double* e) const{
-        vector<Vertex*> surfaceVerticesEdge = model->meshes[0].faceVertices;
+        vector<Vertex*> surfaceVertices = model->meshes[0].faceVertices;
         float dth= 4; // model->getFocalLength() + model->meshes[0].getMaxX();
         int j=0;
         //load the positions
@@ -75,7 +75,7 @@ public:
             nr.y = 0;
             nr.z = 0;
             //if(!model->meshes[0].isEdge(surfaceVerticesEdge[i])){
-                e[i] = fbar(glm::dot(nr,(surfaceVerticesEdge[i]->Position-model->receiverLightPositions[j])),dth);
+                e[i] = fbar(glm::dot(nr,(surfaceVertices[i]->Position-model->receiverLightPositions[i])),dth);
                 j++;
             //}
             //else e[i] = 0;

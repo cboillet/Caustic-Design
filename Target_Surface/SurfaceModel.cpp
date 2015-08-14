@@ -379,7 +379,7 @@ void Model::computeLightDirectionsScreenSurface(){
 //             vecNorm = meshes[0].faceVerticesEdge[i]->Normal;
 //             std::cout<<"load edge: "<<i<<std::endl;
 //         }
-        vecNorm = receiverLightPositions[j] - meshes[0].faceVerticesEdge[i]->Position ;
+        vecNorm = receiverLightPositions[j] - meshes[0].faceVertices[i]->Position ;
         screenDirections.push_back(vecNorm);
     }
 }
@@ -406,7 +406,7 @@ void Model::fresnelMapping(){
 //            j++;
 //        }
         //else norm = meshes[0].faceVerticesEdge[i]->Normal;
-        norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[j]));
+        norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[i]));
         desiredNormals.push_back(norm);
     }
 }
