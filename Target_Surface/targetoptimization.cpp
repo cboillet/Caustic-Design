@@ -14,13 +14,17 @@ public:
         vertices = m->meshes[0].faceVertices;
     }
 
-    bool operator()(const double* x1, double* e) const{
+    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
         //load the positions
         for (int i=0; i<NORMALS; i++){
             vertices[i]->Position.x=x1[i];
+            vertices[i]->Position.y=x2[i];
+            vertices[i]->Position.z=x3[i];
         }
         model->meshes[0].calculateVertexNormals();
-        //e[0] = T(0);
+        model->computeLightDirectionsScreenSurface();
+        model->fresnelMapping();
+
         for (int i=0; i<NORMALS; i++)
                 //if(!model->meshes[0].isEdge(vertices[i])){
                 e[i] = glm::length(vertices[i]->Normal-model->desiredNormals[i]);
@@ -64,11 +68,11 @@ public:
     CostFunctorEbar (Model* m): model(m){}
     bool operator()(const double* x1,double* e) const{
         vector<Vertex*> surfaceVertices = model->meshes[0].faceVertices;
-        float dth= 4; // model->getFocalLength() + model->meshes[0].getMaxX();
+        float dth= EBAR_DETH; // model->getFocalLength() + model->meshes[0].getMaxX();
         int j=0;
         //load the positions
         for (int i=0; i<NORMALS; i++){
-            surfaceVerticesEdge[i]->Position.x=x1[i];
+            surfaceVertices[i]->Position.x=x1[i];
             //normal to the receiver plane
             glm::vec3 nr;
             nr.x = 1;
@@ -145,11 +149,11 @@ void TargetOptimization::runOptimization(Model* m){
         //STEP 2: update normals of position
         model->meshes[0].calculateVertexNormals();
         model->setNormals(true);
-        model->computeLightDirectionsScreenSurface();
+       // model->computeLightDirectionsScreenSurface();
 
 
         //STEP 4: hypothese 1: find desired normals
-        model->fresnelMapping();
+       // model->fresnelMapping();
         numberIteration++;
     }
 }
@@ -172,22 +176,22 @@ void TargetOptimization::optimize(){
     for (int i=0; i<n; i++)
     {
         x1[i] = x[i]->Position.x;
-//        x2[i] = x[i]->Position.y;
-//        x3[i] = x[i]->Position.z;
+        x2[i] = x[i]->Position.y;
+        x3[i] = x[i]->Position.z;
         initial_x1[i] = x1[i];
-//        initial_x2[i] = x2[i];
-//        initial_x3[i] = x3[i];
+        initial_x2[i] = x2[i];
+        initial_x3[i] = x3[i];
     }
 
     Problem problem;
 
     /*1. Test passing vector<Vertex*>*/
    CostFunction* cost_function_Eint =
-        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEint(model));
+        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model));
    CostFunction* cost_function_Ebar =
         new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model));
 
-   problem.AddResidualBlock(cost_function_Eint, NULL, x1);
+   problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
 
    /*2. passing template method*/
@@ -225,7 +229,7 @@ bool TargetOptimization::converged(){
 
     vector<Vertex*>  vecC = model->meshes[0].faceVertices;
     vector<glm::vec3> vecD = model->desiredNormals;
-    std::cout<<"currentNormals size"<<vecC.size()<<std::endl;
+    std::cout<<"faceVertices size"<<vecC.size()<<std::endl;
     std::cout<<"desiredNormals size"<<model->desiredNormals.size()<<std::endl;
 
     for(int i = 0; i<vecC.size(); i++){

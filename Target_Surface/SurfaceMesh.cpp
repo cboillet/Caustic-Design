@@ -36,7 +36,7 @@ void Mesh::create_indices()
         indices[i] = glm::uvec3(base, base+1, base+2);
     }
 
-    std::cout << "done." << std::endl;
+    //std::cout << "done." << std::endl;
 }
 
 
@@ -114,7 +114,7 @@ void Mesh::shrink_vertices()
             }
         }
     }
-    std::cout << "done." << std::endl;
+    //std::cout << "done." << std::endl;
     std::cout << "vertices.size reduced to " << vertices.size() << std::endl;
 
     delete[] used;
@@ -180,8 +180,8 @@ void Mesh::calculateFaceNormal(glm::vec3 & normal, uint faceIndex)
 
 void Mesh::calculateFaceNormals(std::vector<glm::vec3> &normals)
 {
-    std::cout << "calculating face normals.. ";
-    std::cout.flush();
+    //std::cout << "calculating face normals.. ";
+    //std::cout.flush();
 
     for (uint i=0; i<indices.size(); i++)
     {
@@ -190,7 +190,7 @@ void Mesh::calculateFaceNormals(std::vector<glm::vec3> &normals)
         normals.push_back(normal);
     }
 
-    std::cout << "done." << std::endl;
+   //std::cout << "done." << std::endl;
 }
 
 void Mesh::getAdjacentFacesVector()
@@ -251,8 +251,8 @@ void Mesh::calculateVertexNormals()
     std::vector<glm::vec3> faceNormals;
     calculateFaceNormals(faceNormals);
 
-    std::cout << "calculating vertex normals.. ";
-    std::cout.flush();
+    //std::cout << "calculating vertex normals.. ";
+    //std::cout.flush();
 
     //aF contains indices of adjacend faces per vertex
     //interpolate normals of adjacend faces per vertex
@@ -299,7 +299,7 @@ void Mesh::calculateVertexNormals()
         vertices[i].Normal = glm::normalize(vertexNormal);*/
     }
 
-    std::cout << "done." << std::endl;
+    //std::cout << "done." << std::endl;
 }
 
 
@@ -324,7 +324,7 @@ void Mesh::calcMax()
             maxZ = abs(v.Position.z);
     }
 
-    std::cout << "done" << std::endl;
+    //std::cout << "done" << std::endl;
     std::cout << "maxX = " << maxX << ", maxX = " << maxY << ", maxZ = " << maxZ << std::endl;
 }
 

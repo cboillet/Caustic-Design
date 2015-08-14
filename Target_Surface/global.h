@@ -28,7 +28,7 @@
 #define NORMALS 961 //size of vertex in the front face 961 without the edges
 #define AIR_REFRACTIV_INDEX 1
 #define MATERIAL_REFRACTIV_INDEX 1.49//value for acrylic used in the paper to do test experimently
-
+#define EBAR_DETH 44
 
 inline float fbar(float x, float dth){
     float f= fmax(0, -std::log((1-x)+dth));
