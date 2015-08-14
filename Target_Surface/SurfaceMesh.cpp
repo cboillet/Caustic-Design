@@ -10,12 +10,14 @@
 
 
 
-Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures)
+Mesh::Mesh(vector<Vertex> vertices, vector<Texture> textures, vector<glm::uvec3> indices)
 {
     this->vertices = vertices;
     this->textures = textures;
-    create_indices();
-    shrink_vertices();
+    this->indices = indices;
+
+    //create_indices();
+    //shrink_vertices();
     getAdjacentFacesVector();
     calcMax();
     calculateVertexNormals();

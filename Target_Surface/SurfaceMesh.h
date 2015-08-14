@@ -43,7 +43,7 @@ public:
         vector<Vertex*> faceVertices;
         vector<Vertex*> faceVerticesEdge;
 
-        Mesh(vector<Vertex> vertices, vector<Texture> textures);
+        Mesh(vector<Vertex> vertices, vector<Texture> textures, vector<glm::uvec3> indices);
         Mesh(){}
         //void Draw(Shader shader);
         void setUpMesh(int nbvertices);

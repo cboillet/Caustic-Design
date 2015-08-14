@@ -136,7 +136,7 @@ void Model::loadModel(string path){
     clean();
 
     Assimp::Importer import;
-    const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
     if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -168,7 +168,7 @@ void Model::processNode(aiNode *node, const aiScene *scene){
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<Vertex> vertices;
-    vector<GLuint> indices;
+    vector<glm::uvec3> indices;
     vector<Texture> textures;
 
     std::cout << "loading mesh with " << mesh->mNumVertices << " vertices" << std::endl;
@@ -205,8 +205,14 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     for(GLuint i = 0; i < mesh->mNumFaces; i++)
     {
         aiFace face = mesh->mFaces[i];
-        for(GLuint j = 0; j < face.mNumIndices; j++)
-            indices.push_back(face.mIndices[j]);
+        if(face.mNumIndices != 3)
+        {
+            std::cerr << "can't import model, indices wrong" << std::endl;
+        }
+
+        indices.push_back(glm::uvec3(face.mIndices[0], face.mIndices[1], face.mIndices[2]));
+        //for(GLuint j = 0; j < face.mNumIndices; j++)
+        //    indices.push_back(face.mIndices[j]);
     }
 
     // Process material
@@ -220,7 +226,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
                                             aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
-    return Mesh(vertices, textures);
+    return Mesh(vertices, textures, indices);
 }
 
 void Model::rescaleMeshes(float newScale)
