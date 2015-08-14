@@ -39,11 +39,50 @@ private:
 };
 
 
-struct CostFunctorTest {
-  template <typename T> bool operator()(const T* const x, T* residual) const {
-    residual[0] = T(10.0) - x[0];
+//class CostFunctorEdir{
+//public:
+//    CostFunctorEdir(Model* m): model(m){
+//        vertices = m->meshes[0].faceVertices;
+//    }
+
+//    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
+//        //load the positions
+//        for (int i=0; i<NORMALS; i++){
+//            vertices[i]->Position.x=x1[i];
+//            vertices[i]->Position.y=x2[i];
+//            vertices[i]->Position.z=x3[i];
+//        }
+//        model->meshes[0].calculateVertexNormals();
+//        model->computeLightDirectionsScreenSurface();
+//        model->fresnelMapping();
+
+//        for (int i=0; i<NORMALS; i++)
+//                //if(!model->meshes[0].isEdge(vertices[i])){
+//                e[i] = glm::length(vertices[i]->Normal-model->desiredNormals[i]);
+//           // }
+//           // else e[i]=0;
+//        return true;
+//    }
+
+//private:
+//    Model* model;
+//    vector<Vertex*> vertices;
+//};
+
+class CostFunctorTest {
+  public:
+    CostFunctorTest(Model* m):model(m){
+                vector<Vertex*> vertices = m->meshes[0].faceVertices;
+    }
+    template <typename T> bool operator()(const T* const x1, T* e) const {
+        vertices[0]->Position.x=x1[0];
+                for (int i=0; i<NORMALS; i++)
+                    e[i]=T(10.0) - x1[0];
     return true;
   }
+private:
+    Model* model;
+    vector<Vertex*> vertices;
 };
 
 
@@ -104,30 +143,15 @@ TargetOptimization::~TargetOptimization(){
 }
 
 
-void TargetOptimization::runCeresTest()
-{
-
-    double x = 0.5;
-    const double initial_x = x;
-
-    Problem problem;
-
-    CostFunction* cost_function =
-        new AutoDiffCostFunction<CostFunctorTest, 1, 1>(new CostFunctorTest);
-    problem.AddResidualBlock(cost_function, NULL, &x);
-
-    // Run the solver!
-    Solver::Options options;
-    options.minimizer_progress_to_stdout = true;
-    Solver::Summary summary;
-    Solve(options, &problem, &summary);
-
-}
 
 
 void TargetOptimization::runOptimization(Model* m){
     int numberIteration = 0;
     model=m;
+    for(int i=0; i<m->meshes[0].faceVertices.size(); i++){
+        Vertex v = *(m->meshes[0].faceVertices[i]);
+        x_source.push_back(v);
+    }
     //load the values of the calculated vertex in vector<glm::vec3> currentNormals we take the edges
     model->meshes[0].calculateVertexNormals();
     model->setNormals(true); //set current Normals
@@ -191,8 +215,13 @@ void TargetOptimization::optimize(){
    CostFunction* cost_function_Ebar =
         new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model));
 
+//   CostFunction* cost_function_Etest =
+//        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
+
+
    problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
+//   problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
    /*2. passing template method*/
 //    CostFunction* cost_function_Eint2 =

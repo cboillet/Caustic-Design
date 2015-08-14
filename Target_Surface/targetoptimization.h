@@ -10,13 +10,13 @@
 class TargetOptimization
 {
     vector<glm::vec3> computeNormals;
+    vector<Vertex> x_source;
     Model* model;
 
 public:
     TargetOptimization();
     ~TargetOptimization();
     void runOptimization(Model* m);
-    void runCeresTest();
     void optimize();
     bool converged();
 };
