@@ -10,7 +10,7 @@ using ceres::Solve;
 
 class CostFunctorEint{
 public:
-    CostFunctorEint(Model* m): model(m){
+    CostFunctorEint(Model* m, float w): model(m), weight(w){
         vertices = m->meshes[0].faceVertices;
     }
 
@@ -27,7 +27,7 @@ public:
 
         for (int i=0; i<NORMALS; i++)
                 //if(!model->meshes[0].isEdge(vertices[i])){
-                e[i] = glm::length(vertices[i]->Normal-model->desiredNormals[i]);
+                e[i] = weight*(glm::length(vertices[i]->Normal-model->desiredNormals[i]));
            // }
            // else e[i]=0;
         return true;
@@ -36,12 +36,13 @@ public:
 private:
     Model* model;
     vector<Vertex*> vertices;
+    float weight;
 };
 
 
 class CostFunctorEdir{
 public:
-    CostFunctorEdir(Model* m): model(m){
+    CostFunctorEdir(Model* m, vector<Vertex> s, float w): model(m), sources(s), weight(w){
         vertices = m->meshes[0].faceVertices;
     }
 
@@ -54,16 +55,17 @@ public:
         }
 
         for (int i=0; i<NORMALS; i++)
-                //if(!model->meshes[0].isEdge(vertices[i])){
-                //e[i] = vertices[i]->Position
-           // }
-           // else e[i]=0;
+                {
+                e[i] = weight*(glm::length(vertices[i]->Position - proj(sources[i].Position, glm::vec3(1,0,0), vertices[i]->Position)));
+            }
         return true;
     }
 
 private:
     Model* model;
     vector<Vertex*> vertices;
+    vector<Vertex> sources;
+    float weight;
 };
 
 class CostFunctorTest {
@@ -93,7 +95,7 @@ struct CostFunctorEflux {
 
 class CostFunctorEbar {
 public:
-    CostFunctorEbar (Model* m): model(m){}
+    CostFunctorEbar (Model* m, float w): model(m), weight(w){}
     bool operator()(const double* x1,double* e) const{
         vector<Vertex*> surfaceVertices = model->meshes[0].faceVertices;
         float dth= EBAR_DETH; // model->getFocalLength() + model->meshes[0].getMaxX();
@@ -107,7 +109,7 @@ public:
             nr.y = 0;
             nr.z = 0;
             //if(!model->meshes[0].isEdge(surfaceVerticesEdge[i])){
-                e[i] = fbar(glm::dot(nr,(surfaceVertices[i]->Position-model->receiverLightPositions[i])),dth);
+                e[i] = weight*(fbar(glm::dot(nr,(surfaceVertices[i]->Position-model->receiverLightPositions[i])),dth));
                 j++;
             //}
             //else e[i] = 0;
@@ -118,6 +120,7 @@ public:
 
 private:
     Model* model;
+    float weight;
 };
 
 
@@ -139,7 +142,7 @@ void TargetOptimization::runOptimization(Model* m){
     model=m;
     for(int i=0; i<m->meshes[0].faceVertices.size(); i++){
         Vertex v = *(m->meshes[0].faceVertices[i]);
-        x_source.push_back(v);
+        x_sources.push_back(v);
     }
     //load the values of the calculated vertex in vector<glm::vec3> currentNormals we take the edges
     model->meshes[0].calculateVertexNormals();
@@ -194,9 +197,12 @@ void TargetOptimization::optimize(){
 
     /*1. Test passing vector<Vertex*>*/
    CostFunction* cost_function_Eint =
-        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model));
+        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model,EINT_WEIGHT));
    CostFunction* cost_function_Ebar =
-        new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model));
+        new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model,EBAR_WEIGHT));
+   CostFunction* cost_function_Edir =
+        new NumericDiffCostFunction<CostFunctorEdir, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(model,x_sources,EDIR_WEIGHT));
+
 
 //   CostFunction* cost_function_Etest =
 //        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
@@ -204,6 +210,7 @@ void TargetOptimization::optimize(){
 
    problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
+   problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
 //   problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
    /*2. passing template method*/
