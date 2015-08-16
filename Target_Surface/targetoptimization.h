@@ -10,7 +10,7 @@
 class TargetOptimization
 {
     vector<glm::vec3> computeNormals;
-    vector<Vertex> x_source;
+    vector<Vertex> x_sources;
     Model* model;
 
 public:
