@@ -850,7 +850,8 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
     std::cout << "onActionComputeInterpolation" << std::endl;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     Interpolation inter = Interpolation(m_scene, source_scene, compute_scene, m_site_amount,this);
-    inter.runInterpolation();
+    inter.runInterpolation(image, dats);
+    //inter.runInterpolation();
 
     QString results = QFileDialog::getOpenFileName(this, tr("Saving interpolation resultst"), ".dat");
     if (results.isEmpty()) return;

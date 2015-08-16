@@ -606,8 +606,8 @@ void Scene::draw_Xr(){
     glColor3d(1.0,0.0,1.0);
     //Point p;
     for (i=0; i<lightpt.size(); ++i) {
-        std::cout<<"lightpt x"<<lightpt[i].x()<<std::endl;
-        std::cout<<"lightpt y"<<lightpt[i].x()<<std::endl;
+        //std::cout<<"lightpt x"<<lightpt[i].x()<<std::endl;
+        //std::cout<<"lightpt y"<<lightpt[i].x()<<std::endl;
         draw_point(lightpt[i]);
     }
 }

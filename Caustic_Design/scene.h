@@ -21,11 +21,12 @@ class Scene
 public:
 
     std::vector<Vertex_handle> m_vertices;
+    RT m_rt;
 
     std::vector<bool> old_visibility;
     std::vector<bool> new_visibility;
+    std::vector<double> m_timer;    
 private:
-    RT m_rt;
     Domain m_domain;
     std::vector<FT> m_capacities;
 
@@ -37,7 +38,6 @@ private:
     std::vector<Point> lightpt; //incident light ray after interpolation on source scene
     
     bool m_timer_on;
-    std::vector<double> m_timer;    
     bool m_fixed_connectivity;
 
     std::vector<PointSingularity> m_point_singularities;
@@ -259,6 +259,8 @@ public:
     
     bool update_triangulation(bool skip = false);
     
+    void update_triangulation_values();
+
     bool construct_triangulation(const std::vector<Point>& points,
                                  const std::vector<FT>& weights,
                                  bool skip = false);
@@ -390,6 +392,7 @@ public:
 
     int findIndexVerticeBySite (Vertex_handle vi);
     int findIndexVerticeByCentroid (Vertex_handle vi);
+    int findIndexByPoint(Point & p);
 };
 
 #endif

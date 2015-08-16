@@ -109,11 +109,19 @@ bool Scene::construct_triangulation(const std::vector<Point>& points,
         assign_pixels();
         assign_singularites();
         pre_compute_area();
-        compute_capacities(m_capacities);
+        //compute_capacities(m_capacities);
     }
     
     if (m_timer_on) Timer::stop_timer(m_timer, COLOR_BLUE);
     return (ok || !skip);
+}
+
+void Scene::update_triangulation_values()
+{
+    pre_build_dual_cells();
+    assign_pixels();
+    assign_singularites();
+    pre_compute_area();
 }
 
 bool Scene::populate_vertices(const std::vector<Point>& points,
@@ -269,6 +277,12 @@ void Scene::pre_compute_area()
     {
         Vertex_handle vertex = m_vertices[i];
         vertex->pre_compute_area();
+    }
+
+    for (unsigned i = 0; i < m_vertices.size(); ++i)
+    {
+        Vertex_handle vertex = m_vertices[i];
+        vertex->pre_compute_centroid();
     }
 }
 

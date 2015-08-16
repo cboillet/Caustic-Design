@@ -38,6 +38,7 @@ private:
     ConvexPolygon m_dual;
     std::vector<Pixel> m_pixels;
     std::vector<PointSingularity> m_point_singularities;
+    Point centroid;
     FT m_area;
     FT old_wasserstein;
     
@@ -161,7 +162,7 @@ public:
         }
     }
 
-    Point compute_centroid(bool singularities = true) const
+    void pre_compute_centroid(bool singularities = true)
     {
         FT sum_area = 0.0;
         Vector sum_vector = CGAL::NULL_VECTOR;
@@ -170,7 +171,7 @@ public:
             const Pixel& pixel = get_pixel(i);
             FT area = pixel.compute_area();
             Point centroid = pixel.compute_centroid();
-            
+
             sum_area += area;
             sum_vector = sum_vector + area*(centroid - CGAL::ORIGIN);
         }
@@ -185,8 +186,15 @@ public:
             }
         }
 
-        if (sum_area == 0.0) return get_position();
-        return CGAL::ORIGIN + (sum_vector / sum_area);
+        if (sum_area == 0.0)
+            centroid = get_position();
+        else
+            centroid = CGAL::ORIGIN + (sum_vector / sum_area);
+    }
+
+    Point compute_centroid() const
+    {
+        return centroid;
     }
     
     FT compute_variance(bool singularities = true) const

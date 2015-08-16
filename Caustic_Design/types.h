@@ -6,6 +6,7 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Regular_triangulation_filtered_traits_2.h>
 #include <CGAL/Regular_triangulation_2.h>
+#include <CGAL/regular_neighbor_coordinates_2.h>
 
 // local
 #include "enriched_segment.h"
@@ -39,6 +40,9 @@ typedef CDomain<Kernel> Domain;
 typedef CGAL::Regular_triangulation_filtered_traits_2<Kernel> Traits;
 typedef Traits::Weighted_point_2 Weighted_point;
 typedef Traits::Weight Weight;
+// Natural Neighbor
+typedef std::vector< std::pair< Weighted_point, Kernel::FT  > >
+                                                       Point_coordinate_vector;
 
 // Vertex
 typedef CGAL::Regular_triangulation_vertex_base_2<Traits> RVb;

@@ -147,3 +147,15 @@ int Scene::findIndexVerticeByCentroid (Vertex_handle vi){
     }
     return -1;
 }
+
+int Scene::findIndexByPoint(Point & p)
+{
+
+    for(uint i=0; i < m_vertices.size(); i++)
+    {
+        if(m_vertices[i]->get_position() == p)
+            return i;
+    }
+
+    return -1;
+}
