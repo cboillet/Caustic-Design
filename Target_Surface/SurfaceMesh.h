@@ -63,7 +63,9 @@ public:
         void updateNormal(Vertex* v);
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         void calculateFaceNormal(glm::vec3 & normal, uint faceIndex);
-        bool isEdge(Vertex*); //return true if the vertex is an edge
+        bool isEdge(Vertex* v); //return true if the vertex is an edge
+        int getIndex(Vertex* v);
+        vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
         vector<Vertex*> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis

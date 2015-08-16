@@ -16,7 +16,7 @@ LIBS     += -lSOIL \
             -L/usr/lib/x86_64-linux-gnu -lGLEW \
             -L/usr/local/lib -lglfw -lpthread \
             -L/usr/lib/x86_64-linux-gnu -lglut -lGL -lGLU \
-            -lceres -lcholmod -fopenmp -lgflags -lglog \
+            -lceres -lcholmod -fopenmp -lgflags -lglog -logtostderr -v=3 \
 
 # suitesparse
 LIBS        += -lm

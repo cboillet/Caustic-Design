@@ -14,6 +14,8 @@
 #include <QGLWidget>
 #include <QGLFunctions>
 
+#include <glog/logging.h>
+
 #include <iostream>
 #include<numeric>
 #include <vector>
@@ -37,19 +39,11 @@
 #define EINT_WEIGHT 1
 #define EBAR_WEIGHT 1
 #define EDIR_WEIGHT 1e-3
+#define EREG_WEIGHT 1e-3
+
+typedef float (array)[NORMALS];
 
 
-inline float fbar(float x, float dth){
-    float f= fmax(0, -std::log((1-x)+dth));
-    return f;
-}
 
-inline glm::vec3 proj(glm::vec3 xs, glm::vec3 di, glm::vec3 pos){
-    glm::vec3 result;
-    result.x=pos.x;
-    result.y=xs.y;
-    result.z=xs.z;
-    return result;
-}
 
 #endif // GLOBAL_H

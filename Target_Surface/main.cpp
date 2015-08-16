@@ -5,7 +5,7 @@ using namespace glm;
 
 int main(int argc, char *argv[])
 {
-    google::InitGoogleLogging(argv[0]);
+    google::InitGoogleLogging("logtostderr=1");
 
     QApplication a(argc, argv);
     glewExperimental = GL_TRUE;

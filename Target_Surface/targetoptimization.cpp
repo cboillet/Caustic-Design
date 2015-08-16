@@ -124,6 +124,53 @@ private:
 };
 
 
+class CostFunctorEreg{
+public:
+    CostFunctorEreg(Model* m, float w): model(m), weight(w){
+        vertices = m->meshes[0].faceVertices;
+    }
+
+    ~CostFunctorEreg(){
+        model = NULL;
+        vertices.clear();
+        delete[] L;
+    }
+
+    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
+        for(int i=0; i<NORMALS; i++){
+            vertices[i]->Position.x = x1[i];
+            vertices[i]->Position.y = x2[i];
+            vertices[i]->Position.z = x3[i];
+        }
+        for (int i=0; i<NORMALS; i++){
+                for (int j=0; j<NORMALS; j++){
+                    L[i][j]=0;
+                }
+
+                vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
+                L[i][i]=neighbors.size();
+
+                for(int j=0; j<neighbors.size(); j++){
+                    L[i][neighbors[j]]=1;
+                }
+                neighbors.clear();
+        }
+        for(int i=0; i<NORMALS; i++){
+            for (int j=0; j<NORMALS; j++){
+                e[i] += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
+            }
+
+        }
+        return true;
+    }
+
+private:
+    Model* model;
+    vector<Vertex*> vertices;
+    float weight;
+    array* L = new array[NORMALS];
+};
+
 
 TargetOptimization::TargetOptimization()
 {
@@ -197,12 +244,13 @@ void TargetOptimization::optimize(){
 
     /*1. Test passing vector<Vertex*>*/
    CostFunction* cost_function_Eint =
-        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model,EINT_WEIGHT));
+        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model, EINT_WEIGHT));
    CostFunction* cost_function_Ebar =
         new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model,EBAR_WEIGHT));
    CostFunction* cost_function_Edir =
-        new NumericDiffCostFunction<CostFunctorEdir, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(model,x_sources,EDIR_WEIGHT));
-
+        new NumericDiffCostFunction<CostFunctorEdir, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(model, x_sources, EDIR_WEIGHT));
+   CostFunction* cost_function_Ereg =
+        new NumericDiffCostFunction<CostFunctorEreg, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg(model, EREG_WEIGHT));
 
 //   CostFunction* cost_function_Etest =
 //        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
@@ -211,6 +259,7 @@ void TargetOptimization::optimize(){
    problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
    problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
+   problem.AddResidualBlock(cost_function_Ereg, NULL, x1, x2, x3);
 //   problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
    /*2. passing template method*/
@@ -222,13 +271,12 @@ void TargetOptimization::optimize(){
     // Run the solver!
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
+
     Solver::Summary summary;
     Solve(options, &problem, &summary);
 
    // std::cout << summary.BriefReport() << std::endl;
-
-//    for (int i=0; i<n; i++)
-//        std::cout << "x[" << i << "] : " << initial_x[i] << " -> " << x[i] << std::endl;
+    std::cout << summary.FullReport() << std::endl;
 
 
     delete[] x1;
