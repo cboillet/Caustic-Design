@@ -41,3 +41,4 @@ void printMatrix(float* X){
             std::cout<<X[i]<<std::endl;
     }
 }
+

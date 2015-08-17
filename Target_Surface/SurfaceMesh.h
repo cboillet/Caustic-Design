@@ -66,11 +66,13 @@ public:
         bool isEdge(Vertex* v); //return true if the vertex is an edge
         int getIndex(Vertex* v);
         vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter
+        vector<int> getClosestNeighbors(Vertex* v);
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
         vector<Vertex*> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
         void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
+        vector<int> insertSorted(vector<int> vec, int in, Vertex* v2);
 };
 
 class TargetSurfaceMesh : public Mesh {

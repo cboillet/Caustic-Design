@@ -137,6 +137,7 @@ public:
     }
 
     bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
+        double result;
         for(int i=0; i<NORMALS; i++){
             vertices[i]->Position.x = x1[i];
             vertices[i]->Position.y = x2[i];
@@ -147,8 +148,9 @@ public:
                     L[i][j]=0;
                 }
 
-                vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
-                L[i][i]=neighbors.size();
+                //vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
+                vector<int> neighbors = model->meshes[0].getClosestNeighbors(vertices[i]);
+                L[i][i]=-neighbors.size();
 
                 for(int j=0; j<neighbors.size(); j++){
                     L[i][neighbors[j]]=1;
@@ -156,9 +158,11 @@ public:
                 neighbors.clear();
         }
         for(int i=0; i<NORMALS; i++){
+            result=0;
             for (int j=0; j<NORMALS; j++){
-                e[i] += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
+                result += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
             }
+            e[i]=result;
 
         }
         return true;

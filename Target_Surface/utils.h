@@ -8,6 +8,7 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include "SurfaceMesh.h"
 
 
 using namespace std;

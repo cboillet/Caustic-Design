@@ -503,3 +503,45 @@ vector<int> Mesh::getNeighborsIndex(Vertex* v){
     }
     return result;
 }
+
+vector<int> Mesh::insertSorted(vector<int> vec, int in, Vertex* v2){
+    vector<int> vec2=vec;
+    bool under=true;
+    for(int i=0; i<(vec.size()+1); i++){
+        if(under){
+            if(glm::distance(faceVertices[vec[i]]->Position,v2->Position)<glm::distance(faceVertices[in]->Position,v2->Position))
+                vec2.push_back(vec[i]);
+            else {
+                vec2.push_back(in);
+                under=false;
+            }
+        }
+        else vec2.push_back(vec[i-1]);
+    }
+    return vec2;
+}
+
+
+//return the index of the 6 closest neighboors
+vector<int> Mesh::getClosestNeighbors(Vertex* v){
+    //vector<Vertex*> result;
+    vector<int> result;
+    result.push_back(0);
+    glm::vec3 pivot=faceVertices[0]->Position;
+    int n;
+
+    for (int i=0; i<faceVertices.size(); i++){
+        if(glm::distance(faceVertices[i]->Position,v->Position)<glm::distance(pivot,v->Position)){
+            pivot=faceVertices[i]->Position;
+            if (result.size()<6){
+                result=insertSorted(result,i,v);
+            }
+            else {
+                result.pop_back();
+                result=insertSorted(result,i,v);
+            }
+        }
+    }
+    return result;
+}
+
