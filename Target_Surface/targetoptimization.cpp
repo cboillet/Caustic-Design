@@ -148,22 +148,24 @@ public:
                     L[i][j]=0;
                 }
 
-                //vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
-                vector<int> neighbors = model->meshes[0].getClosestNeighbors(vertices[i]);
-                L[i][i]=-neighbors.size();
-
+                vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
+                //vector<int> neighbors = model->meshes[0].getClosestNeighbors(vertices[i]);
+                //std::cout<<"neighbors.size"<<neighbors.size()<<std::endl;
+                L[i][i]=-12;
+                //std::cout<<"L[i][i]"<<L[i][i]<<std::endl;
                 for(int j=0; j<neighbors.size(); j++){
-                    L[i][neighbors[j]]=1;
+                    if(j!=i)
+                        L[i][neighbors[j]]=1;
                 }
                 neighbors.clear();
         }
+        //printMatrix(L);
         for(int i=0; i<NORMALS; i++){
             result=0;
             for (int j=0; j<NORMALS; j++){
                 result += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
             }
             e[i]=result;
-
         }
         return true;
     }
@@ -171,6 +173,46 @@ public:
 private:
     Model* model;
     vector<Vertex*> vertices;
+    float weight;
+    array* L = new array[NORMALS];
+};
+
+
+class CostFunctorEreg2{
+public:
+    CostFunctorEreg2(Model* m, float w): model(m), weight(w){
+    }
+
+    template <typename T> bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const {
+        int result;
+        for (int i=0; i<NORMALS; i++){
+                for (int j=0; j<NORMALS; j++){
+                    L[i][j]=0;
+                }
+
+                vector<int> neighbors = model->meshes[0].getNeighborsIndex(i);
+               // std::cout<<"neighbors.size"<<neighbors.size()<<std::endl;
+                L[i][i]=-12;
+                //std::cout<<"L[i][i]"<<L[i][i]<<std::endl;
+                for(int j=0; j<neighbors.size(); j++){
+                    if(j!=i)
+                        L[i][neighbors[j]]=1;
+                }
+                neighbors.clear();
+        }
+        //printMatrix(L);
+        for(int i=0; i<NORMALS; i++){
+            result=0;
+            for (int j=0; j<NORMALS; j++){
+                e[i] += T(weight)*(pow(T(L[i][j])*x1[j],2)+pow(T(L[i][j])*x2[j],2)+pow(T(L[i][j])*x3[j],2));
+            }
+            //e[i]=result;
+        }
+        return true;
+    }
+
+private:
+    Model* model;
     float weight;
     array* L = new array[NORMALS];
 };
@@ -255,7 +297,8 @@ void TargetOptimization::optimize(){
         new NumericDiffCostFunction<CostFunctorEdir, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(model, x_sources, EDIR_WEIGHT));
    CostFunction* cost_function_Ereg =
         new NumericDiffCostFunction<CostFunctorEreg, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg(model, EREG_WEIGHT));
-
+   CostFunction* cost_function_Ereg2 =
+        new AutoDiffCostFunction<CostFunctorEreg2, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg2(model, EREG_WEIGHT));
 //   CostFunction* cost_function_Etest =
 //        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
 
@@ -264,7 +307,8 @@ void TargetOptimization::optimize(){
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
    problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ereg, NULL, x1, x2, x3);
-//   problem.AddResidualBlock(cost_function_Etest, NULL, x1);
+//   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1, x2, x3);
+//  problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
    /*2. passing template method*/
 //    CostFunction* cost_function_Eint2 =
@@ -275,6 +319,7 @@ void TargetOptimization::optimize(){
     // Run the solver!
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
+    options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
 
     Solver::Summary summary;
     Solve(options, &problem, &summary);

@@ -483,6 +483,12 @@ int Mesh::getIndex(Vertex* v){
     }
 }
 
+int Mesh::getIndex(int v){
+    for(int i=0; i<vertices.size(); i++){
+        if (vertices[i].Position==faceVertices[v]->Position) return i;
+    }
+}
+
 vector<int> Mesh::getNeighborsIndex(Vertex* v){
     vector<int> result;
     int n;
@@ -490,6 +496,25 @@ vector<int> Mesh::getNeighborsIndex(Vertex* v){
     //std::cout<<"number of adjacent faces "<<faces.size()<<std::endl;
     //std::cout<<"index in of face vertices in vertices "<<getIndex(faceVertices[index])<<std::endl;
     for(int i=0; i<faces.size(); i++){
+        for(int j=0; j<3; j++){
+      //      std::cout<<"triangle"<<faces[i]<<std::endl;
+      //      std::cout<<"index of neighbors"<<indices[faces[i]][j]<<std::endl;
+            if (vertices[getIndex(v)].Position != vertices[indices[faces[i]][j]].Position) {
+                //neighbor
+     //           std::cout<<"neighbors n°"<<n<<std::endl;
+                result.push_back(getIndex(&(vertices[indices[faces[i]][j]])));
+                n++;
+            }
+         }
+    }
+    return result;
+}
+
+vector<int> Mesh::getNeighborsIndex(int v){
+    vector<int> result;
+    int n;
+    vector<uint> faces = adjacentFaces[getIndex(v)];
+     for(int i=0; i<faces.size(); i++){
         for(int j=0; j<3; j++){
       //      std::cout<<"triangle"<<faces[i]<<std::endl;
       //      std::cout<<"index of neighbors"<<indices[faces[i]][j]<<std::endl;

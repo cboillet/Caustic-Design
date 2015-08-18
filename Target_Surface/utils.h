@@ -18,5 +18,5 @@ bool floatEquals(float val1, float val2);
 float fbar(float x, float dth);
 glm::vec3 proj(glm::vec3 xs, glm::vec3 di, glm::vec3 pos);
 float* matrixProduct(array* L, float* X);
-void printMatrix(float* X);
+void printMatrix(array* X);
 #endif // UTILS_H

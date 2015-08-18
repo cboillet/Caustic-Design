@@ -35,10 +35,13 @@ float* matrixProduct(array* L, float* X){
     return R;
 }
 
-void printMatrix(float* X){
+void printMatrix(array* X){
     for(int i=0; i<NORMALS; i++){
+        std::cout<<"| "<<std::flush;
         for(int j=0; j<NORMALS; j++)
-            std::cout<<X[i]<<std::endl;
+            std::cout<<" "<<X[i][j]<<" "<<std::flush;
+        std::cout<<" |"<<std::endl;
     }
+
 }
 
