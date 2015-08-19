@@ -150,6 +150,9 @@ void Model::loadModel(string path){
     aiCopyScene(scene, &this->scene);
     meshes[0].faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
     meshes[0].faceVerticesEdge = meshes[0].selectVerticesMeshFaceEdge();
+
+    meshes[0].createEdgeIndices();
+    meshes[0].calcEdgeAdjacentFaces();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){

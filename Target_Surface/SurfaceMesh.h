@@ -32,6 +32,8 @@ public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
         vector<glm::uvec3> indices;
+        vector<glm::uvec3> edgeIndices;
+        vector<vector<uint> > edgeAdjacentFaces;
         vector<vector<uint> > adjacentFaces;
         vector<Texture> textures;
         int nbMeshLayout;
@@ -61,13 +63,19 @@ public:
         void calculateVertexNormal(std::vector<glm::vec3> & faceNormals, uint vertexIndex);
         void getAdjacentFacesVector();
         void updateNormal(Vertex* v);
+        void createEdgeIndices();
+        void calcEdgeAdjacentFaces();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         void calculateFaceNormal(glm::vec3 & normal, uint faceIndex);
         bool isEdge(Vertex* v); //return true if the vertex is an edge
         int getIndex(Vertex* v);
         int getIndex(int v);
+        int getEdgeIndex(Vertex* v);
+        int getIndexTargetSurface(Vertex* v);
+        std::vector<int> createNoEdgeToEdgeMapping();
+        std::vector<int> createEdgeToNoEdgeMapping();
         vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter
-         vector<int> getNeighborsIndex(int v); //v index in faceVertices
+        vector<int> getNeighborsIndex(int v, int indexTargetSurface); //v index in faceVertices
         vector<int> getClosestNeighbors(Vertex* v);
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis

@@ -1,5 +1,6 @@
 #include "global.h"
 #include <math.h>
+#include <algorithm>
 /*Assimp Open Asset Import Librairy*/
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
@@ -39,6 +40,30 @@ void Mesh::create_indices()
     }
 
     //std::cout << "done." << std::endl;
+}
+
+std::vector<int> Mesh::createEdgeToNoEdgeMapping()
+{
+    std::vector<int> mapping;
+
+    for(uint i=0; i<faceVerticesEdge.size(); i++)
+    {
+        mapping.push_back(getIndexTargetSurface(faceVerticesEdge[i]));
+    }
+
+    return mapping;
+}
+
+std::vector<int> Mesh::createNoEdgeToEdgeMapping()
+{
+    std::vector<int> mapping;
+
+    for(uint i=0; i<faceVertices.size(); i++)
+    {
+        //mapping.push_back(getIndexWithEdge(faceVertices[i]));
+    }
+
+    return mapping;
 }
 
 
@@ -205,6 +230,17 @@ void Mesh::getAdjacentFacesVector()
     }
 }
 
+void Mesh::calcEdgeAdjacentFaces()
+{
+    edgeAdjacentFaces.resize(edgeIndices.size());
+
+    for(uint i=0; i<edgeIndices.size(); i++)
+    {
+        edgeAdjacentFaces[edgeIndices[i][0]].push_back(i);
+        edgeAdjacentFaces[edgeIndices[i][1]].push_back(i);
+        edgeAdjacentFaces[edgeIndices[i][2]].push_back(i);
+    }
+}
 
 void Mesh::calculateVertexNormal(std::vector<glm::vec3> & faceNormals, uint vertexIndex)
 {
@@ -481,52 +517,106 @@ int Mesh::getIndex(Vertex* v){
     for(int i=0; i<vertices.size(); i++){
         if (vertices[i].Position==v->Position) return i;
     }
+
+    std::cerr << "did not find vertex [" << v->Position.x << ", " << v->Position.y << ", " << v->Position.z << "]" << std::endl;
+    return -1;
 }
 
 int Mesh::getIndex(int v){
-    for(int i=0; i<vertices.size(); i++){
-        if (vertices[i].Position==faceVertices[v]->Position) return i;
+    for(int i=0; i<faceVertices.size(); i++){
+        if (vertices[v].Position==faceVertices[i]->Position) return i;
     }
+    return -1;
+}
+
+int Mesh::getIndexTargetSurface(Vertex* v)
+{
+    for(int i=0; i<faceVertices.size(); i++){
+        if (faceVertices[i]->Position==v->Position) return i;
+    }
+
+    //std::cerr << "did not find target-vertex [" << v->Position.x << ", " << v->Position.y << ", " << v->Position.z << "]" << std::endl;
+
+    return -1;
+}
+
+int Mesh::getEdgeIndex(Vertex* v)
+{
+    for(int i=0; i<faceVerticesEdge.size(); i++){
+        if (faceVerticesEdge[i]->Position==v->Position) return i;
+    }
+
+    std::cerr << "did not find vertex [" << v->Position.x << ", " << v->Position.y << ", " << v->Position.z << "]" << std::endl;
+    return -1;
 }
 
 vector<int> Mesh::getNeighborsIndex(Vertex* v){
+    int index = getIndex(v);
+    int indexTargetSurface = getIndexTargetSurface(v);
+    return getNeighborsIndex(index, indexTargetSurface);
+}
+
+vector<int> Mesh::getNeighborsIndex(int index, int indexTargetSurface)
+{
     vector<int> result;
-    int n;
-    vector<uint> faces = adjacentFaces[getIndex(v)];
-    //std::cout<<"number of adjacent faces "<<faces.size()<<std::endl;
-    //std::cout<<"index in of face vertices in vertices "<<getIndex(faceVertices[index])<<std::endl;
+    vector<uint> faces = adjacentFaces[index];
+
     for(int i=0; i<faces.size(); i++){
         for(int j=0; j<3; j++){
-      //      std::cout<<"triangle"<<faces[i]<<std::endl;
-      //      std::cout<<"index of neighbors"<<indices[faces[i]][j]<<std::endl;
-            if (vertices[getIndex(v)].Position != vertices[indices[faces[i]][j]].Position) {
-                //neighbor
-     //           std::cout<<"neighbors n°"<<n<<std::endl;
-                result.push_back(getIndex(&(vertices[indices[faces[i]][j]])));
-                n++;
+            if (faceVertices[indexTargetSurface]->Position != vertices[indices[faces[i]][j]].Position) {
+                int ind = getIndexTargetSurface(&(vertices[indices[faces[i]][j]]));
+                // -1 means not found -> vertex on edge
+                if(ind != -1)
+                {
+                    if(std::find(result.begin(), result.end(), ind) != result.end()) {
+                        /* result contains ind */
+                    } else {
+                        /* result does not contain ind */
+                        result.push_back(ind);
+                    }
+                }
             }
          }
     }
     return result;
 }
 
-vector<int> Mesh::getNeighborsIndex(int v){
-    vector<int> result;
-    int n;
-    vector<uint> faces = adjacentFaces[getIndex(v)];
-     for(int i=0; i<faces.size(); i++){
-        for(int j=0; j<3; j++){
-      //      std::cout<<"triangle"<<faces[i]<<std::endl;
-      //      std::cout<<"index of neighbors"<<indices[faces[i]][j]<<std::endl;
-            if (vertices[getIndex(v)].Position != vertices[indices[faces[i]][j]].Position) {
-                //neighbor
-     //           std::cout<<"neighbors n°"<<n<<std::endl;
-                result.push_back(getIndex(&(vertices[indices[faces[i]][j]])));
-                n++;
+
+void Mesh::createEdgeIndices()
+{
+
+    edgeIndices.clear();
+
+    for (uint i=0; i<indices.size(); i++)
+    {
+        bool valid = true;
+
+        for (uint j=0; j<3; j++)
+        {
+            Vertex* v = &vertices[indices[i][j]];
+
+            if(!floatEquals(v->Position.x, maxX))
+            {
+                valid = false;
+                break;
             }
-         }
+        }
+
+        if(valid)
+        {
+            edgeIndices.push_back(indices[i]);
+        }
     }
-    return result;
+
+    // update indices .. (currently pointing to old values)
+
+    for(uint i=0; i<edgeIndices.size(); i++)
+    {
+        for (uint j=0; j<3; j++)
+        {
+            edgeIndices[i][j] = getEdgeIndex(&vertices[edgeIndices[i][j]]);
+        }
+    }
 }
 
 vector<int> Mesh::insertSorted(vector<int> vec, int in, Vertex* v2){

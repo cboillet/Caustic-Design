@@ -39,7 +39,7 @@
 #define EINT_WEIGHT 1
 #define EBAR_WEIGHT 1
 #define EDIR_WEIGHT 1e-3
-#define EREG_WEIGHT 1e-4
+#define EREG_WEIGHT 1e-5
 
 typedef float (array)[NORMALS];
 
