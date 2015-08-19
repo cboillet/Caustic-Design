@@ -1,5 +1,6 @@
 #include "global.h"
 #include <math.h>
+#include <algorithm>
 /*Assimp Open Asset Import Librairy*/
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
@@ -483,27 +484,36 @@ int Mesh::getIndex(Vertex* v){
     }
 }
 
+int Mesh::getTargetIndex(Vertex* v)
+{
+    for(int i=0; i<faceVertices.size(); i++){
+        if (v->Position == faceVertices[i]->Position) return i;
+    }
+
+    return -1;
+}
+
 int Mesh::getIndex(int v){
-    for(int i=0; i<vertices.size(); i++){
-        if (vertices[i].Position==faceVertices[v]->Position) return i;
+    for(int i=0; i<faceVertices.size(); i++){
+        if (vertices[v].Position == faceVertices[i]->Position) return i;
     }
 }
 
 vector<int> Mesh::getNeighborsIndex(Vertex* v){
     vector<int> result;
-    int n;
+    int index = getIndex(v);
+
     vector<uint> faces = adjacentFaces[getIndex(v)];
-    //std::cout<<"number of adjacent faces "<<faces.size()<<std::endl;
-    //std::cout<<"index in of face vertices in vertices "<<getIndex(faceVertices[index])<<std::endl;
+
     for(int i=0; i<faces.size(); i++){
         for(int j=0; j<3; j++){
-      //      std::cout<<"triangle"<<faces[i]<<std::endl;
-      //      std::cout<<"index of neighbors"<<indices[faces[i]][j]<<std::endl;
-            if (vertices[getIndex(v)].Position != vertices[indices[faces[i]][j]].Position) {
-                //neighbor
-     //           std::cout<<"neighbors n°"<<n<<std::endl;
-                result.push_back(getIndex(&(vertices[indices[faces[i]][j]])));
-                n++;
+            if (vertices[index].Position != vertices[indices[faces[i]][j]].Position) {
+                int vIndex = getTargetIndex(&(vertices[indices[faces[i]][j]]));
+                if(vIndex == -1 || (std::find(result.begin(), result.end(), vIndex) != result.end())) {
+                    /* result contains index or not found (if it's edge) */
+                } else {
+                    result.push_back(vIndex);
+                }
             }
          }
     }

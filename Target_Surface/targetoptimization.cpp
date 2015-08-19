@@ -42,28 +42,20 @@ private:
 
 class CostFunctorEdir{
 public:
-    CostFunctorEdir(Model* m, vector<Vertex> s, float w): model(m), sources(s), weight(w){
-        vertices = m->meshes[0].faceVertices;
+    CostFunctorEdir(vector<Vertex> s, float w): sources(s), weight(w){
     }
 
-    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
-        //load the positions
+    template <typename T> bool operator()(const T* const x1, const T* const x2, const T* const x3, T* e) const{
         for (int i=0; i<NORMALS; i++){
-            vertices[i]->Position.x=x1[i];
-            vertices[i]->Position.y=x2[i];
-            vertices[i]->Position.z=x3[i];
+            // x - proj(..) will only return the difference in y- and z-coordinates. we may ignore the rest
+            T y = x2[i] - T(sources[i].Position.y);
+            T z = x3[i] - T(sources[i].Position.z);
+            e[i] = T(weight) * (ceres::abs(y)+ceres::abs(z));
         }
-
-        for (int i=0; i<NORMALS; i++)
-                {
-                e[i] = weight*(glm::length(vertices[i]->Position - proj(sources[i].Position, glm::vec3(1,0,0), vertices[i]->Position)));
-            }
         return true;
     }
 
 private:
-    Model* model;
-    vector<Vertex*> vertices;
     vector<Vertex> sources;
     float weight;
 };
@@ -95,32 +87,38 @@ struct CostFunctorEflux {
 
 class CostFunctorEbar {
 public:
-    CostFunctorEbar (Model* m, float w): model(m), weight(w){}
-    bool operator()(const double* x1,double* e) const{
-        vector<Vertex*> surfaceVertices = model->meshes[0].faceVertices;
-        float dth= EBAR_DETH; // model->getFocalLength() + model->meshes[0].getMaxX();
-        int j=0;
-        //load the positions
+    CostFunctorEbar (Model* m, float w): model(m), weight(w)
+    {
+        for (int i=0; i<NORMALS; i++)
+        {
+            receiverPositions.push_back(&model->receiverLightPositions[i]);
+        }
+
+        surfaceVertices = model->meshes[0].faceVertices;
+    }
+
+
+    template <typename T> bool operator()(const T* const x1, T* e) const{
+
+        T dth = T(EBAR_DETH);
+
         for (int i=0; i<NORMALS; i++){
-            surfaceVertices[i]->Position.x=x1[i];
-            //normal to the receiver plane
-            glm::vec3 nr;
-            nr.x = 1;
-            nr.y = 0;
-            nr.z = 0;
-            //if(!model->meshes[0].isEdge(surfaceVerticesEdge[i])){
-                e[i] = weight*(fbar(glm::dot(nr,(surfaceVertices[i]->Position-model->receiverLightPositions[i])),dth));
-                j++;
-            //}
-            //else e[i] = 0;
+            // nr * (x - xr) means dot product with a normal (1,0,0). which means that y- and z-values are not included anyways.
+            // so we only substract the x-positions (and dot product would then only multiply with 1)
+            T x = x1[i] - T(receiverPositions[i]->x);
+            e[i] = T(weight) * ceres::max(T(0), - ceres::log( (T(1)-x) + dth) );
         }
 
         return true;
     }
 
+
+
 private:
     Model* model;
     float weight;
+    vector<glm::vec3*> receiverPositions;
+    vector<Vertex*> surfaceVertices;
 };
 
 
@@ -128,6 +126,22 @@ class CostFunctorEreg{
 public:
     CostFunctorEreg(Model* m, float w): model(m), weight(w){
         vertices = m->meshes[0].faceVertices;
+        for (int i=0; i<NORMALS; i++){
+                for (int j=0; j<NORMALS; j++){
+                    L[i][j]=0;
+                }
+
+                vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
+                //vector<int> neighbors = model->meshes[0].getClosestNeighbors(vertices[i]);
+                //std::cout<<"neighbors.size"<<neighbors.size()<<std::endl;
+                L[i][i]=-neighbors.size();
+                //std::cout<<"L[i][i]"<<L[i][i]<<std::endl;
+                for(int j=0; j<neighbors.size(); j++){
+                    if(j!=i)
+                        L[i][neighbors[j]]=1;
+                }
+                neighbors.clear();
+        }
     }
 
     ~CostFunctorEreg(){
@@ -143,29 +157,19 @@ public:
             vertices[i]->Position.y = x2[i];
             vertices[i]->Position.z = x3[i];
         }
-        for (int i=0; i<NORMALS; i++){
-                for (int j=0; j<NORMALS; j++){
-                    L[i][j]=0;
-                }
 
-                vector<int> neighbors = model->meshes[0].getNeighborsIndex(vertices[i]);
-                //vector<int> neighbors = model->meshes[0].getClosestNeighbors(vertices[i]);
-                //std::cout<<"neighbors.size"<<neighbors.size()<<std::endl;
-                L[i][i]=-12;
-                //std::cout<<"L[i][i]"<<L[i][i]<<std::endl;
-                for(int j=0; j<neighbors.size(); j++){
-                    if(j!=i)
-                        L[i][neighbors[j]]=1;
-                }
-                neighbors.clear();
-        }
         //printMatrix(L);
         for(int i=0; i<NORMALS; i++){
             result=0;
             for (int j=0; j<NORMALS; j++){
-                result += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
+                result +=
+                        (L[i][j]*(vertices[j]->Position.x)) +
+                        (L[i][j]*(vertices[j]->Position.y)) +
+                        (L[i][j]*(vertices[j]->Position.z));
+
+                //result += weight*(pow(L[i][j]*(vertices[j]->Position.x),2)+pow(L[i][j]*(vertices[j]->Position.y),2)+pow(L[i][j]*vertices[j]->Position.z,2));
             }
-            e[i]=result;
+            e[i] = weight * fabs(result);
         }
         return true;
     }
@@ -181,32 +185,36 @@ private:
 class CostFunctorEreg2{
 public:
     CostFunctorEreg2(Model* m, float w): model(m), weight(w){
-    }
-
-    template <typename T> bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const {
-        int result;
         for (int i=0; i<NORMALS; i++){
                 for (int j=0; j<NORMALS; j++){
                     L[i][j]=0;
                 }
 
-                vector<int> neighbors = model->meshes[0].getNeighborsIndex(i);
-               // std::cout<<"neighbors.size"<<neighbors.size()<<std::endl;
-                L[i][i]=-12;
-                //std::cout<<"L[i][i]"<<L[i][i]<<std::endl;
+                vector<int> neighbors = model->meshes[0].getNeighborsIndex(model->meshes[0].faceVertices[i]);
+
+                L[i][i]= - int(neighbors.size());
                 for(int j=0; j<neighbors.size(); j++){
-                    if(j!=i)
-                        L[i][neighbors[j]]=1;
+                    if(neighbors[j] != i)
+                    {
+                        L[i][neighbors[j]] = 1;
+                    }
                 }
                 neighbors.clear();
         }
-        //printMatrix(L);
+    }
+
+    template <typename T> bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const {
+        T res1, res2, res3;
+
         for(int i=0; i<NORMALS; i++){
-            result=0;
+            res1 = res2 = res3 = T(0);
             for (int j=0; j<NORMALS; j++){
-                e[i] += T(weight)*(pow(T(L[i][j])*x1[j],2)+pow(T(L[i][j])*x2[j],2)+pow(T(L[i][j])*x3[j],2));
+                res1 += T(L[i][j]) * x1[j];
+                res2 += T(L[i][j]) * x2[j];
+                res3 += T(L[i][j]) * x3[j];
             }
-            //e[i]=result;
+
+            e[i] = T(weight) * (ceres::abs(res1) + ceres::abs(res2) + ceres::abs(res3));
         }
         return true;
     }
@@ -216,7 +224,6 @@ private:
     float weight;
     array* L = new array[NORMALS];
 };
-
 
 TargetOptimization::TargetOptimization()
 {
@@ -292,13 +299,13 @@ void TargetOptimization::optimize(){
    CostFunction* cost_function_Eint =
         new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model, EINT_WEIGHT));
    CostFunction* cost_function_Ebar =
-        new NumericDiffCostFunction<CostFunctorEbar, ceres::CENTRAL ,NORMALS, NORMALS>(new CostFunctorEbar(model,EBAR_WEIGHT));
-   CostFunction* cost_function_Edir =
-        new NumericDiffCostFunction<CostFunctorEdir, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(model, x_sources, EDIR_WEIGHT));
-   CostFunction* cost_function_Ereg =
-        new NumericDiffCostFunction<CostFunctorEreg, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg(model, EREG_WEIGHT));
-   CostFunction* cost_function_Ereg2 =
-        new AutoDiffCostFunction<CostFunctorEreg2, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg2(model, EREG_WEIGHT));
+           new AutoDiffCostFunction<CostFunctorEbar,NORMALS, NORMALS>(new CostFunctorEbar(model,EBAR_WEIGHT));
+      CostFunction* cost_function_Edir =
+           new AutoDiffCostFunction<CostFunctorEdir, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(x_sources, float(EDIR_WEIGHT)));
+      //CostFunction* cost_function_Ereg =
+      //     new NumericDiffCostFunction<CostFunctorEreg, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg(model, EREG_WEIGHT));
+      CostFunction* cost_function_Ereg2 =
+           new AutoDiffCostFunction<CostFunctorEreg2, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg2(model, EREG_WEIGHT));
 //   CostFunction* cost_function_Etest =
 //        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
 
@@ -306,7 +313,7 @@ void TargetOptimization::optimize(){
    problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
    problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
-   problem.AddResidualBlock(cost_function_Ereg, NULL, x1, x2, x3);
+   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1, x2, x3);
 //   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1, x2, x3);
 //  problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
@@ -320,6 +327,15 @@ void TargetOptimization::optimize(){
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
+    options.max_num_iterations = 150;
+    options.dense_linear_algebra_library_type = ceres::LAPACK;
+    options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
+    //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
+    string error;
+    if(!options.IsValid(&error))
+    {
+        std::cout << "Options not valid: " << error << std::endl;
+    }
 
     Solver::Summary summary;
     Solve(options, &problem, &summary);

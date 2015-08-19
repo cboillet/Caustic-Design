@@ -35,11 +35,11 @@
 /**/
 #define CONVERGENCE_LIMIT 0.0001
 #define AIR_REFRACTIV_INDEX 1
-#define EBAR_DETH 44
+#define EBAR_DETH 39
 #define EINT_WEIGHT 1
 #define EBAR_WEIGHT 1
-#define EDIR_WEIGHT 1e-3
-#define EREG_WEIGHT 1e-4
+#define EDIR_WEIGHT 1e-6
+#define EREG_WEIGHT 1e-6
 
 typedef float (array)[NORMALS];
 

@@ -66,6 +66,7 @@ public:
         bool isEdge(Vertex* v); //return true if the vertex is an edge
         int getIndex(Vertex* v);
         int getIndex(int v);
+        int getTargetIndex(Vertex* v);
         vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter
          vector<int> getNeighborsIndex(int v); //v index in faceVertices
         vector<int> getClosestNeighbors(Vertex* v);
