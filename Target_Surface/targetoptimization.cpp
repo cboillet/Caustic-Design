@@ -14,12 +14,12 @@ public:
         vertices = m->meshes[0].faceVertices;
     }
 
-    bool operator()(const double* x1, const double* x2, const double* x3, double* e) const{
+    bool operator()(const double* x1/*, const double* x2, const double* x3*/, double* e) const{
         //load the positions
         for (int i=0; i<NORMALS; i++){
             vertices[i]->Position.x=x1[i];
-            vertices[i]->Position.y=x2[i];
-            vertices[i]->Position.z=x3[i];
+            //vertices[i]->Position.y=x2[i];
+            //vertices[i]->Position.z=x3[i];
         }
         model->meshes[0].calculateVertexNormals();
         //model->computeLightDirectionsScreenSurface();
@@ -184,7 +184,7 @@ private:
 
 class CostFunctorEreg2{
 public:
-    CostFunctorEreg2(Model* m, float w): model(m), weight(w){
+    CostFunctorEreg2(Model* m, Renderer* renderer, float w): model(m), weight(w){
         for (int i=0; i<NORMALS; i++){
                 for (int j=0; j<NORMALS; j++){
                     L[i][j]=0;
@@ -201,20 +201,21 @@ public:
                 }
                 neighbors.clear();
         }
+        //printMatrix(L);
     }
 
-    template <typename T> bool operator()(const T* const x1,const T* const x2,const T* const x3, T* e) const {
+    template <typename T> bool operator()(const T* const x1/*,const T* const x2,const T* const x3*/, T* e) const {
         T res1, res2, res3;
 
         for(int i=0; i<NORMALS; i++){
-            res1 = res2 = res3 = T(0);
+            res1 =/* res2 = res3 =*/ T(0);
             for (int j=0; j<NORMALS; j++){
                 res1 += T(L[i][j]) * x1[j];
-                res2 += T(L[i][j]) * x2[j];
-                res3 += T(L[i][j]) * x3[j];
+                //res2 += T(L[i][j]) * x2[j];
+                //res3 += T(L[i][j]) * x3[j];
             }
 
-            e[i] = T(weight) * (ceres::abs(res1) + ceres::abs(res2) + ceres::abs(res3));
+            e[i] = T(weight) * res1/* + ceres::abs(res2) + ceres::abs(res3)*/;
         }
         return true;
     }
@@ -237,7 +238,7 @@ TargetOptimization::~TargetOptimization(){
 
 
 
-void TargetOptimization::runOptimization(Model* m){
+void TargetOptimization::runOptimization(Model* m, Renderer* renderer){
     int numberIteration = 0;
     model=m;
     for(int i=0; i<m->meshes[0].faceVertices.size(); i++){
@@ -262,13 +263,13 @@ void TargetOptimization::runOptimization(Model* m){
         model->fresnelMapping();
 
         //STEP 1: 3D optimization
-        optimize();
+        optimize(renderer);
 
         numberIteration++;
     }
 }
 
-void TargetOptimization::optimize(){
+void TargetOptimization::optimize(Renderer* renderer){
 
     int n = NORMALS;
 
@@ -297,23 +298,23 @@ void TargetOptimization::optimize(){
 
     /*1. Test passing vector<Vertex*>*/
    CostFunction* cost_function_Eint =
-        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEint(model, EINT_WEIGHT));
+        new NumericDiffCostFunction<CostFunctorEint, ceres::CENTRAL ,NORMALS/*, NORMALS, NORMALS*/, NORMALS>(new CostFunctorEint(model, EINT_WEIGHT));
    CostFunction* cost_function_Ebar =
            new AutoDiffCostFunction<CostFunctorEbar,NORMALS, NORMALS>(new CostFunctorEbar(model,EBAR_WEIGHT));
-      CostFunction* cost_function_Edir =
-           new AutoDiffCostFunction<CostFunctorEdir, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(x_sources, float(EDIR_WEIGHT)));
+      //CostFunction* cost_function_Edir =
+      //     new AutoDiffCostFunction<CostFunctorEdir, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEdir(x_sources, float(EDIR_WEIGHT)));
       //CostFunction* cost_function_Ereg =
       //     new NumericDiffCostFunction<CostFunctorEreg, ceres::CENTRAL ,NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg(model, EREG_WEIGHT));
       CostFunction* cost_function_Ereg2 =
-           new AutoDiffCostFunction<CostFunctorEreg2, NORMALS, NORMALS, NORMALS, NORMALS>(new CostFunctorEreg2(model, EREG_WEIGHT));
+           new AutoDiffCostFunction<CostFunctorEreg2, NORMALS, NORMALS/*, NORMALS, NORMALS*/>(new CostFunctorEreg2(model, renderer, EREG_WEIGHT));
 //   CostFunction* cost_function_Etest =
 //        new AutoDiffCostFunction<CostFunctorTest, NORMALS, NORMALS>(new CostFunctorTest(model));
 
 
-   problem.AddResidualBlock(cost_function_Eint, NULL, x1, x2, x3);
+   problem.AddResidualBlock(cost_function_Eint, NULL, x1/*, x2, x3*/);
    problem.AddResidualBlock(cost_function_Ebar, NULL, x1);
-   problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
-   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1, x2, x3);
+   //problem.AddResidualBlock(cost_function_Edir, NULL, x1, x2, x3);
+   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1/*, x2, x3*/);
 //   problem.AddResidualBlock(cost_function_Ereg2, NULL, x1, x2, x3);
 //  problem.AddResidualBlock(cost_function_Etest, NULL, x1);
 
@@ -327,7 +328,7 @@ void TargetOptimization::optimize(){
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
-    options.max_num_iterations = 150;
+    options.max_num_iterations = 200;
     options.dense_linear_algebra_library_type = ceres::LAPACK;
     options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
     //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner

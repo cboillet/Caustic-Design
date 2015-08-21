@@ -67,7 +67,7 @@ void MainWindow::on_actionGenerateTriangles_triggered()
 
 void MainWindow::on_actionRunTargetOptimization_triggered()
 {
-    optimizer->runOptimization(&(viewer->model));
+    optimizer->runOptimization(&(viewer->model), viewer);
 }
 
 void MainWindow::on_actionLoadLightRayReceiverPosition_triggered()
