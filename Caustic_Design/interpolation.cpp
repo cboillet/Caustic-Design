@@ -75,6 +75,9 @@ void Interpolation::runInterpolation(QString imageFile, QString datFile)
 
     std::thread* ts = new std::thread[n];
 
+    source_scene->getLightPointsTarget().resize(source_scene->getLightPointsSource().size());
+    m_scene->getLightPointsTarget().resize(source_scene->getLightPointsSource().size());
+
     int step = source_scene->getLightPointsSource().size() / n;
     int max = source_scene->getLightPointsSource().size();
     for(uint j=0; j<n; j++)
@@ -193,11 +196,11 @@ void multiThreadInterpolation(Interpolation* inter, uint id, uint from, uint to)
     for (uint i = from; i<to; i++)
     {
         std::cout << "thread-state: " << (i-from) << "/" << range << std::endl;
-        findNeighborr(inter->Xo[i], inter, id);
+        findNeighborr(inter->Xo[i], inter, id, i);
     }
 }
 
-void findNeighborr(Point oP, Interpolation* inter, uint id)
+void findNeighborr(Point oP, Interpolation* inter, uint id, int index)
 {
     RT rt = inter->computeScenes[id]->m_rt;
 
@@ -251,8 +254,8 @@ void findNeighborr(Point oP, Interpolation* inter, uint id)
     Point p = Point(x,y);
 
     mtx.lock();
-    inter->m_scene->getLightPointsTarget().push_back(p);
-    inter->source_scene->getLightPointsTarget().push_back(p);
+    inter->m_scene->getLightPointsTarget()[index] = p;
+    inter->source_scene->getLightPointsTarget()[index] = p;
     mtx.unlock();
 
     delete[] points;

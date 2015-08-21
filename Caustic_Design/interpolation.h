@@ -58,7 +58,7 @@ public:
 };
 
 void multiThreadInterpolation(Interpolation* inter, uint id, uint from, uint to);
-void findNeighborr(Point oP, Interpolation* inter, uint id);
+void findNeighborr(Point oP, Interpolation* inter, uint id, int index);
 
 #endif // INTERPOLATION_H
 
