@@ -96,6 +96,17 @@ void MainWindow::on_actionDesired_Normals_toggled(){
     viewer->update();
 }
 
+void MainWindow::on_actionDesired_Rays_toggled()
+{
+    viewer->toggleDrawDesiredRays();
+    viewer->update();
+}
+
+void MainWindow::on_actionDesired_Ray_Directions_toggled()
+{
+    viewer->toggleDrawDesiredRayDirections();
+    viewer->update();
+}
 
 void MainWindow::newMeshHeight()
 {

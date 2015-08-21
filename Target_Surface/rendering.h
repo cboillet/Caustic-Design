@@ -22,11 +22,11 @@ public:
     void keyPressEvent(QKeyEvent *keyEvent);
     void updateCamera();
     void sceneUpdate();
-
     void toggleDrawNormals(){drawNormals=!drawNormals;}
     void toggleDrawDesiredNormals(){drawDesiredNormals=!drawDesiredNormals;}
     void toggleDrawAxis(){drawAxis=!drawAxis;}
-
+    void toggleDrawDesiredRays(){drawDesiredRays = !drawDesiredRays;}
+    void toggleDrawDesiredRayDirections(){drawDesiredRayDirections=!drawDesiredRayDirections;}
 
     float y_rotate;
     float x_rotate;
@@ -42,6 +42,8 @@ public slots:
     virtual void timeOutSlot();
 
 protected:
+    bool drawDesiredRays;
+    bool drawDesiredRayDirections;
     bool drawNormals;
     bool drawDesiredNormals;
     bool drawAxis;
@@ -67,6 +69,9 @@ public:
     void paintReceiver();
     void paintNormals(Mesh mesh);
     void paintDesiredNormals();
+    void drawHighlights();
+    void paintDesiredRays();
+    void paintDesiredRayDirections();
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

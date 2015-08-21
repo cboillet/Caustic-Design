@@ -37,6 +37,8 @@ protected slots:
     void on_actionLoadLightRayReceiverPosition_triggered();
     void on_actionNormals_toggled();
     void on_actionDesired_Normals_toggled();
+    void on_actionDesired_Ray_Directions_toggled();
+    void on_actionDesired_Rays_toggled();
 
     void on_actionAxis_toggled();
     /* line edit slots */

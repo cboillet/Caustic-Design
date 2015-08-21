@@ -124,12 +124,13 @@ void Model::loadReceiverLightPoints(QString path)
     std::ifstream ifs(qPrintable(path));
     float y,z;
 
-    while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), z*surfaceSize/CAUSTIC_DOMAIN, y*surfaceSize/CAUSTIC_DOMAIN));
+    while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), y*surfaceSize/CAUSTIC_DOMAIN, z*surfaceSize/CAUSTIC_DOMAIN));
 
     std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
 
     //calculate and load the desired normals
     computeLightDirectionsScreenSurface();
+    fresnelMapping();
 }
 
 void Model::loadModel(string path){
@@ -385,8 +386,8 @@ void Model::computeLightDirectionsScreenSurface(){
 //             vecNorm = meshes[0].faceVerticesEdge[i]->Normal;
 //             std::cout<<"load edge: "<<i<<std::endl;
 //         }
-        vecNorm = receiverLightPositions[j] - meshes[0].faceVertices[i]->Position ;
-        screenDirections.push_back(vecNorm);
+        vecNorm = receiverLightPositions[i] - meshes[0].faceVertices[i]->Position ;
+        screenDirections.push_back(glm::normalize(vecNorm));
     }
 }
 
@@ -395,15 +396,14 @@ void Model::fresnelMapping(){
     //calculate sin(i1)/sin(i2)
     float refraction = MATERIAL_REFRACTIV_INDEX;
     desiredNormals.clear();
-    int j=0;
     for(int i = 0; i<meshes[0].faceVertices.size(); i++){
         glm::vec3 incidentLight;
-        incidentLight.x = 1;
+        incidentLight.x = -1;
         incidentLight.y = 0;
         incidentLight.z = 0;
 
-        glm::vec3 vert = meshes[0].faceVertices[i]->Position;
-        vert *= refraction;
+        glm::vec3 vert = screenDirections[i];
+        //vert *= refraction;
         glm::vec3 norm;
 
 //        if(!meshes[0].isEdge(meshes[0].faceVerticesEdge[i])){
@@ -412,7 +412,7 @@ void Model::fresnelMapping(){
 //            j++;
 //        }
         //else norm = meshes[0].faceVerticesEdge[i]->Normal;
-        norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[i]));
-        desiredNormals.push_back(norm);
+        norm = (refraction*incidentLight + vert);
+        desiredNormals.push_back(glm::normalize(norm)*-1.0f);
     }
 }

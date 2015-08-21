@@ -40,7 +40,9 @@ Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(
       xCenter = 0;
       drawAxis = true;
       drawNormals = true;
-      drawDesiredNormals = false;
+      drawDesiredNormals = true;
+      drawDesiredRayDirections = false;
+      drawDesiredRays = false;
 }
 
 void Renderer::printVersion(){
@@ -122,7 +124,6 @@ void Renderer::sceneUpdate()
     updateCamera();
 }
 
-
 /*Model Rendering*/
 
 ModelRendering::ModelRendering(QWidget *parent):Renderer(60,parent,"Model Rendering")
@@ -160,9 +161,7 @@ void ModelRendering::paintGL(){
     if(model.meshes.empty()) return;
 
     Mesh meshToDraw = model.meshes[0];
-    //drawMesh(meshToDraw);
-    Vertex v;
-    int i=0;
+
 
     // apply rotation around middle between mesh and receiver
     glTranslatef(xCenter, 0, 0);
@@ -181,55 +180,18 @@ void ModelRendering::paintGL(){
     if(drawDesiredNormals)
         paintDesiredNormals();
 
+    if(drawDesiredRays)
+        paintDesiredRays();
+
+    if(drawDesiredRayDirections)
+        paintDesiredRayDirections();
+
     paintReceiver();
 
+
     glFlush();
-
-//    Mesh meshToDraw = model.meshes[0];
-//    glGenVertexArrays(1, &meshToDraw.VAO);
-//    glGenBuffers(1, &meshToDraw.VBO);
-//    glGenBuffers(1, &meshToDraw.EBO);
-
-//    glBindVertexArray(meshToDraw.VAO);
-//    glBindBuffer(GL_ARRAY_BUFFER, meshToDraw.VBO);
-
-//    glBufferData(GL_ARRAY_BUFFER, meshToDraw.vertices.size() * sizeof(Vertex),
-//                 &meshToDraw.vertices[0], GL_STATIC_DRAW);
-
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshToDraw.EBO);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshToDraw.indices.size() * sizeof(GLuint),
-//                 &meshToDraw.indices[0], GL_STATIC_DRAW);
-
-//    // Vertex Positions
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-//                         (GLvoid*)0);
-//    // Vertex Normals
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-//                         (GLvoid*)offsetof(Vertex, Normal));
-//    // Vertex Texture Coords
-//    glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-//                         (GLvoid*)offsetof(Vertex, TexCoords));
-
-//    glBindVertexArray(0);
-
-//    glBindVertexArray(meshToDraw.VAO);
-//    glDrawElements(GL_TRIANGLES, meshToDraw.indices.size(), GL_UNSIGNED_INT, 0);
-//    glBindVertexArray(0);
-
-
-//    glBegin(GL_TRIANGLES);
-//        glVertex3f(0.0f, 1.0f, 0.0f);
-//        glVertex3f(-1.0f, -1.0f, 0.0f);
-//        glVertex3f(1.0f, -1.0f, 0.0f);
-//    glEnd();
-
-//    glTranslatef(3.0f, 0.0f, -6.0f);
-
-
 }
+
 
 void ModelRendering::paintAxis()
 {
@@ -325,13 +287,46 @@ void ModelRendering::paintDesiredNormals()
     for (uint i=0; i<model.desiredNormals.size(); i++)
     {
         glm::vec3 pos = model.meshes[0].faceVertices[i]->Position;
-        glm::vec3 end = model.desiredNormals[i];
+        glm::vec3 end = model.desiredNormals[i] + pos;
         glVertex3f(pos.x, pos.y, pos.z);
         glVertex3f(end.x, end.y, end.z);
     }
+
     glEnd();
 }
 
+void ModelRendering::paintDesiredRayDirections()
+{
+    glBegin(GL_LINES);
+
+    glColor3f(0,0,1);
+    for (uint i=0; i<model.screenDirections.size(); i++)
+    {
+        glm::vec3 pos = model.meshes[0].faceVertices[i]->Position;
+        glm::vec3 end = model.screenDirections[i] + pos;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glVertex3f(end.x, end.y, end.z);
+    }
+
+    glEnd();
+}
+
+void ModelRendering::paintDesiredRays()
+{
+    if(model.meshes[0].faceVertices.empty() || model.receiverLightPositions.empty())
+        return;
+
+    glBegin(GL_LINES);
+    glColor3f(0, 1, 0);
+
+    Mesh m = model.meshes[0];
+    for (uint i=0; i<model.meshes[0].faceVertices.size(); i++)
+    {
+        glVertex3f(m.faceVertices[i]->Position.x, m.faceVertices[i]->Position.y, m.faceVertices[i]->Position.z);
+        glVertex3f(model.receiverLightPositions[i].x, model.receiverLightPositions[i].y, model.receiverLightPositions[i].z);
+    }
+    glEnd();
+}
 
 void ModelRendering::setModel(){
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");
