@@ -120,6 +120,7 @@
      <string>Algorithm</string>
     </property>
     <addaction name="actionRunTargetOptimization"/>
+    <addaction name="actionShoot_Test_Ray"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -241,6 +242,11 @@
    </property>
    <property name="text">
     <string>Desired Rays</string>
+   </property>
+  </action>
+  <action name="actionShoot_Test_Ray">
+   <property name="text">
+    <string>Shoot Test-Ray</string>
    </property>
   </action>
  </widget>

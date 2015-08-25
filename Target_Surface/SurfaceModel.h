@@ -38,6 +38,7 @@ class Model {
         void rescaleMeshes(float newScale);
         void modifyMesh();
         void setNormals(bool edge);
+        void shootTestRay(glm::vec3 & direction, glm::vec3 & redirect, glm::vec3 & endpoint);
         void computeLightDirectionsScreenSurface();
         void fresnelMapping(); //compute the position on the surface to for the desired normals
         /*  Model Data  */
@@ -63,6 +64,7 @@ class Model {
         virtual void processNode(aiNode* node, const aiScene* scene);
         virtual Mesh processMesh(aiMesh* mesh, const aiScene* scene);
         virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+
 
         void populateMesh(){}
         void compute(){}

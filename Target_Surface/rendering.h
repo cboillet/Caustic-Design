@@ -31,6 +31,13 @@ public:
         this->neighbors = neighbors;
         this->neighborMapping = neighborMapping;
     }
+    void setTestRay(glm::vec3 direction, glm::vec3 redirection, glm::vec3 endPoint)
+    {
+        this->testRayDirection = direction;
+        this->testRayRedirect = redirection;
+        this->testRayEndPoint = endPoint;
+        drawTestRay = true;
+    }
 
     float y_rotate;
     float x_rotate;
@@ -51,6 +58,11 @@ protected:
     bool drawNormals;
     bool drawDesiredNormals;
     bool drawAxis;
+    bool drawTestRay;
+
+    glm::vec3 testRayDirection;
+    glm::vec3 testRayRedirect;
+    glm::vec3 testRayEndPoint;
 
     std::vector<int> neighbors;
     std::vector<int> neighborMapping;
@@ -83,6 +95,7 @@ public:
     void paintDesiredRayDirections();
     void paintVertexHighlight();
     void paintNeighbors();
+    void paintTestRay();
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

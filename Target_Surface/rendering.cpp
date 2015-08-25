@@ -43,6 +43,7 @@ Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(
       drawDesiredNormals = true;
       drawDesiredRayDirections = false;
       drawDesiredRays = false;
+      drawTestRay = false;
       highlightIndex = 14;
 }
 
@@ -190,6 +191,9 @@ void ModelRendering::paintGL(){
     paintVertexHighlight();
 
     paintNeighbors();
+
+    if(drawTestRay)
+        paintTestRay();
 
     paintReceiver();
 
@@ -408,6 +412,22 @@ void ModelRendering::paintNeighbors()
         glEnd();
 
     }
+
+}
+
+void ModelRendering::paintTestRay()
+{
+    glm::vec3 startPos = glm::vec3(-10, 0, 0);
+    glBegin(GL_LINES);
+    glColor3f(1, 0.33, 0.9);
+
+    glVertex3f(startPos.x, startPos.y, startPos.z);
+    glVertex3f(testRayRedirect.x, testRayRedirect.y, testRayRedirect.z);
+
+    glVertex3f(testRayRedirect.x, testRayRedirect.y, testRayRedirect.z);
+    glVertex3f(testRayEndPoint.x, testRayEndPoint.y, testRayEndPoint.z);
+
+    glEnd();
 
 }
 

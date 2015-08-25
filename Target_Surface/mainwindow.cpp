@@ -108,6 +108,17 @@ void MainWindow::on_actionDesired_Ray_Directions_toggled()
     viewer->update();
 }
 
+void MainWindow::on_actionShoot_Test_Ray_triggered()
+{
+    glm::vec3 direction;
+    glm::vec3 redirect;
+    glm::vec3 endpoint;
+    viewer->model.shootTestRay(direction, redirect, endpoint);
+
+    viewer->setTestRay(direction, redirect, endpoint);
+    viewer->update();
+}
+
 void MainWindow::newMeshHeight()
 {
     std::string txt = meshHeightLineEdit->text().toStdString();
