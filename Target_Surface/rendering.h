@@ -27,6 +27,10 @@ public:
     void toggleDrawAxis(){drawAxis=!drawAxis;}
     void toggleDrawDesiredRays(){drawDesiredRays = !drawDesiredRays;}
     void toggleDrawDesiredRayDirections(){drawDesiredRayDirections=!drawDesiredRayDirections;}
+    void setNeigbors(vector<int> neighbors, std::vector<int> neighborMapping){
+        this->neighbors = neighbors;
+        this->neighborMapping = neighborMapping;
+    }
 
     float y_rotate;
     float x_rotate;
@@ -47,6 +51,11 @@ protected:
     bool drawNormals;
     bool drawDesiredNormals;
     bool drawAxis;
+
+    std::vector<int> neighbors;
+    std::vector<int> neighborMapping;
+
+    int highlightIndex;
 
 private:
     QTimer *t_Timer;
@@ -72,6 +81,8 @@ public:
     void drawHighlights();
     void paintDesiredRays();
     void paintDesiredRayDirections();
+    void paintVertexHighlight();
+    void paintNeighbors();
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

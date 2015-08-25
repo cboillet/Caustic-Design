@@ -43,6 +43,7 @@ Renderer::Renderer(int framesPerSecond, QWidget *parent , char *name):QGLWidget(
       drawDesiredNormals = true;
       drawDesiredRayDirections = false;
       drawDesiredRays = false;
+      highlightIndex = 14;
 }
 
 void Renderer::printVersion(){
@@ -119,7 +120,7 @@ void Renderer::sceneUpdate()
     if(model.getLightRayPositions().empty())
         xCenter = 0.0f;
     else
-        xCenter = 0.5 * model.getFocalLength();
+        xCenter = 0.0 * model.getFocalLength();
 
     updateCamera();
 }
@@ -185,6 +186,10 @@ void ModelRendering::paintGL(){
 
     if(drawDesiredRayDirections)
         paintDesiredRayDirections();
+
+    paintVertexHighlight();
+
+    paintNeighbors();
 
     paintReceiver();
 
@@ -326,6 +331,84 @@ void ModelRendering::paintDesiredRays()
         glVertex3f(model.receiverLightPositions[i].x, model.receiverLightPositions[i].y, model.receiverLightPositions[i].z);
     }
     glEnd();
+}
+
+void ModelRendering::paintVertexHighlight()
+{
+    if(true) return;
+
+    if(highlightIndex != -1 && !model.meshes[0].vertices.empty())
+    {
+
+        Mesh mesh = model.meshes[0];
+        Vertex* v = &mesh.vertices[highlightIndex];
+
+        //std::vector<int> neighbors = mesh.getNeighborsIndex(v, false);
+
+        glPointSize(10.0f);
+        glBegin(GL_POINTS);
+        glColor3f(1,1,0);
+
+        glVertex3f(v->Position.x, v->Position.y, v->Position.z);
+
+        glColor3f(0,1,1);
+        for(uint i=0; i<neighbors.size(); i++)
+        {
+            int index = neighbors[i];
+            glm::vec3 pos = mesh.vertices[index].Position;
+            glVertex3f(pos.x, pos.y, pos.z);
+        }
+
+        glEnd();
+    }
+}
+
+void ModelRendering::paintNeighbors()
+{
+    int vertexIndex = 14;
+
+    for(uint i=0; i<neighborMapping.size(); i+=2)
+    {
+        float color[3] = {0, 0, 0};
+        int index = (i%6)/2;
+        color[index] = 1;
+
+        glColor3f(color[0], color[1], color[2]);
+        Vertex* v1 = &model.meshes[0].vertices[vertexIndex];
+        Vertex* v2 = &model.meshes[0].vertices[neighbors[neighborMapping[i]]];
+        Vertex* v3 = &model.meshes[0].vertices[neighbors[neighborMapping[i+1]]];
+
+        glm::vec3 xoffset = glm::vec3(0.1, 0, 0) * float(i);
+
+        glBegin(GL_LINES);
+        // first edge
+        glm::vec3 pos = v1->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v2->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // second edge
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v3->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // third edge
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v1->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glEnd();
+
+        // highlight starting-point (= end-point)
+        glBegin(GL_POINTS);
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // and 2nd point
+        pos = v2->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glEnd();
+
+    }
+
 }
 
 void ModelRendering::setModel(){
