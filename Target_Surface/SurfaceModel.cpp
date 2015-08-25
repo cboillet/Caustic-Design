@@ -149,8 +149,9 @@ void Model::loadModel(string path){
 
     // copy the scene to a modifiable copy.
     aiCopyScene(scene, &this->scene);
-    meshes[0].faceVertices = meshes[0].selectVerticesMeshFaceNoEdge();
-    meshes[0].faceVerticesEdge = meshes[0].selectVerticesMeshFaceEdge();
+    meshes[0].setVertices();
+    meshes[0].createEdgeIndices();
+    meshes[0].calcEdgeAdjacentFaces();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){
@@ -171,7 +172,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<Vertex> vertices;
     vector<glm::uvec3> indices;
     vector<Texture> textures;
-
+    vector<int> edgeIndicesToIndices;
+    float max_X;
+    float max_Y;
+    float max_Z;
+    int edgeIndices;
+    int j;
     std::cout << "loading mesh with " << mesh->mNumVertices << " vertices" << std::endl;
 
     for(GLuint i = 0; i < mesh->mNumVertices; i++)
@@ -184,6 +190,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
         vector.z = mesh->mVertices[i].z;
         vector *= surfaceSize;
         vertex.Position = vector;
+        if (max_X<vector.x) max_X=vector.x;
+        if (max_Y<vector.y) max_Y=vector.y;
+        if (max_Z<vector.z) max_Z=vector.z;
         //normals
         //vector.x = mesh->mNormals[i].x;
         //vector.y = mesh->mNormals[i].y;
@@ -211,9 +220,14 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
             std::cerr << "can't import model, indices wrong" << std::endl;
         }
 
-        indices.push_back(glm::uvec3(face.mIndices[0], face.mIndices[1], face.mIndices[2]));
+        indices.push_back(glm::uvec3(face.mIndices[0], face.mIndices[1], face.mIndices[2]));        
+//        if(isEdge(mesh->mVertices[face.mIndices[0]].x) || isEdge(mesh->mVertices[face.mIndices[1]].y) || isEdge(mesh->mVertices[face.mIndices[0]].z) && mesh->mVertices[face.mIndices[1]].x==max_X && mesh->mVertices[face.mIndices[1]].x==max_X && mesh->mVertices[face.mIndices[2]].x==max_X){ //one of the vertices
+//            edgeIndicesToIndices.push_back(j);
+//            edgeIndices++;
+//        }
         //for(GLuint j = 0; j < face.mNumIndices; j++)
         //    indices.push_back(face.mIndices[j]);
+        j++;
     }
 
     // Process material
@@ -227,7 +241,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
                                             aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
-    return Mesh(vertices, textures, indices);
+    return Mesh(vertices, textures, indices, max_X, max_Y, max_Z/*, edgeIndicesToIndices*/);
 }
 
 void Model::rescaleMeshes(float newScale)
@@ -358,7 +372,7 @@ int Model::findSurfaceMesh(){
 void Model::setNormals(bool edge){
     int limit;
     currentNormals.clear();
-    if (edge) limit = meshes[0].selectVerticesMeshFaceEdge().size();
+    if (edge) limit = meshes[0].faceVerticesEdge.size();
     else limit = meshes[0].faceVerticesEdge.size();
     for (int i=0; i<meshes[0].faceVerticesEdge.size(); i++){
         glm::vec3 norm ;
@@ -396,9 +410,10 @@ void Model::fresnelMapping(){
     //calculate sin(i1)/sin(i2)
     float refraction = MATERIAL_REFRACTIV_INDEX;
     desiredNormals.clear();
+    int j;
     for(int i = 0; i<meshes[0].faceVertices.size(); i++){
         glm::vec3 incidentLight;
-        incidentLight.x = -1;
+        incidentLight.x = 1;
         incidentLight.y = 0;
         incidentLight.z = 0;
 
@@ -406,13 +421,13 @@ void Model::fresnelMapping(){
         //vert *= refraction;
         glm::vec3 norm;
 
-//        if(!meshes[0].isEdge(meshes[0].faceVerticesEdge[i])){
-//            //normal of the surface see Kiser and Pauly
-//            norm = incidentLight +  vert/(glm::length(incidentLight+refraction*screenDirections[j]));
-//            j++;
-//        }
-        //else norm = meshes[0].faceVerticesEdge[i]->Normal;
+        //normal of the surface see Kiser and Pauly
+        //norm = (incidentLight +  (1/refraction)*vert)/(glm::length(incidentLight+(1/refraction)*vert));
         norm = (refraction*incidentLight + vert);
-        desiredNormals.push_back(glm::normalize(norm)*-1.0f);
+        //norm = (incidentLight + refraction*vert);
+        desiredNormals.push_back(glm::normalize(norm));
+        //desiredNormals.push_back(glm::normalize(norm)*-1.0f);
+
+
     }
 }

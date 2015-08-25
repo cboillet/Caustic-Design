@@ -32,6 +32,8 @@ public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
         vector<glm::uvec3> indices;
+        vector<glm::uvec3> edgeIndices;
+        vector<vector<uint> > edgeAdjacentFaces;
         vector<vector<uint> > adjacentFaces;
         vector<Texture> textures;
         int nbMeshLayout;
@@ -40,10 +42,19 @@ public:
         /*  Render data  */
         GLuint VAO, VBO, EBO;
         /*  Functions  */
+        vector<Vertex*> allVertices;
         vector<Vertex*> faceVertices;
         vector<Vertex*> faceVerticesEdge;
 
-        Mesh(vector<Vertex> vertices, vector<Texture> textures, vector<glm::uvec3> indices);
+        /*different mappings*/
+        vector<int> edgeToNoEdgeMapping;
+        vector<int> noEdgeToEdgeMapping;
+        vector<int> allToEdgeMapping;
+        vector<int> edgeToAllMapping;
+        vector<int> indicesToEdgesIndices;
+        vector<int> faceEdgeIndicesToIndices;
+
+        Mesh(vector<Vertex> vertices, vector<Texture> textures, vector<glm::uvec3> indices, float max_X, float max_Y, float max_Z/*, vector<int> edgeIndicesToIndices*/);
         Mesh(){}
         //void Draw(Shader shader);
         void setUpMesh(int nbvertices);
@@ -61,18 +72,24 @@ public:
         void calculateVertexNormal(std::vector<glm::vec3> & faceNormals, uint vertexIndex);
         void getAdjacentFacesVector();
         void updateNormal(Vertex* v);
+        void createEdgeIndices();
+        void calcEdgeAdjacentFaces();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         void calculateFaceNormal(glm::vec3 & normal, uint faceIndex);
         bool isEdge(Vertex* v); //return true if the vertex is an edge
         int getIndex(Vertex* v);
         int getIndex(int v);
-        int getTargetIndex(Vertex* v);
+        int getEdgeIndex(int i);
+        int getIndexTargetSurface(Vertex* v);
+        std::vector<int> createNoEdgeToEdgeMapping();
+        std::vector<int> createEdgeToNoEdgeMapping();
         vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter
-         vector<int> getNeighborsIndex(int v); //v index in faceVertices
+        vector<int> getNeighborsIndex(int v, int indexTargetSurface); //v index in faceVertices
         vector<int> getClosestNeighbors(Vertex* v);
         //void shrink_vertices_camille(); //reimplementation
         vector<Vertex*> selectVerticesMeshFaceNoEdge(); //select the vertex on the face the furthest on x axis
         vector<Vertex*> selectVerticesMeshFaceEdge(); //select the vertex on the face the furthest on x axis
+        void setVertices();
         void exportVertices(const QString& filename, float scaling);
         float getMaxX(){return maxX;};
         vector<int> insertSorted(vector<int> vec, int in, Vertex* v2);

@@ -39,7 +39,10 @@
 #define EINT_WEIGHT 1
 #define EBAR_WEIGHT 1
 #define EDIR_WEIGHT 1e-6
-#define EREG_WEIGHT 1e-6
+#define EREG_WEIGHT 1e-64
+#define MAX_Y 1
+#define MAX_Z 1
+
 
 typedef float (array)[NORMALS];
 

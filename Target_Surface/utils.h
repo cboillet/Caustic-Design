@@ -19,4 +19,6 @@ float fbar(float x, float dth);
 glm::vec3 proj(glm::vec3 xs, glm::vec3 di, glm::vec3 pos);
 float* matrixProduct(array* L, float* X);
 void printMatrix(array* X);
+bool isEdge(glm::vec3 v); //not used in the current version
+bool compareVectors(vector<int> v1, vector<int> v2);
 #endif // UTILS_H

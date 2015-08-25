@@ -6,6 +6,7 @@
 #include "glog/logging.h"
 #include "SurfaceModel.h"
 #include "utils.h"
+#include "rendering.h"
 
 class TargetOptimization
 {
@@ -16,8 +17,8 @@ class TargetOptimization
 public:
     TargetOptimization();
     ~TargetOptimization();
-    void runOptimization(Model* m);
-    void optimize();
+    void runOptimization(Model* m, Renderer* r);
+    void optimize(Renderer* r);
     bool converged();
 };
 

@@ -45,3 +45,24 @@ void printMatrix(array* X){
 
 }
 
+bool isEdge(glm::vec3 v){
+    bool edge = false;
+    if(floatEquals(fabs(v[1]), MAX_Y) || floatEquals(fabs(v[2]), MAX_Z)) edge=true;
+    return edge;
+
+}
+
+bool compareVectors(vector<int> v1, vector<int> v2){
+    bool same = true;
+    if(v1.size()!=v2.size()){
+        std::cout<<"v1 size: "<<v1.size()<<std::endl;
+        std::cout<<"v2 size: "<<v2.size()<<std::endl;
+        return false;
+    }
+    for(uint i = 0; i<v1.size(); i++){
+        if(v1[i]!=v2[i]){
+            std::cout<<"different vectors"<<std::endl;
+            return false;
+        }
+    }
+}
