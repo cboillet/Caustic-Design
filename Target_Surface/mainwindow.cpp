@@ -110,9 +110,9 @@ void MainWindow::on_actionDesired_Ray_Directions_toggled()
 
 void MainWindow::on_actionShoot_Test_Ray_triggered()
 {
-    glm::vec3 direction;
-    glm::vec3 redirect;
-    glm::vec3 endpoint;
+    glm::highp_dvec3 direction;
+    glm::highp_dvec3 redirect;
+    glm::highp_dvec3 endpoint;
     viewer->model.shootTestRay(direction, redirect, endpoint);
 
     viewer->setTestRay(direction, redirect, endpoint);

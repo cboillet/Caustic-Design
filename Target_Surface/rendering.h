@@ -31,7 +31,7 @@ public:
         this->neighbors = neighbors;
         this->neighborMapping = neighborMapping;
     }
-    void setTestRay(glm::vec3 direction, glm::vec3 redirection, glm::vec3 endPoint)
+    void setTestRay(glm::highp_dvec3 direction, glm::highp_dvec3 redirection, glm::highp_dvec3 endPoint)
     {
         this->testRayDirection = direction;
         this->testRayRedirect = redirection;
@@ -60,9 +60,9 @@ protected:
     bool drawAxis;
     bool drawTestRay;
 
-    glm::vec3 testRayDirection;
-    glm::vec3 testRayRedirect;
-    glm::vec3 testRayEndPoint;
+    glm::highp_dvec3 testRayDirection;
+    glm::highp_dvec3 testRayRedirect;
+    glm::highp_dvec3 testRayEndPoint;
 
     std::vector<int> neighbors;
     std::vector<int> neighborMapping;

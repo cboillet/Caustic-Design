@@ -9,6 +9,7 @@
 #include "GL/glut.h"
 #include "GL/freeglut.h"
 #include "GL/glext.h"
+#define GLM_PRECISION_HIGHP_DOUBLE
 #include "glm/glm.hpp"
 
 #include <QGLWidget>
@@ -35,11 +36,11 @@
 /**/
 #define CONVERGENCE_LIMIT 0.0001
 #define AIR_REFRACTIV_INDEX 1
-#define EBAR_DETH 38
+#define EBAR_DETH 100
 #define EINT_WEIGHT 1
-#define EBAR_WEIGHT 1
-#define EDIR_WEIGHT 1e-8
-#define EREG_WEIGHT 1e-8
+#define EBAR_WEIGHT 0
+#define EDIR_WEIGHT 0
+#define EREG_WEIGHT 0
 
 typedef float (array)[NORMALS];
 

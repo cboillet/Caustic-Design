@@ -384,25 +384,26 @@ void Model::setNormals(bool edge){
     }
 }
 
-void Model::shootTestRay(glm::vec3 & direction, glm::vec3 & redirect, glm::vec3 & endpoint)
+void Model::shootTestRay(glm::highp_dvec3 & direction, glm::highp_dvec3 & redirect, glm::highp_dvec3 & endpoint)
 {
     // a test ray is at origin into the direction of x-axis.
     // it then is redirected from the vertex with index 14
     direction = glm::vec3(1,0,0);
     redirect = meshes[0].vertices[14].Position;
-    glm::vec3 pointNormal = meshes[0].vertices[14].Normal;
+    //glm::highp_vec3 pointNormal = meshes[0].vertices[14].Normal;
+    glm::highp_dvec3 pointNormal = glm::highp_dvec3(meshes[0].vertices[14].Normal);
 
-    float refraction = MATERIAL_REFRACTIV_INDEX;
+    double refraction = MATERIAL_REFRACTIV_INDEX;
 
-    float c = glm::dot(pointNormal, direction);
+    double c = glm::dot(pointNormal, direction);
 
-    glm::vec3 refractedRay = refraction * direction + (refraction*c - sqrt(1 - refraction*refraction*(1-c*c))) * (-pointNormal);
+    glm::highp_dvec3 refractedRay = refraction * direction + (refraction*c - sqrt(1 - refraction*refraction*(1-c*c))) * (-pointNormal);
 
     refractedRay = glm::normalize(refractedRay);
 
     std::cerr << refractedRay.x << ", " << refractedRay.y << ", " << refractedRay.z << std::endl;
 
-    endpoint = float(1.5*getFocalLength()) * refractedRay - redirect;
+    endpoint = double(1.5*getFocalLength()) * refractedRay - redirect;
 
     std::cerr << endpoint.x << ", " << endpoint.y << ", " << endpoint.z << std::endl;
 }
