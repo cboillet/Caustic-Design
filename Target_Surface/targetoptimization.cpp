@@ -1129,141 +1129,146 @@ void TargetOptimization::runTest(Renderer* renderer)
 
     //renderer->setNeigbors(neighborList, neighborMap);
 
-    int nNeighbors = neighborList.size();
-    std::cout << "nNeighbors = " << nNeighbors << std::endl;
-
-    double* vertices = new double[3*(nNeighbors+1)];
-
-    vertices[0] = vertex->Position.x;
-    vertices[1] = vertex->Position.y;
-    vertices[2] = vertex->Position.z;
-
-    uint nVertices = 3*(nNeighbors+1);
-    std::cout << "nVertices = " << nVertices << std::endl;
-    for (uint i = 1; i <= nNeighbors; i++)
+    for(uint loop=0; loop<15; loop++)
     {
-        glm::vec3 pos = model->meshes[0].vertices[neighborList[i-1]].Position;
+        int nNeighbors = neighborList.size();
+        std::cout << "nNeighbors = " << nNeighbors << std::endl;
 
-        uint at = 3*i;
-        std::cout << "adding @" << at << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-        vertices[at] = pos.x;
-        vertices[at+1] = pos.y;
-        vertices[at+2] = pos.z;
+        double* vertices = new double[3*(nNeighbors+1)];
 
-    }
+        vertices[0] = vertex->Position.x;
+        vertices[1] = vertex->Position.y;
+        vertices[2] = vertex->Position.z;
 
-    // prepare model
-    model->meshes[0].calculateVertexNormals();
-    model->computeLightDirectionsScreenSurface();
-    model->fresnelMapping();
-    //Mesh mesh = model->meshes[0];
-    int mappedIndex = mesh->getIndexTargetSurface(&model->meshes[0].vertices[vertexIndex]);
+        uint nVertices = 3*(nNeighbors+1);
+        std::cout << "nVertices = " << nVertices << std::endl;
+        for (uint i = 1; i <= nNeighbors; i++)
+        {
+            glm::vec3 pos = model->meshes[0].vertices[neighborList[i-1]].Position;
 
-    CostFunction* cost_fuction_eint =
-            // one residual, 7 parameters
-            new AutoDiffCostFunction<CostFunctorEint6, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEint6(&model->desiredNormals[mappedIndex], neighborMap));
-    CostFunction* cost_function_ereg =
-            new AutoDiffCostFunction<CostFunctorEreg6, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6(model, renderer, neighborList));
+            uint at = 3*i;
+            std::cout << "adding @" << at << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+            vertices[at] = pos.x;
+            vertices[at+1] = pos.y;
+            vertices[at+2] = pos.z;
 
-    glm::vec3 pos = glm::vec3(x_sources[vertexIndex]);
-    CostFunction* cost_function_edir =
-            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&pos));
+        }
 
-    glm::vec3 receiverPos = glm::vec3(mesh->getMaxX() + model->getFocalLength(), 0, 0);
-    CostFunction* cost_function_ebar =
-            new AutoDiffCostFunction<CostFunctorEbar2, 1, 3>(new CostFunctorEbar2(&receiverPos));
+        // prepare model
+        model->meshes[0].calculateVertexNormals();
+        model->computeLightDirectionsScreenSurface();
+        model->fresnelMapping();
+        //Mesh mesh = model->meshes[0];
+        int mappedIndex = mesh->getIndexTargetSurface(&model->meshes[0].vertices[vertexIndex]);
 
-    Problem problem;
+        CostFunction* cost_fuction_eint =
+                // one residual, 7 parameters
+                new AutoDiffCostFunction<CostFunctorEint6, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEint6(&model->desiredNormals[mappedIndex], neighborMap));
+        CostFunction* cost_function_ereg =
+                new AutoDiffCostFunction<CostFunctorEreg6, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6(model, renderer, neighborList));
 
-    problem.AddResidualBlock(
-            cost_fuction_eint,
-            NULL,
-            vertices, // vertex
-            &vertices[3], // and the neighbors..
-            &vertices[6],
-            &vertices[9],
-            &vertices[12],
-            &vertices[15],
-            &vertices[18]);
+        glm::vec3 pos = glm::vec3(x_sources[vertexIndex]);
+        CostFunction* cost_function_edir =
+                new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&pos));
 
-    problem.AddResidualBlock(
-            cost_function_ereg,
-            NULL,
-            vertices, // vertex
-            &vertices[3], // and the neighbors..
-            &vertices[6],
-            &vertices[9],
-            &vertices[12],
-            &vertices[15],
-            &vertices[18]);
+        glm::vec3 receiverPos = glm::vec3(mesh->getMaxX() + model->getFocalLength(), 0, 0);
+        CostFunction* cost_function_ebar =
+                new AutoDiffCostFunction<CostFunctorEbar2, 1, 3>(new CostFunctorEbar2(&receiverPos));
 
-
-    problem.AddResidualBlock(
-            cost_function_edir,
-            NULL,
-            vertices);
-
-    problem.AddResidualBlock(
-            cost_function_ebar,
-            NULL,
-            vertices);
-
-
-    glm::vec3 *ps[neighborList.size()];
-    for(uint i=0; i<neighborList.size(); i++)
-    {
-        ps[i] = new glm::vec3(x_sources[neighborList[i]]);
-        int index = 3* (i+1);
-        CostFunction* fkt =
-                new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(ps[i]));
+        Problem problem;
 
         problem.AddResidualBlock(
-                    fkt,
-                    NULL,
-                    &vertices[index]);
+                cost_fuction_eint,
+                NULL,
+                vertices, // vertex
+                &vertices[3], // and the neighbors..
+                &vertices[6],
+                &vertices[9],
+                &vertices[12],
+                &vertices[15],
+                &vertices[18]);
+
+        problem.AddResidualBlock(
+                cost_function_ereg,
+                NULL,
+                vertices, // vertex
+                &vertices[3], // and the neighbors..
+                &vertices[6],
+                &vertices[9],
+                &vertices[12],
+                &vertices[15],
+                &vertices[18]);
+
+
+        problem.AddResidualBlock(
+                cost_function_edir,
+                NULL,
+                vertices);
+
+        problem.AddResidualBlock(
+                cost_function_ebar,
+                NULL,
+                vertices);
+
+
+        glm::vec3 *ps[neighborList.size()];
+        for(uint i=0; i<neighborList.size(); i++)
+        {
+            ps[i] = new glm::vec3(x_sources[neighborList[i]]);
+            int index = 3* (i+1);
+            CostFunction* fkt =
+                    new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(ps[i]));
+
+            problem.AddResidualBlock(
+                        fkt,
+                        NULL,
+                        &vertices[index]);
+        }
+
+
+        Solver::Options options;
+        options.minimizer_progress_to_stdout = true;
+        //options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
+        options.max_num_iterations = 500;
+        options.dense_linear_algebra_library_type = ceres::LAPACK;
+        //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
+        //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
+        string error;
+        if(!options.IsValid(&error))
+        {
+            std::cout << "Options not valid: " << error << std::endl;
+        }
+
+        Solver::Summary summary;
+        Solve(options, &problem, &summary);
+
+        std::cout << summary.FullReport() << std::endl;
+
+
+        vertex->Position.x = vertices[0];
+        vertex->Position.y = vertices[1];
+        vertex->Position.z = vertices[2];
+
+        for (uint i=1; i<=nNeighbors; i++)
+        {
+
+            Vertex* v = &model->meshes[0].vertices[neighborList[i-1]];
+            v->Position.x = vertices[i*3 + 0];
+            v->Position.y = vertices[i*3 + 1];
+            v->Position.z = vertices[i*3 + 2];
+        }
+
+        for (uint i=0; i<neighborList.size(); i++)
+        {
+            delete ps[i];
+        }
+
+        delete[] vertices;
+
+        model->meshes[0].calculateVertexNormals();
+        model->computeLightDirectionsScreenSurface();
+        model->fresnelMapping();
     }
-
-
-    Solver::Options options;
-    options.minimizer_progress_to_stdout = true;
-    //options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
-    options.max_num_iterations = 500;
-    options.dense_linear_algebra_library_type = ceres::LAPACK;
-    //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
-    //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
-    string error;
-    if(!options.IsValid(&error))
-    {
-        std::cout << "Options not valid: " << error << std::endl;
-    }
-
-    Solver::Summary summary;
-    Solve(options, &problem, &summary);
-
-    std::cout << summary.FullReport() << std::endl;
-
-
-    vertex->Position.x = vertices[0];
-    vertex->Position.y = vertices[1];
-    vertex->Position.z = vertices[2];
-
-    for (uint i=1; i<=nNeighbors; i++)
-    {
-
-        Vertex* v = &model->meshes[0].vertices[neighborList[i-1]];
-        v->Position.x = vertices[i*3 + 0];
-        v->Position.y = vertices[i*3 + 1];
-        v->Position.z = vertices[i*3 + 2];
-    }
-
-    for (uint i=0; i<neighborList.size(); i++)
-    {
-        delete ps[i];
-    }
-
-    delete[] vertices;
-
-    model->meshes[0].calculateVertexNormals();
 
     renderer->repaint();
 }
@@ -1275,7 +1280,7 @@ void TargetOptimization::runOptimization(Model* m, Renderer* renderer){
     {
         model = m;
         for(int i=0; i<m->meshes[0].vertices.size(); i++){
-            glm::vec3 v = (m->meshes[0].vertices[i].Position);
+            glm::vec3 v = glm::vec3(m->meshes[0].vertices[i].Position);
             x_sources.push_back(v);
         }
         runTest(renderer);

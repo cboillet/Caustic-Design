@@ -396,7 +396,7 @@ void Model::shootTestRay(glm::vec3 & direction, glm::vec3 & redirect, glm::vec3 
 
     float c = glm::dot(pointNormal, direction);
 
-    glm::vec3 refractedRay = refraction * direction + (refraction*c - sqrt(1 - refraction*refraction*(1-c*c))) * pointNormal;
+    glm::vec3 refractedRay = refraction * direction + (refraction*c - sqrt(1 - refraction*refraction*(1-c*c))) * (-pointNormal);
 
     refractedRay = glm::normalize(refractedRay);
 
