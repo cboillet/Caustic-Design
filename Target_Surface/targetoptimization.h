@@ -23,6 +23,8 @@ public:
     void optimize(Renderer* renderer);
     bool converged();
     void runTest(Renderer* renderer);
+
+    void addResidualBlocks(ceres::Problem * problem, uint vertexIndex, vector<int> & neighbors, vector<int> & neighborMap, double* vertices);
 };
 
 #endif // TARGETOPTIMIZATION_H

@@ -755,6 +755,38 @@ void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexInde
 
 }
 
+
+void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, vector<int> &neighbors, vector<int> &neighborMap, double *vertices)
+{
+
+    // EBar only calculates the distance from the vertex to the receiver-plane. So passing x-coordiate of receiving plane is sufficient
+    glm::vec3 receiverPos = glm::vec3(model->meshes[0].getMaxX() + model->getFocalLength(), 0, 0);
+    CostFunction* cost_function_ebar =
+            new AutoDiffCostFunction<CostFunctorEbar2, 1, 3>(new CostFunctorEbar2(&receiverPos));
+
+    problem->AddResidualBlock(
+                cost_function_ebar,
+                NULL, // no loss function
+                &vertices[vertexIndex]
+                );
+
+
+    // EDir depends on the original position
+    glm::vec3 pos; // TODO get original position
+    CostFunction* cost_function_edir =
+            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&pos));
+
+    problem->AddResidualBlock(
+                cost_function_edir,
+                NULL,
+                &vertices[vertexIndex]
+                );
+
+
+    // now we need to take care of the different amount of neighbors for EInt and EReg
+}
+
+
 void TargetOptimization::runTest(Renderer* renderer)
 {
 
@@ -784,10 +816,41 @@ void TargetOptimization::runTest(Renderer* renderer)
             std::cout << "\tnFaces = " << (neighborMap.size()/2) << std::endl << std::endl;
             allCaptured = false;
         }
+
+        neighborsPerVertex[i] = neighbors;
+        neighborMapPerVertex[i] = neighborMap;
     }
 
     if(allCaptured)
         std::cout << "all possible neighbor-numbers captured" << std::endl;
+
+
+    // prepare model and mesh
+    mesh->calculateVertexNormals();
+    model->computeLightDirectionsScreenSurface();
+    model->fresnelMapping();
+
+    // put all positions in one big list that we access later
+    double* vertices = new double[3*mesh->faceVerticesEdge.size()];
+    for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
+    {
+        glm::vec3 * pos = &mesh->faceVerticesEdge[i]->Position;
+
+        vertices[3*i + 0] = pos->x;
+        vertices[3*i + 1] = pos->y;
+        vertices[3*i + 2] = pos->z;
+    }
+
+    Problem prob;
+
+    // iterate over all vertices and add the corresponding residual blocks
+    for(uint i=0; i<neighborsPerVertex.size(); i++)
+    {
+        addResidualBlocks(prob, i, neighborsPerVertex[i], neighborMapPerVertex[i], vertices);
+    }
+
+
+
 
     if(true)
         return;
@@ -799,19 +862,6 @@ void TargetOptimization::runTest(Renderer* renderer)
     vector<int> neighborMap;
     vector<int> neighborList;
 
-    /*Vertex * vertex = &model->meshes[0].vertices[i];
-
-    Mesh* m = &model->meshes[0];
-    if(!floatEquals(vertex->Position.x, m->maxX) &&
-            floatEquals(fabs(vertex->Position.y), m->maxY) &&
-            floatEquals(fabs(vertex->Position.z), m->maxZ))
-        continue;
-
-    vector<uint> adjacentFaces = model->meshes[0].adjacentFaces[i];
-
-    vector<int> neighborMap;
-    vector<int> neighborList;
-*/
     // we are now getting all neighbors. Each only once.
     // and at the same time we are creating a mapping. So we kind of create a adjacentfaces with vetrices.
     // so the neighborMap always has two entries that are (in combination with current vertex) one face.
@@ -868,7 +918,7 @@ void TargetOptimization::runTest(Renderer* renderer)
     int nNeighbors = neighborList.size();
     std::cout << "nNeighbors = " << nNeighbors << std::endl;
 
-    double* vertices = new double[3*(nNeighbors+1)];
+    //double* vertices = new double[3*(nNeighbors+1)];
 
     vertices[0] = vertex->Position.x;
     vertices[1] = vertex->Position.y;
