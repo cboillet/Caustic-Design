@@ -126,7 +126,7 @@ void Model::loadReceiverLightPoints(QString path)
 
     while(ifs >> y >> z) receiverLightPositions.push_back(glm::vec3(focalLength + meshes[0].getMaxX(), y*surfaceSize/CAUSTIC_DOMAIN, z*surfaceSize/CAUSTIC_DOMAIN));
 
-    std::cout << "Loaded light positions for focal length " << focalLength << std::endl;
+    std::cout << "Loaded " << receiverLightPositions.size() << " light positions for focal length " << focalLength << std::endl;
 
     //calculate and load the desired normals
     computeLightDirectionsScreenSurface();
@@ -413,19 +413,19 @@ void Model::fresnelMapping(){
     int j;
     for(int i = 0; i<meshes[0].faceVertices.size(); i++){
         glm::vec3 incidentLight;
-        incidentLight.x = 1;
+        incidentLight.x = -1;
         incidentLight.y = 0;
         incidentLight.z = 0;
 
-        glm::vec3 vert = screenDirections[i];
+        glm::vec3 vert = screenDirections[i]/refraction;
         //vert *= refraction;
         glm::vec3 norm;
 
         //normal of the surface see Kiser and Pauly
         //norm = (incidentLight +  (1/refraction)*vert)/(glm::length(incidentLight+(1/refraction)*vert));
-        norm = (refraction*incidentLight + vert);
+        norm = (incidentLight + vert);
         //norm = (incidentLight + refraction*vert);
-        desiredNormals.push_back(glm::normalize(norm));
+        desiredNormals.push_back(glm::normalize(norm)*-1.0f);
         //desiredNormals.push_back(glm::normalize(norm)*-1.0f);
 
 

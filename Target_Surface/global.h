@@ -36,10 +36,10 @@
 #define CONVERGENCE_LIMIT 0.0001
 #define AIR_REFRACTIV_INDEX 1
 #define EBAR_DETH 39
-#define EINT_WEIGHT 1
-#define EBAR_WEIGHT 1
-#define EDIR_WEIGHT 1e-6
-#define EREG_WEIGHT 1e-64
+#define EINT_WEIGHT 1.0
+#define EBAR_WEIGHT 1.0
+#define EDIR_WEIGHT 1.0
+#define EREG_WEIGHT 1.0
 #define MAX_Y 1
 #define MAX_Z 1
 

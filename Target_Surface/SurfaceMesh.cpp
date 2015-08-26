@@ -236,7 +236,7 @@ void Mesh::getAdjacentFacesVector()
 
 void Mesh::calcEdgeAdjacentFaces()
 {
-    edgeAdjacentFaces.resize(edgeIndices.size());
+    edgeAdjacentFaces.resize(faceVerticesEdge.size());
 
     for(uint i=0; i<edgeIndices.size(); i++)
     {

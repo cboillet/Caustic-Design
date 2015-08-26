@@ -99,7 +99,7 @@ template<typename T> T evaluateInt(const T* const vertex, const T** neighbors, u
     T y = vertexNormal[1] - T(desiredNormal->y);
     T z = vertexNormal[2] - T(desiredNormal->z);
 
-    T res = ceres::sqrt(x*x + y*y + z*z);
+    T res = T(EINT_WEIGHT) * ceres::sqrt(x*x + y*y + z*z);
 
     // -- clean
     delete[] vertexNormal;
