@@ -846,7 +846,7 @@ void TargetOptimization::runTest(Renderer* renderer)
     // iterate over all vertices and add the corresponding residual blocks
     for(uint i=0; i<neighborsPerVertex.size(); i++)
     {
-        addResidualBlocks(prob, i, neighborsPerVertex[i], neighborMapPerVertex[i], vertices);
+        addResidualBlocks(&prob, i, neighborsPerVertex[i], neighborMapPerVertex[i], vertices);
     }
 
 
