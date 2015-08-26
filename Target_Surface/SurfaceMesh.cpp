@@ -468,21 +468,24 @@ void Mesh::setVertices(){
     bool isNoEdge=false;
     for(uint i=0; i<vertices.size(); i++)
     {
-        if(floatEquals(vertices[i].Position.x, maxX) && !floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ)) //noEdge
+        if(floatEquals(vertices[i].Position.x, maxX))
         {
-            faceVertices.push_back(&vertices[i]);
-            noEdgeToEdgeMapping.push_back(edge);//[noEdge]=k;
-            noEdge++;
-            isNoEdge=true;
-         }
-        if(floatEquals(vertices[i].Position.x, maxX)) //Edge
-        {
-            faceVerticesEdge.push_back(&vertices[i]);
-            edgeToAllMapping.push_back(all);//[edge]=all;
-            if(!floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ)) edgeToNoEdgeMapping.push_back(noEdge-1);
-            else edgeToNoEdgeMapping.push_back(-1);
-            edge++;
-            isEdge=true;
+            if(!floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ)) //noEdge
+            {
+                faceVertices.push_back(&vertices[i]);
+                noEdgeToEdgeMapping.push_back(edge);//[noEdge]=k;
+                noEdge++;
+                isNoEdge=true;
+             }
+
+            {   //Edge
+                faceVerticesEdge.push_back(&vertices[i]);
+                edgeToAllMapping.push_back(all);//[edge]=all;
+                if(!floatEquals(fabs(vertices[i].Position.y), maxY) && !floatEquals(fabs(vertices[i].Position.z), maxZ)) edgeToNoEdgeMapping.push_back(noEdge-1);
+                else edgeToNoEdgeMapping.push_back(-1);
+                edge++;
+                isEdge=true;
+            }
         }
         allVertices.push_back(&vertices[i]); //all
         if(isEdge) allToEdgeMapping.push_back(edge-1);//[all]=edge;
@@ -490,7 +493,12 @@ void Mesh::setVertices(){
         all++;
         isNoEdge=false;
         isEdge=false;
+
     }
+
+    std::cout << "faceVertices.size = " << faceVertices.size() << std::endl;
+    std::cout << "faceVerticesEdge.size = " << faceVerticesEdge.size() << std::endl;
+    std::cout << "allVertices.size = " << allVertices.size() << std::endl;
 }
 
 //useful to find the index in vertices of a vertex in faceVertices
