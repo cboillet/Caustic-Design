@@ -81,6 +81,7 @@ public:
         int getIndex(int v);
         int getEdgeIndex(int i);
         int getIndexTargetSurface(Vertex* v);
+        int getIndexTargetSurface(int i); // index in the all vertics
         std::vector<int> createNoEdgeToEdgeMapping();
         std::vector<int> createEdgeToNoEdgeMapping();
         vector<int> getNeighborsIndex(Vertex *v); //return the index in faceVertices of the vertex of faceVertices with the index as parameter

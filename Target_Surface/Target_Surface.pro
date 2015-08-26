@@ -83,7 +83,8 @@ HEADERS  += mainwindow.h \
     GLFW/glfw3.h \
     GLFW/glfw3native.h \
     utils.h \
-    targetoptimization.h
+    targetoptimization.h \
+    costFunctor.h
 
 FORMS    += mainwindow.ui
 

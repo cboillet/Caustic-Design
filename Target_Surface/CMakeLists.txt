@@ -69,6 +69,7 @@ set ( Target_Surface_Headers
     SurfaceModel.h
     SOIL.h
     global.h
+    costFunctor.h
     glew/freeglut.h
     glew/freeglut_ext.h
     glew/freeglut_std.h
