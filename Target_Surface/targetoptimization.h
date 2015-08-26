@@ -7,6 +7,7 @@
 #include "SurfaceModel.h"
 #include "rendering.h"
 #include "utils.h"
+#include "cost_functors.h"
 
 class TargetOptimization
 {
@@ -23,13 +24,5 @@ public:
     bool converged();
     void runTest(Renderer* renderer);
 };
-
-template<typename T> void cross(T* v1, T* v2, T* result);
-template<typename T> void calcFaceNormal(const T* const v1, const T* const v2, const T* const v3, T* result);
-template<typename T> T angle(T* v1, T* v2);
-template<typename T> void normalize(T* v);
-template<typename T> T evaluateInt(const T* const vertex, const T** const neighbors, uint nNeighbors, const vector<int> & neighborMap);
-template<typename T> void calcVertexNormal(const T* vertex, T* result, T** faceNormals, const T** neighbors, const vector<int> & neighborMap);
-template<typename T> T evaluateReg(const T** const allVertices, const float* L, uint nVertices);
 
 #endif // TARGETOPTIMIZATION_H
