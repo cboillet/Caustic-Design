@@ -403,7 +403,7 @@ void Model::shootTestRay(glm::highp_dvec3 & direction, glm::highp_dvec3 & redire
 
     std::cerr << refractedRay.x << ", " << refractedRay.y << ", " << refractedRay.z << std::endl;
 
-    endpoint = double(1.5*getFocalLength()) * refractedRay - redirect;
+    endpoint = double(1.5*getFocalLength()) * refractedRay + redirect;
 
     std::cerr << endpoint.x << ", " << endpoint.y << ", " << endpoint.z << std::endl;
 }
