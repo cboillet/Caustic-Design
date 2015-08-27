@@ -22,8 +22,8 @@ public:
     void optimize(Renderer* r);
     void runTest(Renderer* r);
     bool converged();
-    void gatherVertexInformation(Vertex * v, uint vertexIndex, vector<int> & neighbors, vector<int> & neighborMap);
-    void addResidualBlocks(ceres::Problem * problem, uint vertexIndex, vector<int> & neighbors, vector<int> & neighborMap, double* vertices, Renderer* r);
+    void gatherVertexInformation(Vertex * v, uint vertexIndex, vector<int> & neighbors, vector<int> & neighborMap, vector<int> & eightNeighbors);
+    void addResidualBlocks(ceres::Problem * problem, uint vertexIndex, vector<int> & neighbors, vector<int> & neighborMap, vector<int> & eightNeighbors, double* vertices, Renderer* r);
 
 };
 

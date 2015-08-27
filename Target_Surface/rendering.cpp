@@ -119,7 +119,7 @@ void Renderer::sceneUpdate()
     if(model.getLightRayPositions().empty())
         xCenter = 0.0f;
     else
-        xCenter = 0.5 * model.getFocalLength();
+        xCenter = 0.0 * model.getFocalLength();
 
     updateCamera();
 }
@@ -185,6 +185,11 @@ void ModelRendering::paintGL(){
 
     if(drawDesiredRayDirections)
         paintDesiredRayDirections();
+
+    //paintNeighbors();
+    //paintEdgeVertices();
+    //paintVertex();
+
 
     paintReceiver();
 
@@ -327,6 +332,105 @@ void ModelRendering::paintDesiredRays()
     }
     glEnd();
 }
+
+void ModelRendering::paintEdgeVertices()
+{
+    Mesh * mesh = &model.meshes[0];
+
+    glm::vec3 xOffset = glm::vec3(2.0, 0, 0);
+
+    glColor3f(1,1,1);
+    glBegin(GL_LINES);
+    for (uint i=0; i<mesh->edgeIndices.size(); i++)
+    {
+        glm::vec3 from = mesh->faceVerticesEdge[mesh->edgeIndices[i][0]]->Position;
+        glm::vec3 to = mesh->faceVerticesEdge[mesh->edgeIndices[i][1]]->Position;
+        from = from + xOffset;
+        to = to + xOffset;
+
+        glVertex3f(from.x, from.y, from.z);
+        glVertex3f(to.x, to.y, to.z);
+
+
+        from = to;
+        to = xOffset + mesh->faceVerticesEdge[mesh->edgeIndices[i][2]]->Position;
+
+        glVertex3f(from.x, from.y, from.z);
+        glVertex3f(to.x, to.y, to.z);
+
+        from = to;
+        to = xOffset + mesh->faceVerticesEdge[mesh->edgeIndices[i][0]]->Position;
+
+
+        glVertex3f(from.x, from.y, from.z);
+        glVertex3f(to.x, to.y, to.z);
+    }
+
+    glEnd();
+}
+
+
+void ModelRendering::paintNeighbors()
+{
+    int vertexIndex = 10;
+
+    for(uint i=0; i<neighborMapping.size(); i+=2)
+    {
+        float color[3] = {0, 0, 0};
+        int index = (i%6)/2;
+        color[index] = 1;
+
+        glColor3f(color[0], color[1], color[2]);
+        Vertex* v1 = model.meshes[0].faceVerticesEdge[vertexIndex];
+        Vertex* v2 = model.meshes[0].faceVerticesEdge[neighbors[neighborMapping[i]]];
+        Vertex* v3 = model.meshes[0].faceVerticesEdge[neighbors[neighborMapping[i+1]]];
+
+        glm::vec3 xoffset = glm::vec3(0.1, 0, 0) * float(i);
+
+        glBegin(GL_LINES);
+        // first edge
+        glm::vec3 pos = v1->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v2->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // second edge
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v3->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // third edge
+        glVertex3f(pos.x, pos.y, pos.z);
+        pos = v1->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glEnd();
+
+        // highlight starting-point (= end-point)
+        glBegin(GL_POINTS);
+        glVertex3f(pos.x, pos.y, pos.z);
+
+        // and 2nd point
+        pos = v2->Position + xoffset;
+        glVertex3f(pos.x, pos.y, pos.z);
+        glEnd();
+
+    }
+
+}
+
+
+void ModelRendering::paintVertex()
+{
+
+    if(true) return;
+    glPointSize(10.0);
+
+    glm::vec3 vertex = model.meshes[0].faceVerticesEdge[10]->Position;
+    glBegin(GL_POINTS);
+        glVertex3f(vertex.x, vertex.y, vertex.z);
+    glEnd();
+}
+
 
 void ModelRendering::setModel(){
     QString modelToLoad = QFileDialog::getOpenFileName(this, tr("Open 3D model to load"), ".");

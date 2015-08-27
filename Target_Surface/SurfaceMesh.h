@@ -53,6 +53,9 @@ public:
         vector<int> edgeToAllMapping;
         vector<int> indicesToEdgesIndices;
         vector<int> faceEdgeIndicesToIndices;
+        vector<int> vertexRowMap;
+        vector<int> vertexColMap;
+        vector<vector<int> > frontFaceMatrix;
 
         Mesh(vector<Vertex> vertices, vector<Texture> textures, vector<glm::uvec3> indices, float max_X, float max_Y, float max_Z/*, vector<int> edgeIndicesToIndices*/);
         Mesh(){}
@@ -74,6 +77,7 @@ public:
         void updateNormal(Vertex* v);
         void createEdgeIndices();
         void calcEdgeAdjacentFaces();
+        void createFrontFaceMatrix();
         void calculateFaceNormals(std::vector<glm::vec3>& normals);
         void calculateFaceNormal(glm::vec3 & normal, uint faceIndex);
         bool isEdge(Vertex* v); //return true if the vertex is an edge

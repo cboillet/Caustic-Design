@@ -199,6 +199,46 @@ void Mesh::updateNormal(Vertex *v)
     calculateVertexNormal(normals, vertexIndex);
 }
 
+void Mesh::createFrontFaceMatrix()
+{
+    frontFaceMatrix.clear();
+
+    int rows = (int) (sqrt(faceVerticesEdge.size()) + 0.5);
+    int cols = rows;
+
+    std::cout << "rows = " << rows << std::endl;
+
+    double step = (2*maxY) / (rows-1);
+
+    frontFaceMatrix.resize(rows);
+    vertexRowMap.resize(faceVerticesEdge.size());
+    vertexColMap.resize(faceVerticesEdge.size());
+
+    for(uint i=0; i<frontFaceMatrix.size(); i++)
+    {
+        std::vector<int> col;
+        col.resize(cols);
+        frontFaceMatrix[i] = col;
+    }
+
+    std::cout << "faceVerticesEdge.size = " << faceVerticesEdge.size() << std::endl;
+
+    for(uint i=0; i<faceVerticesEdge.size(); i++)
+    {
+        glm::vec3 * pos = &faceVerticesEdge[i]->Position;
+
+        int col = (int) (((pos->y + maxY) / step) + 0.5);
+        int row = (int) (((pos->z + maxZ) / step) + 0.5);
+
+        frontFaceMatrix[row][col] = i;
+
+        vertexRowMap[i] = row;
+        vertexColMap[i] = col;
+
+        //std::cerr << "set vertex " << i << " = " << pos->x << ", " << pos->y << ", " << pos->z << " to position " << row << ", " << col << std::endl;
+    }
+}
+
 
 void Mesh::calculateFaceNormal(glm::vec3 & normal, uint faceIndex)
 {

@@ -152,6 +152,7 @@ void Model::loadModel(string path){
     meshes[0].setVertices();
     meshes[0].createEdgeIndices();
     meshes[0].calcEdgeAdjacentFaces();
+    meshes[0].createFrontFaceMatrix();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene){

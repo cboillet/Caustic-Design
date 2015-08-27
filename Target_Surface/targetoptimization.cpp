@@ -713,7 +713,7 @@ TargetOptimization::~TargetOptimization(){
     //if (model != NULL) delete[] model;
 }
 
-void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexIndex, vector<int> &neighborList, vector<int> &neighborMap)
+void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexIndex, vector<int> &neighborList, vector<int> &neighborMap, vector<int> & eightNeighbors)
 {
     Mesh * mesh = &model->meshes[0];
     vector<uint> adjacentFaces = mesh->edgeAdjacentFaces[vertexIndex];
@@ -753,10 +753,30 @@ void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexInde
         }
     }
 
+
+    if(mesh->edgeToNoEdgeMapping[vertexIndex] != -1)
+    {
+        // no edge, make a 8 neighbor-matrix for e-reg
+        int row = mesh->vertexRowMap[vertexIndex];
+        int col = mesh->vertexColMap[vertexIndex];
+
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col-1]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col+1]);
+
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row][col-1]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row][col+1]);
+
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col-1]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col+1]);
+    }
+
+
 }
 
 
-void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, vector<int> &neighbors, vector<int> &neighborMap, double *vertices, Renderer* renderer)
+void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, vector<int> &neighbors, vector<int> &neighborMap, vector<int> & eightNeighbors, double *vertices, Renderer* renderer)
 {
 
 
@@ -772,11 +792,31 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                 &vertices[vertexIndex*3]
                 );
 
+    float weightMult = 1.0;
+    if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] == -1)
+        weightMult = 10000;
+    else
+    {
+        CostFunction* cost_function_ereg8 =
+            new AutoDiffCostFunction<CostFunctorEreg8Neighbors, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg8Neighbors(model, renderer, eightNeighbors));
+        problem->AddResidualBlock(
+            cost_function_ereg8,
+            NULL,
+            &vertices[vertexIndex*3], // vertex
+            &vertices[eightNeighbors[0]*3], // and the neighbors..
+            &vertices[eightNeighbors[1]*3],
+            &vertices[eightNeighbors[2]*3],
+            &vertices[eightNeighbors[3]*3],
+            &vertices[eightNeighbors[4]*3],
+            &vertices[eightNeighbors[5]*3],
+            &vertices[eightNeighbors[6]*3],
+            &vertices[eightNeighbors[7]*3]);
+    }
 
     // EDir depends on the original position
     //glm::vec3 pos = glm::vec3(x_sources[vertexIndex]); // TODO get original position
     CostFunction* cost_function_edir =
-            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&x_sources[vertexIndex]));
+            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&x_sources[vertexIndex], weightMult));
 
     problem->AddResidualBlock(
                 cost_function_edir,
@@ -831,8 +871,8 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                            &vertices[neighbors[1]*3],
                                            &vertices[neighbors[2]*3],
                                            &vertices[neighbors[3]*3]);
-                CostFunction* cost_function_ereg4 =
-                    new AutoDiffCostFunction<CostFunctorEreg4Neighbors, 1, 3, 3, 3, 3, 3>(new CostFunctorEreg4Neighbors(model, renderer, neighbors));
+                /*CostFunction* cost_function_ereg4 =
+                    new AutoDiffCostFunction<CostFunctorEreg4Neighbors, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg4Neighbors(model, renderer, neighbors));
                 problem->AddResidualBlock(
                         cost_function_ereg4,
                         NULL,
@@ -840,7 +880,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                         &vertices[neighbors[0]*3], // and the neighbors..
                         &vertices[neighbors[1]*3],
                         &vertices[neighbors[2]*3],
-                        &vertices[neighbors[3]*3]);
+                        &vertices[neighbors[3]*3]);*/
             }
 
             break;
@@ -858,8 +898,8 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                    &vertices[neighbors[3]*3],
                                    &vertices[neighbors[4]*3]);
 
-                CostFunction* cost_function_ereg5 =
-                        new AutoDiffCostFunction<CostFunctorEreg5Neighbors, 1, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg5Neighbors(model, renderer, neighbors));
+                /*CostFunction* cost_function_ereg5 =
+                        new AutoDiffCostFunction<CostFunctorEreg5Neighbors, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg5Neighbors(model, renderer, neighbors));
                     problem->AddResidualBlock(
                             cost_function_ereg5,
                             NULL,
@@ -868,7 +908,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                             &vertices[neighbors[1]*3],
                             &vertices[neighbors[2]*3],
                             &vertices[neighbors[3]*3],
-                            &vertices[neighbors[4]*3]);
+                            &vertices[neighbors[4]*3]);*/
         }
 
         break;
@@ -887,8 +927,8 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                &vertices[neighbors[4]*3],
                                &vertices[neighbors[5]*3]);
 
-                    CostFunction* cost_function_ereg6 =
-                        new AutoDiffCostFunction<CostFunctorEreg6Neighbors, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6Neighbors(model, renderer, neighbors));
+                    /*CostFunction* cost_function_ereg6 =
+                        new AutoDiffCostFunction<CostFunctorEreg6Neighbors, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6Neighbors(model, renderer, neighbors));
                     problem->AddResidualBlock(
                             cost_function_ereg6,
                             NULL,
@@ -898,7 +938,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                             &vertices[neighbors[2]*3],
                             &vertices[neighbors[3]*3],
                             &vertices[neighbors[4]*3],
-                            &vertices[neighbors[5]*3]);
+                            &vertices[neighbors[5]*3]);*/
         }
 
         break;
@@ -918,8 +958,8 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                &vertices[neighbors[5]*3],
                                &vertices[neighbors[6]*3]);
 
-                    CostFunction* cost_function_ereg7 =
-                        new AutoDiffCostFunction<CostFunctorEreg7Neighbors, 1, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg7Neighbors(model, renderer, neighbors));
+                    /*CostFunction* cost_function_ereg7 =
+                        new AutoDiffCostFunction<CostFunctorEreg7Neighbors, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg7Neighbors(model, renderer, neighbors));
                     problem->AddResidualBlock(
                             cost_function_ereg7,
                             NULL,
@@ -930,7 +970,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                             &vertices[neighbors[3]*3],
                             &vertices[neighbors[4]*3],
                             &vertices[neighbors[5]*3],
-                            &vertices[neighbors[6]*3]);
+                            &vertices[neighbors[6]*3]);*/
         }
 
         break;
@@ -951,8 +991,8 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                &vertices[neighbors[6]*3],
                                &vertices[neighbors[7]*3]);
 
-                CostFunction* cost_function_ereg8 =
-                    new AutoDiffCostFunction<CostFunctorEreg8Neighbors, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg8Neighbors(model, renderer, neighbors));
+                /*CostFunction* cost_function_ereg8 =
+                    new AutoDiffCostFunction<CostFunctorEreg8Neighbors, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg8Neighbors(model, renderer, neighbors));
                 problem->AddResidualBlock(
                         cost_function_ereg8,
                         NULL,
@@ -964,7 +1004,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                         &vertices[neighbors[4]*3],
                         &vertices[neighbors[5]*3],
                         &vertices[neighbors[6]*3],
-                        &vertices[neighbors[7]*3]);
+                        &vertices[neighbors[7]*3]);*/
         }
         break;
 
@@ -986,14 +1026,18 @@ void TargetOptimization::runTest(Renderer* renderer)
     vector<vector<int> > neighborMapPerVertex;
     neighborMapPerVertex.resize(mesh->faceVerticesEdge.size());
 
+    vector<vector<int> > eightNeighborsPerVertex;
+    eightNeighborsPerVertex.resize(mesh->faceVerticesEdge.size());
+
     bool allCaptured = true;
     for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
     {
         Vertex * v = mesh->faceVerticesEdge[i];
         vector<int> neighbors;
         vector<int> neighborMap;
+        vector<int> eightNeighbors;
 
-        gatherVertexInformation(v, i, neighbors, neighborMap);
+        gatherVertexInformation(v, i, neighbors, neighborMap, eightNeighbors);
 
         uint nNeighbors = neighbors.size();
         if(nNeighbors != 2 && nNeighbors != 3 && nNeighbors != 4 && nNeighbors != 5 && nNeighbors != 6 && nNeighbors != 7 && nNeighbors != 8)
@@ -1010,6 +1054,7 @@ void TargetOptimization::runTest(Renderer* renderer)
 
         neighborsPerVertex[i] = neighbors;
         neighborMapPerVertex[i] = neighborMap;
+        eightNeighborsPerVertex[i] = eightNeighbors;
     }
 
     if(allCaptured)
@@ -1021,56 +1066,63 @@ void TargetOptimization::runTest(Renderer* renderer)
     model->computeLightDirectionsScreenSurface();
     model->fresnelMapping();
 
-    // put all positions in one big list that we access later
-    double* vertices = new double[3*mesh->faceVerticesEdge.size()];
-    for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
+    for(uint loop=0; loop<1; loop++)
     {
-        glm::vec3 * pos = &mesh->faceVerticesEdge[i]->Position;
+        // put all positions in one big list that we access later
+        double* vertices = new double[3*mesh->faceVerticesEdge.size()];
+        for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
+        {
+            glm::vec3 * pos = &mesh->faceVerticesEdge[i]->Position;
 
-        vertices[3*i + 0] = pos->x;
-        vertices[3*i + 1] = pos->y;
-        vertices[3*i + 2] = pos->z;
+            vertices[3*i + 0] = pos->x;
+            vertices[3*i + 1] = pos->y;
+            vertices[3*i + 2] = pos->z;
+        }
+
+        Problem prob;
+
+        // iterate over all vertices and add the corresponding residual blocks
+        for(uint i=0; i<neighborsPerVertex.size(); i++)
+        {
+            addResidualBlocks(&prob, i, neighborsPerVertex[i], neighborMapPerVertex[i], eightNeighborsPerVertex[i], vertices, renderer);
+        }
+
+
+        Solver::Options options;
+        options.minimizer_progress_to_stdout = true;
+        //options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
+        options.max_num_iterations = 1000;
+        options.dense_linear_algebra_library_type = ceres::LAPACK;
+        options.num_threads = 4;
+        //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
+        //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
+        string error;
+        if(!options.IsValid(&error))
+        {
+            std::cout << "Options not valid: " << error << std::endl;
+        }
+
+        Solver::Summary summary;
+        Solve(options, &prob, &summary);
+
+        std::cout << summary.FullReport() << std::endl;
+
+        glm::vec3 * pos;
+        for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
+        {
+            pos = &mesh->faceVerticesEdge[i]->Position;
+            pos->x = vertices[3*i + 0];
+            pos->y = vertices[3*i + 1];
+            pos->z = vertices[3*i + 2];
+        }
+
+        delete[] vertices;
+
+        mesh->calculateVertexNormals();
+        model->computeLightDirectionsScreenSurface();
+        model->fresnelMapping();
+
     }
-
-    Problem prob;
-
-    // iterate over all vertices and add the corresponding residual blocks
-    for(uint i=0; i<neighborsPerVertex.size(); i++)
-    {
-        addResidualBlocks(&prob, i, neighborsPerVertex[i], neighborMapPerVertex[i], vertices, renderer);
-    }
-
-
-    Solver::Options options;
-    options.minimizer_progress_to_stdout = true;
-    //options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
-    options.max_num_iterations = 100;
-    options.dense_linear_algebra_library_type = ceres::LAPACK;
-    //options.num_threads = 4;
-    //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
-    //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
-    string error;
-    if(!options.IsValid(&error))
-    {
-        std::cout << "Options not valid: " << error << std::endl;
-    }
-
-    Solver::Summary summary;
-    Solve(options, &prob, &summary);
-
-    std::cout << summary.FullReport() << std::endl;
-
-    glm::vec3 * pos;
-    for(uint i=0; i<mesh->faceVerticesEdge.size(); i++)
-    {
-        pos = &mesh->faceVerticesEdge[i]->Position;
-        pos->x = vertices[3*i + 0];
-        pos->y = vertices[3*i + 1];
-        pos->z = vertices[3*i + 2];
-    }
-
-    delete[] vertices;
-
     model->meshes[0].calculateVertexNormals();
 
     renderer->repaint();

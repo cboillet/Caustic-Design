@@ -166,9 +166,11 @@ template<typename T> void calcVertexNormal(const T* vertex, T* result, T** faceN
 
 
 // For EReg
-template<typename T> T evaluateReg(const T** const allVertices, const float* L, uint nVertices)
+template<typename T> void evaluateReg(const T** const allVertices, const float* L, uint nVertices, T* res)
 {
-    T res[3] = {T(0), T(0), T(0)};
+
+    for (uint i=0; i<3; i++)
+        res[i] = T(0);
 
     for(int i=0; i<nVertices; i++){
         for (int j=0; j<3; j++){
@@ -176,8 +178,8 @@ template<typename T> T evaluateReg(const T** const allVertices, const float* L, 
         }
     }
 
-    return T(EREG_WEIGHT) * (ceres::abs(res[0]) + ceres::abs(res[1]) + ceres::abs(res[2]));
-
+    for (uint i=0; i<3; i++)
+        res[i] = res[i] * res[i] * T(EREG_WEIGHT);
 }
 
 
@@ -476,7 +478,7 @@ public:
         allVertices[8] = neighbor8;
 
 
-        residual[0] = evaluateReg(allVertices, L, 9);
+        evaluateReg(allVertices, L, 9, residual);
 
         return true;
     }
@@ -526,7 +528,7 @@ public:
         allVertices[7] = neighbor7;
 
 
-        residual[0] = evaluateReg(allVertices, L, 8);
+        evaluateReg(allVertices, L, 8, residual);
 
         return true;
     }
@@ -575,7 +577,7 @@ public:
         allVertices[6] = neighbor6;
 
 
-        residual[0] = evaluateReg(allVertices, L, 7);
+        evaluateReg(allVertices, L, 7, residual);
 
         return true;
     }
@@ -621,7 +623,7 @@ public:
         allVertices[5] = neighbor5;
 
 
-        residual[0] = evaluateReg(allVertices, L, 6);
+        evaluateReg(allVertices, L, 6, residual);
 
         return true;
     }
@@ -666,7 +668,7 @@ public:
         allVertices[4] = neighbor4;
 
 
-        residual[0] = evaluateReg(allVertices, L, 5);
+        evaluateReg(allVertices, L, 5, residual);
 
         return true;
     }
@@ -709,7 +711,7 @@ public:
         allVertices[3] = neighbor3;
 
 
-        residual[0] = evaluateReg(allVertices, L, 4);
+        evaluateReg(allVertices, L, 4, residual);
 
         return true;
     }
@@ -750,7 +752,7 @@ public:
         allVertices[2] = neighbor2;
 
 
-        residual[0] = evaluateReg(allVertices, L, 3);
+        evaluateReg(allVertices, L, 3, residual);
 
         return true;
     }
@@ -788,20 +790,20 @@ private:
 
 class CostFunctorEdir2{
 public:
-    CostFunctorEdir2(glm::vec3 * s): source(s){
+    CostFunctorEdir2(glm::vec3 * s, float weightMultiplicator): source(s), weightMultiplicator(weightMultiplicator) {
     }
 
     template <typename T> bool operator()(const T* const vertex, T* e) const{
         // x - proj(..) will only return the difference in y- and z-coordinates. we may ignore the rest
         T y = vertex[1] - T(source->y);
         T z = vertex[2] - T(source->z);
-        e[0] = T(EDIR_WEIGHT) * (ceres::abs(y)+ceres::abs(z));
+        e[0] = T(EDIR_WEIGHT*weightMultiplicator) * (y*y+z*z);
         return true;
     }
 
 private:
     glm::vec3 * source;
-    float weight;
+    float weightMultiplicator;
 };
 
 
