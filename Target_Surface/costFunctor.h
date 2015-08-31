@@ -18,7 +18,7 @@ template<typename T> void cross(T* v1, T* v2, T* result);
 template<typename T> void calcFaceNormal(const T* const v1, const T* const v2, const T* const v3, T* result);
 template<typename T> T angle(T* v1, T* v2);
 template<typename T> void normalize(T* v);
-template<typename T> T evaluateInt(const T* const vertex, const T** const neighbors, uint nNeighbors, const vector<int> & neighborMap);
+template<typename T> T evaluateInt(const T* const vertex, const T** const neighbors, uint nNeighbors, const vector<int> & neighborMap, T* result);
 template<typename T> void calcVertexNormal(const T* vertex, T* result, T** faceNormals, const T** neighbors, const vector<int> & neighborMap);
 template<typename T> T evaluateReg(const T** const allVertices, const float* L, uint nVertices);
 
@@ -72,7 +72,7 @@ template<typename T> void normalize(T* v)
     }
 }
 
-template<typename T> T evaluateInt(const T* const vertex, const T** neighbors, uint nNeighbors, const vector<int> & neighborMap, const glm::vec3 * desiredNormal)
+template<typename T> T evaluateInt(const T* const vertex, const T** neighbors, uint nNeighbors, const vector<int> & neighborMap, const glm::vec3 * desiredNormal, T* result)
 {
 
     T** faceNormals = new T*[neighborMap.size()/2];
@@ -100,6 +100,9 @@ template<typename T> T evaluateInt(const T* const vertex, const T** neighbors, u
     T z = vertexNormal[2] - T(desiredNormal->z);
 
     T res = T(EINT_WEIGHT) * ceres::sqrt(x*x + y*y + z*z);
+    result[0] = x;
+    result[1] = y;
+    result[2] = z;
 
     // -- clean
     delete[] vertexNormal;
@@ -172,14 +175,26 @@ template<typename T> void evaluateReg(const T** const allVertices, const float* 
     for (uint i=0; i<3; i++)
         res[i] = T(0);
 
-    for(int i=0; i<nVertices; i++){
-        for (int j=0; j<3; j++){
-            res[j] += T(L[i]) * allVertices[i][j];
+    if(nVertices == uint(5))
+    {
+        for(int i=0; i<nVertices; i++){
+            for (int j=0; j<3; j++){
+                res[j] += T(L[i]) * allVertices[i][j];
+            }
+        }
+    }
+    else
+    {
+        for(uint i=0; i<nVertices; i++)
+        {
+            res[0] += T(L[i]) * allVertices[i][0];
+            res[1] = T(0);
+            res[2] = T(0);
         }
     }
 
     for (uint i=0; i<3; i++)
-        res[i] = res[i] * res[i] * T(EREG_WEIGHT);
+        res[i] = res[i] * T(EREG_WEIGHT);
 }
 
 
@@ -218,7 +233,7 @@ public:
         neighbors[7] = neighbor8;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 8, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 8, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -257,7 +272,7 @@ public:
         neighbors[6] = neighbor7;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 7, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 7, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -294,7 +309,7 @@ public:
         neighbors[5] = neighbor6;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 6, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 6, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -328,7 +343,7 @@ public:
         neighbors[4] = neighbor5;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 5, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 5, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -361,7 +376,7 @@ public:
         neighbors[3] = neighbor4;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 4, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 4, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -392,7 +407,7 @@ public:
         neighbors[2] = neighbor3;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 3, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 3, neighborMap, desiredNormal, residual);
 
         return true;
     }
@@ -423,7 +438,7 @@ public:
         neighbors[2] = neighbor3;
 
 
-        residual[0] = evaluateInt(vertex, neighbors, 3, neighborMap, desiredNormal);
+        evaluateInt(vertex, neighbors, 3, neighborMap, desiredNormal, residual);
 
         return true;
     }
