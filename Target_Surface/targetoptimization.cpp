@@ -820,7 +820,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
     // EDir depends on the original position
     //glm::vec3 pos = glm::vec3(x_sources[vertexIndex]); // TODO get original position
     CostFunction* cost_function_edir =
-            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&x_sources[vertexIndex], weightMult));
+            new AutoDiffCostFunction<CostFunctorEdir2, 3, 3>(new CostFunctorEdir2(&x_sources[vertexIndex], weightMult));
 
     problem->AddResidualBlock(
                 cost_function_edir,
@@ -1112,7 +1112,7 @@ void TargetOptimization::runTest(Renderer* renderer)
     model->computeLightDirectionsScreenSurface();
     model->fresnelMapping();
 
-    for(uint loop=0; loop<3; loop++)
+    for(uint loop=0; loop<1; loop++)
     {
         // put all positions in one big list that we access later
         double* vertices = new double[3*mesh->faceVerticesEdge.size()];
@@ -1138,14 +1138,14 @@ void TargetOptimization::runTest(Renderer* renderer)
         options.minimizer_progress_to_stdout = true;
         options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
         //options.linear_solver_type = ceres::SPARSE_SCHUR;
-        options.max_num_iterations = 800;
+        options.max_num_iterations = 200;
         options.dense_linear_algebra_library_type = ceres::LAPACK;
         options.num_threads = 4;
         //options.preconditioner_type = ceres::CLUSTER_JACOBI;
         //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
         //options.preconditioner_type = ceres::5CLUSTER_TRIDIAGONAL; // fast preconditioner
-        options.function_tolerance = 1e-9;
-        options.parameter_tolerance = 1e-9;
+        //options.function_tolerance = 1e-7;
+        //options.parameter_tolerance = 1e-9;
         string error;
         if(!options.IsValid(&error))
         {

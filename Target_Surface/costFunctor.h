@@ -812,7 +812,9 @@ public:
         // x - proj(..) will only return the difference in y- and z-coordinates. we may ignore the rest
         T y = vertex[1] - T(source->y);
         T z = vertex[2] - T(source->z);
-        e[0] = T(EDIR_WEIGHT*weightMultiplicator) * (y*y+z*z);
+        e[0] = T(0);
+        e[1] = T(EDIR_WEIGHT*weightMultiplicator) * y;
+        e[2] = T(EDIR_WEIGHT*weightMultiplicator) * z;
         return true;
     }
 
