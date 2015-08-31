@@ -1091,7 +1091,7 @@ void TargetOptimization::runTest(Renderer* renderer)
         Solver::Options options;
         options.minimizer_progress_to_stdout = true;
         options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
-        options.max_num_iterations = 1000;
+        options.max_num_iterations = 200; //1000;
         options.dense_linear_algebra_library_type = ceres::LAPACK;
         options.num_threads = 4;
         options.function_tolerance = 1e-10;

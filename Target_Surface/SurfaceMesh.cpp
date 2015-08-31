@@ -103,7 +103,7 @@ void Mesh::shrink_vertices()
         for (int j=0; j<i; j++)
         {
 
-            // if distance between the two vertices is small, we assume they are the same -> set higher index to lower one
+            // if distance between the two vertices is small, we assume they are the same ->         higher index to lower one
             if(glm::distance(vertices[i].Position, vertices[j].Position) < 0.00001){
                 int indexBase = i/3;
                 int indexOffset = i%3;

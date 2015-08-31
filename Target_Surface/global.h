@@ -42,7 +42,7 @@
 #define EREG_WEIGHT 1e-1
 #define MAX_Y 1
 #define MAX_Z 1
-
+#define RAY_SHOOT 50
 
 typedef float (array)[NORMALS];
 

@@ -148,6 +148,15 @@ void MainWindow::newFocalLength()
 
 }
 
+void MainWindow::on_actionShoot_Ray_toggled(){
+    vector<glm::highp_dvec3> direction;
+    vector<glm::highp_dvec3> redirect;
+    vector<glm::highp_dvec3> endpoint;
+    viewer->model.shootRay(direction, redirect, endpoint);
+    viewer->setRay(direction, redirect, endpoint);
+    viewer->update();
+}
+
 void MainWindow::on_actionExit_triggered()
 {
     QApplication::quit();
