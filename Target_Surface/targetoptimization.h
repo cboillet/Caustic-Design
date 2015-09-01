@@ -14,6 +14,7 @@ class TargetOptimization
     vector<glm::vec3> computeNormals;
     vector<glm::vec3> x_sources;
     Model* model;
+    bool neighborsVersion;
 
 public:
     TargetOptimization();

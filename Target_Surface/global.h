@@ -39,7 +39,8 @@
 #define EINT_WEIGHT 1.0
 #define EBAR_WEIGHT 1.0
 #define EDIR_WEIGHT 1e-4
-#define EREG_WEIGHT 1e-1
+#define EDIR_EDGE_WEIGHT 1
+#define EREG_WEIGHT 2e-1
 #define MAX_Y 1
 #define MAX_Z 1
 #define RAY_SHOOT 50
