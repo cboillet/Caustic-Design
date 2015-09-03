@@ -257,6 +257,7 @@ void ModelRendering::paintReceiver()
     for (uint i=0; i<light_pos.size(); i++)
     {
         glm::vec3 p = light_pos[i];
+        glColor3f(0,0,0);
         glVertex3f(p.x, p.y, p.z);
     }
     glEnd();
