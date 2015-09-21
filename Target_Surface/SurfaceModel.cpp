@@ -5,8 +5,6 @@
 #include <assimp/Exporter.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
-/*openGL*/
-#include "SOIL.h"
 /* io */
 #include <iostream>
 #include <fstream>
