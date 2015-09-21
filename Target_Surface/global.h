@@ -9,8 +9,6 @@
 
 #include "GL/gl.h"
 #include "GL/glu.h"
-#include "GL/glut.h"
-#include "GL/freeglut.h"
 #include "GL/glext.h"
 #include "glm/glm.hpp"
 

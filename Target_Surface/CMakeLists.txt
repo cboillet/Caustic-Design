@@ -19,16 +19,8 @@ else()
 endif()
 
 ##########################
-# OpenGL, GLUT
+# OpenGL
 #########################
-find_package(GLUT REQUIRED)
-include_directories(${GLUT_INCLUDE_DIRS})
-link_directories(${GLUT_LIBRARY_DIRS})
-add_definitions(${GLUT_DEFINITIONS})
-if(NOT GLUT_FOUND)
-    message(ERROR " GLUT not found!")
-endif(NOT GLUT_FOUND)
-
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
@@ -52,7 +44,6 @@ include_directories (
 	${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 	${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
-	${GLUT_INCLUDE_DIR}
 	/usr/include/
 	/usr/local/lib
 )
@@ -91,4 +82,4 @@ set ( Target_Surface_MOCS
 QT4_WRAP_CPP(MOCS ${Target_Surface_MOCS})
 
 add_executable ( Target_Surface ${Target_Surface_Src} ${UIS} ${RSCS} ${TRS} ${MOCS} )
-target_link_libraries ( Target_Surface  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLU_LIBRARY} ${CERES_LIBRARIES} ${ASSIMP_FLAGS})
+target_link_libraries ( Target_Surface  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${OPENGL_LIBRARIES} ${GLU_LIBRARY} ${CERES_LIBRARIES} ${ASSIMP_FLAGS})
