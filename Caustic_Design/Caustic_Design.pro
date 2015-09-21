@@ -1,5 +1,6 @@
 INCLUDEPATH +=   /usr/include/
 LIBS        += -L/usr/include/
+LIBS	    += -L/usr/include/suitesparse/
 LIBS        += -lCGAL
 LIBS        += -lboost_thread
 LIBS        += -lgmp
@@ -19,6 +20,7 @@ LIBS        += -llapack
 # L-BFGS
 LIBS        += -llbfgs
 LIBS        += -ltinyxml
+LIBS += -lsuitesparse
 LIBS += -lsuitesparseconfig
 
 CONFIG += warn_off
