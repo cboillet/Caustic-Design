@@ -25,13 +25,6 @@ class MainWindow;
 
 class Interpolation{
 
-private:
-    //std::vector<Point> Xo;
-    std::vector<double> c_weights;
-    std::vector<Vertex_handle> p_vertices;
-    //std::map<Point, Vertex_handle> map;
-
-
 public:
     Scene** computeScenes;
     Scene* source_scene;
@@ -45,15 +38,7 @@ public:
     ~Interpolation(){}
 
 
-    void runInterpolation();
     void runInterpolation(QString imageFile, QString datFile);
-    std::vector<Point>& getXo(){return Xo;}
-    void computeWeights(std::vector<Vertex_handle> neighbors, Point oP);
-    void findNaturalNeighbor(Point oP);
-    void findNeighbor(Point oP);
-    //std::vector<Point> computeXr(std::vector<std::pair<Vertex_handle, FT> > vertices_weight);
-
-
 
 };
 

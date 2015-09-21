@@ -453,7 +453,7 @@ private:
 
 class CostFunctorEreg8Neighbors{
 public:
-    CostFunctorEreg8Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg8Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -505,7 +505,7 @@ private:
 
 class CostFunctorEreg7Neighbors{
 public:
-    CostFunctorEreg7Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg7Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -556,7 +556,7 @@ private:
 
 class CostFunctorEreg6Neighbors{
 public:
-    CostFunctorEreg6Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg6Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -604,7 +604,7 @@ private:
 
 class CostFunctorEreg5Neighbors{
 public:
-    CostFunctorEreg5Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg5Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -651,7 +651,7 @@ private:
 
 class CostFunctorEreg4Neighbors{
 public:
-    CostFunctorEreg4Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg4Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -696,7 +696,7 @@ private:
 
 class CostFunctorEreg3Neighbors{
 public:
-    CostFunctorEreg3Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg3Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];
@@ -739,7 +739,7 @@ private:
 
 class CostFunctorEreg2Neighbors{
 public:
-    CostFunctorEreg2Neighbors(Model* m, Renderer* renderer, vector<int> neighbors): model(m){
+    CostFunctorEreg2Neighbors(Model* m, vector<int> neighbors): model(m){
 
         uint size = neighbors.size() + 1;
         L = new float[size];

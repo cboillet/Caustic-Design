@@ -1,8 +1,11 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #define GL_GLEXT_PROTOTYPES
-#include "GL/glew.h"
-#include "GL/glext.h"
+#define GLM_FORCE_RADIANS
+
+#define QT_NO_OPENGL_ES_2
+#include <QGLWidget>
+#include <QGLFunctions>
 
 #include "GL/gl.h"
 #include "GL/glu.h"
@@ -10,9 +13,6 @@
 #include "GL/freeglut.h"
 #include "GL/glext.h"
 #include "glm/glm.hpp"
-
-#include <QGLWidget>
-#include <QGLFunctions>
 
 #include <glog/logging.h>
 

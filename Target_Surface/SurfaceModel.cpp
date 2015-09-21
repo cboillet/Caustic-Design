@@ -174,9 +174,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<glm::uvec3> indices;
     vector<Texture> textures;
     vector<int> edgeIndicesToIndices;
-    float max_X;
-    float max_Y;
-    float max_Z;
+    float max_X = -100;
+    float max_Y = -100;
+    float max_Z = -100;
     int edgeIndices;
     int j;
     std::cout << "loading mesh with " << mesh->mNumVertices << " vertices" << std::endl;

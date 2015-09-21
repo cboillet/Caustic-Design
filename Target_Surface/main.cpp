@@ -8,8 +8,6 @@ int main(int argc, char *argv[])
     google::InitGoogleLogging("logtostderr=1");
 
     QApplication a(argc, argv);
-    glewExperimental = GL_TRUE;
-    glewInit();
 
     std::cout << "running with EDIR " << EDIR_WEIGHT << ", EREG " << EREG_WEIGHT << std::endl;
 

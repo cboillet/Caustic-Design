@@ -11,6 +11,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
 #include "utils.h"
+#define GLM_FORCE_RADIANS
 #include "glm/gtx/vector_angle.hpp"
 
 using namespace std;

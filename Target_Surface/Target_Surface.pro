@@ -56,32 +56,8 @@ HEADERS  += mainwindow.h \
     SurfaceMesh.h \
     glm/glm.hpp \
     SurfaceModel.h \
-    SOIL.h \
     global.h \
-    glew/freeglut.h \
-    glew/freeglut_ext.h \
-    glew/freeglut_std.h \
-    glew/gl.h \
-    glew/glew.h \
-    glew/glext.h \
-    glew/gl_mangle.h \
-    glew/glu.h \
-    glew/glu_mangle.h \
-    glew/glut.h \
-    glew/glx.h \
-    glew/glxew.h \
-    glew/glxext.h \
-    glew/glxint.h \
-    glew/glx_mangle.h \
-    glew/glxmd.h \
-    glew/glxproto.h \
-    glew/glxtokens.h \
-    glew/wglew.h \
-    glew/internal/dri_interface.h \
-    glew/internal/glcore.h \
     rendering.h \
-    GLFW/glfw3.h \
-    GLFW/glfw3native.h \
     utils.h \
     targetoptimization.h \
     costFunctor.h
