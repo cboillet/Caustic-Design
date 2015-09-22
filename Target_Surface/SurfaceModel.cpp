@@ -98,7 +98,7 @@ void Model::exportModel(std::string filename)
 
     // --- actually export
     Assimp::Exporter exporter;
-    exporter.Export(scene, "obj", filename);
+    exporter.Export(scene, "stl", filename);
 
     std::cout << "exported to " << filename << std::endl;
 
