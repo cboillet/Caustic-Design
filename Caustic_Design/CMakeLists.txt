@@ -30,7 +30,7 @@ FIND_PACKAGE(TinyXML REQUIRED)
 
 set(QT_USE_QTOPENGL TRUE)
 set ( CGAL_FLAGS "-lCGAL -lboost_thread -lgmp -lmpfr -lm -lamd -lcamd -lcolamd -lccolamd -lcholmod -lspqr -ltbb -lmetis -lblas -llapack" )
-set (CMAKE_CXX_FLAGS "-frounding-math -O3 -std=c++11 ${CGAL_FLAGS}")
+set (CMAKE_CXX_FLAGS "-frounding-math -pthread -O3 -std=c++11 ${CGAL_FLAGS}")
 include ( ${QT_USE_FILE} )
 include_directories (
 	${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}

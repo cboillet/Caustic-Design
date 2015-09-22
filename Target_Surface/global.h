@@ -36,8 +36,8 @@
 #define EBAR_DETH 39
 #define EINT_WEIGHT 1.0
 #define EBAR_WEIGHT 1.0
-#define EDIR_WEIGHT 5e-3
-#define EREG_WEIGHT 1.0e+1
+#define EDIR_WEIGHT 1.0
+#define EREG_WEIGHT 10.0
 #define MAX_Y 1
 #define MAX_Z 1
 
