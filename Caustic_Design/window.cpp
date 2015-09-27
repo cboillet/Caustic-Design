@@ -853,7 +853,8 @@ void MainWindow::on_actionComputeInterpolation_triggered(){
     inter.runInterpolation(image, dats);
     //inter.runInterpolation();
 
-    QString results = QFileDialog::getOpenFileName(this, tr("Saving interpolation resultst"), ".dat");
+    QString results = QFileDialog::getSaveFileName(this, tr("Save Interpolation results"), ".dat");
+    //QString results = QFileDialog::getOpenFileName(this, tr("Saving interpolation resultst"), ".dat");
     if (results.isEmpty()) return;
     m_scene->save_dat(results, m_scene->getLightPointsTarget());
 

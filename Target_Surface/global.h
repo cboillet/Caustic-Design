@@ -1,18 +1,16 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #define GL_GLEXT_PROTOTYPES
-#include "GL/glew.h"
-#include "GL/glext.h"
+#define GLM_FORCE_RADIANS
+
+#define QT_NO_OPENGL_ES_2
+#include <QGLWidget>
+#include <QGLFunctions>
 
 #include "GL/gl.h"
 #include "GL/glu.h"
-#include "GL/glut.h"
-#include "GL/freeglut.h"
 #include "GL/glext.h"
 #include "glm/glm.hpp"
-
-#include <QGLWidget>
-#include <QGLFunctions>
 
 #include <glog/logging.h>
 
@@ -33,14 +31,19 @@
 
 
 /**/
-#define CONVERGENCE_LIMIT 0.0001
+#define CONVERGENCE_LIMIT 9e-2001
 #define AIR_REFRACTIV_INDEX 1
 #define EBAR_DETH 39
 #define EINT_WEIGHT 1.0
 #define EBAR_WEIGHT 1.0
+<<<<<<< HEAD
 #define EDIR_WEIGHT 1e-4
 #define EDIR_EDGE_WEIGHT 1
 #define EREG_WEIGHT 2e-1
+=======
+#define EDIR_WEIGHT 1.0
+#define EREG_WEIGHT 10.0
+>>>>>>> cleanup
 #define MAX_Y 1
 #define MAX_Z 1
 #define RAY_SHOOT 50

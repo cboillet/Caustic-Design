@@ -1,4 +1,14 @@
-# Caustic-Design
+# Caustic-Design-Project
+
+There are two major parts in this project. 
+
+ 1.  Caustic-Design - handles Optimal-Transport and corresponding tasks
+ 2.  Target Optimization - handles 3D Optimization
+
+
+## Caustic-Design
+
+Note: This step is optional.. qmake is not fully functional in the current version. Please see the Build-Section for details.
 
 <b>Import in QT-Creator</b>
  *  Open QT-Creator
@@ -19,11 +29,23 @@ Following dependencies are needed for the Caustic_Designer:<br>
  *  liblapack-dev
  *  libtbb-dev
  *  libmetis-dev
- *  suitesparse: http://www.cise.ufl.edu/research/sparse/SuiteSparse/
+ *  libsuitesparse-dev (or manually via: http://faculty.cse.tamu.edu/davis/suitesparse.html)
+ *  liblbfgs-dev
  *  libtinyxml-dev
 
 Debian dependencies as one-liner:<br>
-`sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev libtinyxml-dev`
+`sudo apt-get install cmake libqt4-dev libcgal-dev libcgal-qt4-dev libblas-dev liblapack-dev libtbb-dev libmetis-dev libsuitesparse-dev liblbfgs-dev libtinyxml-dev`
+
+## Build
+
+We suggest using cmake to build the project. To do so, simple:
+
+ 1.  Create Build Directory (e.g. `mkdir build-Caustic_Design`)
+ 2.  Run cmake in the build directory (e.g. `cd build-Caustic_Design && cmake ../Caustic_Design/`)
+
+
+You may also use qmake instead of cmake if you prefer qmake. But in the current version, suitesparse does not seem to be set correctly when installing it via `apt-get`.
+
 
 ## Usage
 
@@ -62,6 +84,13 @@ algorithm->compute interpolation to load the source image, and points (.dat) and
 
 ------
 
+## Target Optimization
+
+## Dependencies
+Following libraries are needed:
+
+ *  ceres-solver: http://ceres-solver.org/building.html
+ *  libassimp-dev
 
 ### Target Surface -> C++ (3D part) 
 // Assigned to: Cam<br>

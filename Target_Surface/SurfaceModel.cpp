@@ -5,8 +5,6 @@
 #include <assimp/Exporter.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing fla
-/*openGL*/
-#include "SOIL.h"
 /* io */
 #include <iostream>
 #include <fstream>
@@ -100,7 +98,7 @@ void Model::exportModel(std::string filename)
 
     // --- actually export
     Assimp::Exporter exporter;
-    exporter.Export(scene, "obj", filename);
+    exporter.Export(scene, "stl", filename);
 
     std::cout << "exported to " << filename << std::endl;
 
@@ -174,9 +172,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     vector<glm::uvec3> indices;
     vector<Texture> textures;
     vector<int> edgeIndicesToIndices;
-    float max_X;
-    float max_Y;
-    float max_Z;
+    float max_X = -100;
+    float max_Y = -100;
+    float max_Z = -100;
     int edgeIndices;
     int j;
     std::cout << "loading mesh with " << mesh->mNumVertices << " vertices" << std::endl;
