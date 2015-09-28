@@ -1,6 +1,6 @@
 <!doctype html> <html class="no-js"> <head> <meta charset="utf-8"> 
 
-<title>Perfect Laplacians for Polygon Meshes</title> 
+<title>Caustic Design</title>
 
 <meta name="description" content=""> <meta name="viewport" content="width=device-width"> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link href="http://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css"> 
 <style type="text/css">
@@ -8,6 +8,7 @@
 /*! Skeleton v2.0.4 | MIT License | http://getskeleton.com/ */
 html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:700}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]{-webkit-appearance:textfield;box-sizing:content-box}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:700}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}body{font-family:Raleway,sans-serif}.container{max-width:800px}.header{margin-top:6rem;text-align:center}.value-prop{margin-top:1rem}.value-props{margin-top:4rem;margin-bottom:4rem}.docs-header{text-transform:uppercase;font-size:1.4rem;letter-spacing:.2rem;font-weight:600}.docs-section{border-top:1px solid #eee;padding:4rem 0;margin-bottom:0}.value-img{display:block;text-align:center;margin:2.5rem auto 0}.example-grid .column,.example-grid .columns{background:#EEE;text-align:center;border-radius:4px;font-size:1rem;text-transform:uppercase;height:30px;line-height:30px;margin-bottom:.75rem;font-weight:600;letter-spacing:.1rem}.docs-example .row,.docs-example form,.docs-example.row{margin-bottom:0}.docs-example h1,.docs-example h2,.docs-example h3,.docs-example h4,.docs-example h5,.docs-example h6{margin-bottom:1rem}.heading-font-size{font-size:1.2rem;color:#999;letter-spacing:normal}.code-example{margin-top:1.5rem;margin-bottom:0}.code-example-body{white-space:pre;word-wrap:break-word}.example{position:relative;margin-top:4rem}.example-header{font-weight:600;margin-top:1.5rem;margin-bottom:.5rem}.example-description{margin-bottom:1.5rem}.example-screenshot-wrapper{display:block;position:relative;overflow:hidden;border-radius:6px;border:1px solid #eee;height:250px}.example-screenshot{width:100%;height:auto}.example-screenshot.coming-soon{width:auto;position:absolute;background:#eee;top:5px;right:5px;bottom:5px;left:5px}.navbar{display:none;position:absolute}@media (min-width:550px){.header{margin-top:10rem}.value-props{margin-top:9rem;margin-bottom:7rem}.value-img{margin-bottom:1rem}.example-grid .column,.example-grid .columns{margin-bottom:1.5rem}.docs-section{padding:6rem 0}.example-send-yourself-copy{float:right;margin-top:12px}.example-screenshot-wrapper{position:absolute;width:48%;height:100%;left:0;max-height:none}}@media (min-width:750px){.navbar+.docs-section{border-top-width:0}.navbar,.navbar-spacer{display:block;width:100%;height:6.5rem;background:rgba(239,239,239,0.9);z-index:99;border-bottom:1px solid #888}.navbar-spacer{display:none}.navbar-list{list-style:none;margin-bottom:0}.navbar-item{position:relative;float:left;margin-bottom:0}.navbar-link{text-transform:uppercase;font-size:11px;font-weight:600;letter-spacing:.2rem;margin-right:35px;text-decoration:none;line-height:6.5rem;color:#222}.navbar-link.active{color:#33C3F0}.navbar{position:fixed;top:0;left:0}.has-docked-nav .navbar-spacer{display:block}.navbar>.container{width:80%}.popover.open{display:block}.popover{display:none;position:absolute;background:#fff;border:1px solid #eee;border-radius:4px;top:92%;left:-50%;-webkit-filter:drop-shadow(0 0 6px rgba(0,0,0,.1));-moz-filter:drop-shadow(0 0 6px rgba(0,0,0,.1));filter:drop-shadow(0 0 6px rgba(0,0,0,.1))}.popover-item:first-child .popover-link:after,.popover-item:first-child .popover-link:before{bottom:100%;left:50%;border:solid transparent;content:" ";height:0;width:0;position:absolute;pointer-events:none}.popover-item:first-child .popover-link:after{border-color:rgba(255,255,255,0);border-bottom-color:#fff;border-width:10px;margin-left:-10px}.popover-item:first-child .popover-link:before{border-color:rgba(238,238,238,0);border-bottom-color:#eee;border-width:11px;margin-left:-11px}.popover-list{padding:0;margin:0;list-style:none}.popover-item{padding:0;margin:0}.popover-link{position:relative;color:#222;display:block;padding:8px 20px;border-bottom:1px solid #eee;text-decoration:none;text-transform:uppercase;font-size:1rem;font-weight:600;text-align:center;letter-spacing:.1rem}.popover-item:first-child .popover-link{border-radius:4px 4px 0 0}.popover-item:last-child .popover-link{border-radius:0 0 4px 4px;border-bottom-width:0}.popover-link:hover{color:#fff;background:#33C3F0}.popover-item:first-child .popover-link:hover:after,.popover-link:hover{border-bottom-color:#33C3F0}}.container{position:relative;width:100%;max-width:960px;margin:0 auto;padding:0 20px;box-sizing:border-box}.column,.columns{width:100%;float:left;box-sizing:border-box}@media (min-width:400px){.container{width:85%;padding:0}}@media (min-width:550px){.container{width:80%}.column,.columns{margin-left:4%}.column:first-child,.columns:first-child{margin-left:0}.one.column,.one.columns{width:4.66666666667%}.two.columns{width:13.3333333333%}.three.columns{width:22%}.four.columns{width:30.6666666667%}.five.columns{width:39.3333333333%}.six.columns{width:48%}.seven.columns{width:56.6666666667%}.eight.columns{width:65.3333333333%}.nine.columns{width:74%}.ten.columns{width:82.6666666667%}.eleven.columns{width:91.3333333333%}.twelve.columns{width:100%;margin-left:0}.one-third.column{width:30.6666666667%}.two-thirds.column{width:65.3333333333%}.one-half.column{width:48%}.offset-by-one.column,.offset-by-one.columns{margin-left:8.66666666667%}.offset-by-two.column,.offset-by-two.columns{margin-left:17.3333333333%}.offset-by-three.column,.offset-by-three.columns{margin-left:26%}.offset-by-four.column,.offset-by-four.columns{margin-left:34.6666666667%}.offset-by-five.column,.offset-by-five.columns{margin-left:43.3333333333%}.offset-by-six.column,.offset-by-six.columns{margin-left:52%}.offset-by-seven.column,.offset-by-seven.columns{margin-left:60.6666666667%}.offset-by-eight.column,.offset-by-eight.columns{margin-left:69.3333333333%}.offset-by-nine.column,.offset-by-nine.columns{margin-left:78%}.offset-by-ten.column,.offset-by-ten.columns{margin-left:86.6666666667%}.offset-by-eleven.column,.offset-by-eleven.columns{margin-left:95.3333333333%}.offset-by-one-third.column,.offset-by-one-third.columns{margin-left:34.6666666667%}.offset-by-two-thirds.column,.offset-by-two-thirds.columns{margin-left:69.3333333333%}.offset-by-one-half.column,.offset-by-one-half.columns{margin-left:52%}}html{font-size:62.5%}body{font-size:1.5em;line-height:1.6;font-weight:400;font-family:Raleway,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;color:#222}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:2rem;font-weight:300}h1{font-size:4rem;line-height:1.2;letter-spacing:-.1rem}h2{font-size:3.6rem;line-height:1.25;letter-spacing:-.1rem}h3{font-size:3rem;line-height:1.3;letter-spacing:-.1rem}h4{font-size:2.4rem;line-height:1.35;letter-spacing:-.08rem}h5{font-size:1.8rem;line-height:1.5;letter-spacing:-.05rem}h6{font-size:1.5rem;line-height:1.6;letter-spacing:0}@media (min-width:550px){h1{font-size:5rem}h2{font-size:4.2rem}h3{font-size:3.6rem}h4{font-size:3rem}h5{font-size:2.4rem}h6{font-size:1.5rem}}p{margin-top:0}a{color:#1EAEDB}a:hover{color:#0FA0CE}.button,button,input[type=button],input[type=reset],input[type=submit]{display:inline-block;height:38px;padding:0 30px;color:#555;text-align:center;font-size:11px;font-weight:600;line-height:38px;letter-spacing:.1rem;text-transform:uppercase;text-decoration:none;white-space:nowrap;background-color:transparent;border-radius:4px;border:1px solid #bbb;cursor:pointer;box-sizing:border-box}.button:focus,.button:hover,button:focus,button:hover,input[type=button]:focus,input[type=button]:hover,input[type=reset]:focus,input[type=reset]:hover,input[type=submit]:focus,input[type=submit]:hover{color:#333;border-color:#888;outline:0}.button.button-primary,button.button-primary,input[type=button].button-primary,input[type=reset].button-primary,input[type=submit].button-primary{color:#FFF;background-color:#33C3F0;border-color:#33C3F0}.button.button-primary:focus,.button.button-primary:hover,button.button-primary:focus,button.button-primary:hover,input[type=button].button-primary:focus,input[type=button].button-primary:hover,input[type=reset].button-primary:focus,input[type=reset].button-primary:hover,input[type=submit].button-primary:focus,input[type=submit].button-primary:hover{color:#FFF;background-color:#1EAEDB;border-color:#1EAEDB}input[type=email],input[type=number],input[type=password],input[type=search],input[type=tel],input[type=text],input[type=url],select,textarea{height:38px;padding:6px 10px;background-color:#fff;border:1px solid #D1D1D1;border-radius:4px;box-shadow:none;box-sizing:border-box}input[type=email],input[type=number],input[type=password],input[type=search],input[type=tel],input[type=text],input[type=url],textarea{-webkit-appearance:none;-moz-appearance:none;appearance:none}textarea{min-height:65px;padding-top:6px;padding-bottom:6px}input[type=email]:focus,input[type=number]:focus,input[type=password]:focus,input[type=search]:focus,input[type=tel]:focus,input[type=text]:focus,input[type=url]:focus,select:focus,textarea:focus{border:1px solid #33C3F0;outline:0}label,legend{display:block;margin-bottom:.5rem;font-weight:600}fieldset{padding:0;border-width:0}input[type=checkbox],input[type=radio]{display:inline}label>.label-body{display:inline-block;margin-left:.5rem;font-weight:400}ul{list-style:circle inside}ol{list-style:decimal inside}ol,ul{padding-left:0;margin-top:0}ol ol,ol ul,ul ol,ul ul{margin:1.5rem 0 1.5rem 3rem;font-size:90%}li{margin-bottom:1rem}code{padding:.2rem .5rem;margin:0 .2rem;font-size:90%;white-space:nowrap;background:#F1F1F1;border:1px solid #E1E1E1;border-radius:4px}pre>code{display:block;padding:1rem 1.5rem;white-space:pre}td,th{padding:12px 15px;text-align:left;border-bottom:1px solid #E1E1E1}td:first-child,th:first-child{padding-left:0}td:last-child,th:last-child{padding-right:0}.button,button{margin-bottom:1rem}fieldset,input,select,textarea{margin-bottom:1.5rem}blockquote,dl,figure,form,ol,p,pre,table,ul{margin-bottom:2.5rem}.u-full-width{width:100%;box-sizing:border-box}.u-max-full-width{max-width:100%;box-sizing:border-box}.u-pull-right{float:right}.u-pull-left{float:left}hr{margin-top:3rem;margin-bottom:3.5rem;border-width:0;border-top:1px solid #E1E1E1}.container:after,.row:after,.u-cf{content:"";display:table;clear:both}
 </style>
+
 <!--<link rel="stylesheet" href="styles/main.37ab405b.css">-->
 <body> 
 <!--[if lt IE 7]>
@@ -23,6 +24,12 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                     <a class="navbar-link" href="#intro">Intro</a>
                 </li>
                 <li class="navbar-item">
+                    <a class="navbar-link" href="#overview">Overview</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="navbar-link" href="#algorithm">Algorithm</a>
+                </li>
+                <li class="navbar-item">
                     <a class="navbar-link" href="#results">Results</a>
                 </li>
                 <li class="navbar-item">
@@ -31,44 +38,135 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 <li class="navbar-item">
                     <a class="navbar-link" href="#text">Text</a>
                 </li>
+                <li class="navbar-item">
+                    <a class="navbar-link" href="#references">References</a>
+                </li>
             </ul>
         </div>
     </nav>
     <section class="header" id="intro">
-        <h2 class="title">Perfect Laplacians for Polygon Meshes</h2>
-        <p>We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
-edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators. Given a set of edge length
-ratios, we provide conditions for the existence of a planar embedding. Moreover, we present a simple yet powerful
-optimization scheme for obtaining a mesh with an orthogonal dual that approximates a given mesh. The applications are manifold: our approach directly supports the computation of self-supporting surfaces with arbitrarily
-shaped tiles. It can also be applied to polygonal meshes in 3-dimensional space by defining the tangent spaces of
-vertices. For such meshes we can provide approximations that possess positive Laplace-Beltrami operators useful
-for applications that require the maximum principle.</p>
+        <h2 class="title">Caustic Design</h2>
+        <div class="row">
+            <div class="one-half column category" style="text-align: right;">
+                <p class="u-max-full-width">
+                    Caustic is an area of reflected or refracted light, often curve shaped with high illumination. Such caustics are caused by either reflective or transparent objects as glasses, water or metallic objects.<br>
+                    In this project, we utilize the refractive behaviour of acrylic glass in order to create a caustic image. We will thereby take a target image as an input that we will in the end be able to project onto a receiving plane.<br>
+                    We will give an overview over the relevant steps to come from an image to a shaped acrylic glass object and present few results we achieved with our implementation.
+                </p>
+            </div>
+            <div class="one-half column category" style="text-align: right">
+                <img class="u-max-full-width" src="images/caustic.png"/>
+                Cube made of shower glass produces caustic.
+            </div>
+        </div>
     </section>
+
+    <div class="docs-section" id="overview">
+        <h3 class="section-heading">Overview</h3>
+
+        <img src="images/overview.png" class="u-max-full-width">
+        <div class="docs-example" style="text-align: right">Figure 1: Algorithm overview. Source: <a href="#1">[1]</a> </div>
+        </img>
+        <br>
+        Figure 1 gives an overview over the algorithm. We start from the left.
+        First we have a light source, that provides incident illumination which passes the acrylic object (caustic generator) and forms the source irradiance on the receiving plane.
+        Thereby, the source surface is the outgoing surface of our acrylic glass object.
+        We then need to find an Optimal Transport between the source- and the target-irradiance. Given this optimal transport, we can calculate where each light-ray needs to be redirected to and we can calculate what the normals for need to be to achieve the desired refraction of the light-rays.<br>
+        This brings us the final step, the Target Optimization. In this step, we calculate how the source surface needs to be modified to be as close to the desired normals as possible. The resulting surface is called the target surface.
+    </div>
+
+    <div class="docs-section" id="algorithm">
+        <h3 class="section-heading">Algorithm</h3>
+        The algorithm comprises of three main parts, which we will describe here.
+        <ul>
+            <li>Optimal Transport Map (OTM) Computation</li>
+            <li>Natural Neighbor Interpolation</li>
+            <li>Target Optimization</li>
+        </ul>
+
+        <div class="docs-section">
+            <h4 class="section-heading">Optimal Transport Map Computation</h4>
+            <div class="row">
+                <div class="one-half column category">
+                    To obtain the optimal transport map, we first create a Voronoi diagram from the source distribution (1). Each cell of the Voronoi diagram thereby contains the same amount of irradiance (same amount of light).
+                    This means, that areas with less irradiance are covered by larger cells. To achieve this, apply use Lloyd Sampling.<br>
+                    In the next step, we remove the source distribution an plug in the target distribution. We now have a non-matching Voronoi-diagram-distribution pair (2).
+                    At this point, we transform the Voronoi diagram into a power diagram (or Weighted Voronoi diagram) by introducing weights. Each cell has an associated weight.
+                    If all weights are zero, the power diagram corresponds to the original Voronoi diagram. By increasing the weight of a cell, this cell grows, by decreasing the weight, the corresponding cell shrinks.<br>
+                    Step (3) finally optimizes the weight vector of the Power diagram to again have the same irradiance in each cell and at the same time, move each cell as few as possible.
+                    This process is a convex optimization, for which we use an L-BFGS solver <a href="#6">[6]</a>.<br>
+                    <br>
+                    Having the Optimal Transport Map, we have a direct mapping for each cell from the initial Voronoi diagram to the optimized power diagram.
+                    This gives us the information, were each light-ray in a cell needs to be redirected to, in order to form our desired image.
+                </div>
+                <div class="one-half column category" style="text-align: right;">
+                    <img class="u-max-full-width" src="images/otmcomputation.png">
+                    Figure 2: OTM Steps. Source: <a href="#1">[1]</a>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <h5 class="section-heading">Multi-Scale Approach</h5>
+            <p>
+                As calculating the OTM is a convex optimization, we can plug in an initial guess.
+                The quality of this initial guess has an significant impact on the duration of the optimization process.
+                Therefore, we calculate the OTM on different levels.
+                We thereby start with fewer cells and a lower-resolution target distribution on the lowest level.
+                We then use the result of that optimization as an initial guess for the next higher level.
+                This step is repeated several times until we reach our target level that we want to compute.
+            </p>
+
+            <img src="images/weight_injection.png" class="u-max-full-width">
+            <p style="text-align: right;">Figure 3: Weight-injection for Multi-Scale-Approach</p>
+
+            <p>
+                In Figure 3, one can see the lower level Voronoi diagram on the left and the next higher Voronoi diagram on the right.
+                When the optimization of the lower level diagram succeeds, we use the weight of the highlighted cell and inject it as an initial guess for each cell highlighted in the right diagram.
+                <br>
+                <br>
+                In the following, we have two videos that show the process of calculating the OTM. On the left, the video shows the creation of the initial Voronoi diagram.
+                On the right, the weights of the previously calculated initial Voronoi diagram (or power diagram, as we are working with weights now) are optimized using a manually Gradient Descent approach.
+                The calculation using the aforementioned L-BFGS solver is faster, but the manual implementation shows the movement of the cells better.
+                One can see, that the cells are moving towards the center of the image. This happens, because the weights of the outer cells are increasing and therefore the outer cells are growing and pushing the inner cells more to the center.
+            </p>
+
+            <div class="row">
+                <div class="one-half column category" style="text-align: center;">
+                    <h5 class="docs-header">Voronoi Generation</h5>
+                    <video class="u-max-full-width" controls>
+                        <source src="videos/voronoi.ogg" type="video/ogg">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p>The video shows a slowed down version of the process of creating an initial Voronoi Diagram using Lloyd Sampling. The amount of sites in the Voronoi Diagram is set to 200. The Lloyd Sampling converges when all sites nearly contain the same irradiance.</p>
+                </div>
+                <div class="one-half column category" style="text-align: center;">
+                    <h5 class="docs-header">Optimal Transport</h5>
+                    <video class="u-max-full-width" controls>
+                        <source src="videos/otm.ogg" type="video/ogg">
+                        Your browser does not support the video tag
+                    </video>
+                    <p>The video shows a speeded up version of the optimization to retrieve the optimal transport map. A manually implemented Gradient Descent approach is used to solve the convex optimization function.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-section">
+            <h4 class="section-heading">Natural Neighbor Interpolation</h4>
+        </div>
+
+        <div class="docs-section">
+            <h4 class="section-heading">Target Optimization</h4>
+        </div>
+
+    </div>
+
     <div class="docs-section" id="results">
         <h3 class="section-heading">Results</h3>
         <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
 edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-        <div class="row">
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Voronoi Generation</h5>
-		<video class="u-max-full-width" controls>
-			<source src="videos/voronoi.ogg" type="video/ogg">
-			Your browser does not support the video tag.
-		</video>
-                    <p>We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
-edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-                </div>
-                <div class="one-half column category" style="text-align: center;">
-                    <h5 class="docs-header">Optimal Transport</h5>
-                	<video class="u-max-full-width" controls>
-				<source src="videos/otm.ogg" type="video/ogg">
-				Your browser does not support the video tag
-			</video>
-                        <p>We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
-edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-                    </div>
-                </div>
-            </div>
+
+    </div>
             <div class="docs-section" id="misc">
                 <h3 class="section-heading">Misc</h3>
                 <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
@@ -139,6 +237,49 @@ edge length ratios as they directly provide perfect discrete Laplace-Beltrami op
 </code>
                 </pre>
             </div>
+
+
+
+            <!--
+            ---------------------------------------------------
+            ... References
+            ---------------------------------------------------
+            -->
+            <div class="docs-section" id="references">
+                <h3 class="section-heading">References</h3>
+                <ul class="popover-list">
+                    <li class="popover-item" id="1">
+                        <!--
+                        A link to this may look like:
+                        <a href="#1">[1]</a>
+                        -->
+                        [1] SCHWARTZBURG, Y. et al., High-Contrast Computational Caustic Design, <i>ACM Transaction on Graphics (TOG) 33</i>, 4, 74.
+                    </li>
+                    <li class="popover-item" id="2">
+                        [2] DE GOES, F. et al., Blue noise through optimal transport. <i>ACM Transaction on Graphics (TOG) 31</i>, 5, 171.
+                    </li>
+                    <li class="popover-item" id="3">
+                        [3] ALEXANDER GESSLER AND OTHERS 2015, Open Asset Import Library, <a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>, last retrieved 09-2015
+                    </li>
+                    <li class="popover-item" id="4">
+                        [4] GRIMALDI, J.-P. et al., LuxRender, <a href="http://www.luxrender.net/">http://www.luxrender.net/</a>, last retrieved 09-205
+                    </li>
+                    <li class="popover-item" id="5">
+                        [5] YVINEC, M. 2013. 2D triangulations. In <i>CGAL User Reference Manual</i>, 4.3 ed. CGAL Editor Board
+                    </li>
+                    <li class="popover-item" id="6">
+                        [6] LIU, D. C. AND NOCEDAL, J., On the limited memory BFGS method for large scale optimization methods, <i>Mathematical Programming</i>, 45 (1989), pp. 503-528.
+                    </li>
+                    <li class="popover-item" id="7">
+                        [7] AGARWAL, S. AND MIERLE, K. AND OTHERS, Ceres Solver, <a href="http://ceres-solver.org/">http://ceres-solver.org/</a>, last retrieved 09-2015
+                    </li>
+                    <li class="popover-item" id="8">
+                        [8] ROOSENDAAL, T. AND OTHERS, Blender, <a href="http://www.blender.org/">http://www.blender.org/</a>, last retrieved 09-2015
+                    </li>
+                </ul>
+            </div>
+
+
         </div>
     </div>
-</div>
+</body>
