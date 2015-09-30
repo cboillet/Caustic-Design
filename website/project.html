@@ -162,8 +162,8 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                     We are applying a Natural Neighbor Interpolation for each vertex of our source surface to determine, where a light-ray that passes a given vertex is supposed to intersect our receiving plane.<br><br>
             <div class="row">
                 <div class="one-third column category">
-                    As shown in Figure 4, a light-ray passing through a vertex x<sub>S</sub> in our source mesh (mesh of the source surface) is ray-traced to find the intersection with the receiving plane in the source distribution x<sub>R</sub> (TODO: ADD TILDE!). 
-                    The light-ray direction is hereby shown as d<sub>S</sub>. 
+                    As shown in Figure 4, a light-ray passing through a vertex x<sub>S</sub> in our source mesh (mesh of the source surface) is ray-traced to find the intersection with the receiving plane in the source distribution x&#x303<sub>R</sub>.
+                    The light-ray direction is hereby shown as d<sub>S</sub>.
                     We now apply the Natural Neighbor Interpolation to determine how much area the insertion of x<sub>R</sub> would steal from the neighboring cells.
                     With the given areas (used as weights) we take a linear combination of the neighboring cells' centroid positions in the optimized power diagram to retrieve the desired intersection-point x<sub>R</sub>.
                 </div>
