@@ -71,13 +71,13 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
         Figure 1 gives an overview over the algorithm. We start from the left.
         First we have a light source, that provides incident illumination which passes the acrylic object (caustic generator) and forms the source irradiance on the receiving plane.
         Thereby, the source surface is the outgoing surface of our acrylic glass object.
-        We then need to find an Optimal Transport between the source- and the target-irradiance. Given this optimal transport, we can calculate where each light-ray needs to be redirected to and we can calculate what the normals for need to be to achieve the desired refraction of the light-rays.<br>
+        We then need to find an Optimal Transport Map between the source- and the target-irradiance. Given this Optimal Transport Map, we can calculate where each light-ray needs to be redirected to and we can calculate what the normals need to be to achieve the desired refraction of the light-rays.<br>
         This brings us the final step, the Target Optimization. In this step, we calculate how the source surface needs to be modified to be as close to the desired normals as possible. The resulting surface is called the target surface.
     </div>
 
     <div class="docs-section" id="algorithm">
         <h3 class="section-heading">Algorithm</h3>
-        The algorithm comprises of three main parts, which we will describe here.
+        The algorithm comprises of three main parts we will describe here, namely:<br><br>
         <ul>
             <li>Optimal Transport Map (OTM) Computation</li>
             <li>Natural Neighbor Interpolation</li>
@@ -88,16 +88,17 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             <h4 class="section-heading">Optimal Transport Map Computation</h4>
             <div class="row">
                 <div class="one-half column category">
-                    To obtain the optimal transport map, we first create a Voronoi diagram from the source distribution (1). Each cell of the Voronoi diagram thereby contains the same amount of irradiance (same amount of light).
-                    This means, that areas with less irradiance are covered by larger cells. To achieve this, apply use Lloyd Sampling.<br>
+                    The Optimal Transport Map (OTM) is a mapping between the initial Voronoi diagram and the optimized power diagram.
+                    To obtain the OTM, we first create a Voronoi diagram from the source distribution (1). Each cell of the Voronoi diagram thereby contains the same amount of irradiance (same amount of light).
+                    This means, that areas with less irradiance are covered by larger cells. To achieve this, we apply Lloyd Sampling.<br>
                     In the next step, we remove the source distribution an plug in the target distribution. We now have a non-matching Voronoi-diagram-distribution pair (2).
                     At this point, we transform the Voronoi diagram into a power diagram (or Weighted Voronoi diagram) by introducing weights. Each cell has an associated weight.
                     If all weights are zero, the power diagram corresponds to the original Voronoi diagram. By increasing the weight of a cell, this cell grows, by decreasing the weight, the corresponding cell shrinks.<br>
-                    Step (3) finally optimizes the weight vector of the Power diagram to again have the same irradiance in each cell and at the same time, move each cell as few as possible.
+                    Step (3) finally optimizes the weight vector of the Power diagram to again have the same irradiance in each cell and at the same time, moves each cell as few as possible.
                     This process is a convex optimization, for which we use an L-BFGS solver <a href="#6">[6]</a>.<br>
                     <br>
-                    Having the Optimal Transport Map, we have a direct mapping for each cell from the initial Voronoi diagram to the optimized power diagram.
-                    This gives us the information, were each light-ray in a cell needs to be redirected to, in order to form our desired image.
+                    Having the Optimal Transport Map, we know where each cell from the initial Voronoi diagram moves to and therefore have a direct mapping from the initial Voronoi diagram to the optimized power diagram.
+                    <!-- This gives us the information, were each light-ray in a cell needs to be redirected to, in order to form our desired image. -->
                 </div>
                 <div class="one-half column category" style="text-align: right;">
                     <img class="u-max-full-width" src="images/otmcomputation.png">
@@ -112,7 +113,7 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 As calculating the OTM is a convex optimization, we can plug in an initial guess.
                 The quality of this initial guess has an significant impact on the duration of the optimization process.
                 Therefore, we calculate the OTM on different levels.
-                We thereby start with fewer cells and a lower-resolution target distribution on the lowest level.
+                We thereby start with fewer cells and a lower-resolution target distribution image on the lowest level.
                 We then use the result of that optimization as an initial guess for the next higher level.
                 This step is repeated several times until we reach our target level that we want to compute.
             </p>
@@ -126,9 +127,9 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 <br>
                 <br>
                 In the following, we have two videos that show the process of calculating the OTM. On the left, the video shows the creation of the initial Voronoi diagram.
-                On the right, the weights of the previously calculated initial Voronoi diagram (or power diagram, as we are working with weights now) are optimized using a manually Gradient Descent approach.
-                The calculation using the aforementioned L-BFGS solver is faster, but the manual implementation shows the movement of the cells better.
-                One can see, that the cells are moving towards the center of the image. This happens, because the weights of the outer cells are increasing and therefore the outer cells are growing and pushing the inner cells more to the center.
+                On the right, the weights of the previously calculated initial Voronoi diagram (or power diagram, as we are working with weights now) are optimized using a manually implemented Gradient Descent approach.
+                The calculation using the aforementioned L-BFGS solver is faster, but the manual implementation provides a better visualization of the optimization process.
+                One can see, that the cells are moving towards the center of the image. This happens, because the weights of the outer cells are increasing, causing a growth of the outer cells and pushing the inner cells more to the center.
             </p>
 
             <div class="row">
@@ -153,6 +154,24 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
 
         <div class="docs-section">
             <h4 class="section-heading">Natural Neighbor Interpolation</h4>
+            
+                    At this point, we have an Optimal Transport Map, which tells us, where each cell of the initial Voronoi diagram moves to.
+                    But as we want the source surface to be a regular grid, the vertices of the source surface are not directly mapping the Voronoi diagram.
+                    The desired mapping can be achieved by using the Natural Neighbor Interpolation.<br>
+                    The Natural Neighbor Interpolation simulates an additional insertion of a cell into a Voronoi diagram and calculates how much area would be stolen from the neighboring cells. These hypothetically stolen areas can be used as a weighting for a linear combination of the cells' centroid positions in the optimized power diagram.<br>
+                    We are applying a Natural Neighbor Interpolation for each vertex of our source surface to determine, where a light-ray that passes a given vertex is supposed to intersect our receiving plane.<br><br>
+            <div class="row">
+                <div class="one-third column category">
+                    As shown in Figure 4, a light-ray passing through a vertex x<sub>S</sub> in our source mesh (mesh of the source surface) is ray-traced to find the intersection with the receiving plane in the source distribution x<sub>R</sub> (TODO: ADD TILDE!). 
+                    The light-ray direction is hereby shown as d<sub>S</sub>. 
+                    We now apply the Natural Neighbor Interpolation to determine how much area the insertion of x<sub>R</sub> would steal from the neighboring cells.
+                    With the given areas (used as weights) we take a linear combination of the neighboring cells' centroid positions in the optimized power diagram to retrieve the desired intersection-point x<sub>R</sub>.
+                </div>
+                <div class="two-thirds column category">
+                    <img src="images/natural_neighbor.png" class="u-max-full-width"/>
+                    <p style="text-align: right;">Figure 4: Finding the target point x<sub>R</sub> from source point x<sub>S</sub>. Source: <a href="#1">[1]</a></p>
+                </div>
+            </div>
         </div>
 
         <div class="docs-section">
