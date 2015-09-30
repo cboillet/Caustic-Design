@@ -156,16 +156,16 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             <h4 class="section-heading">Natural Neighbor Interpolation</h4>
             
                     At this point, we have an Optimal Transport Map, which tells us, where each cell of the initial Voronoi diagram moves to.
-                    But as we want the source surface to be a regular grid, the vertices of the source surface are not directly mapping the Voronoi diagram.
+                    But as we want the source surface to be a regular grid, we need to map the source surface vertices to the initial Voronoi diagram.
                     The desired mapping can be achieved by using the Natural Neighbor Interpolation.<br>
-                    The Natural Neighbor Interpolation simulates an additional insertion of a cell into a Voronoi diagram and calculates how much area would be stolen from the neighboring cells. These hypothetically stolen areas can be used as a weighting for a linear combination of the cells' centroid positions in the optimized power diagram.<br>
+                    The Natural Neighbor Interpolation simulates an additional insertion of a cell into a Voronoi diagram and calculates how much area this new cell would steal from the neighboring cells. This hypothetically stolen area per neighboring cell can be used as a weighting for a linear combination of the positions of the cells' centroid's in the optimized power diagram.<br>
                     We are applying a Natural Neighbor Interpolation for each vertex of our source surface to determine, where a light-ray that passes a given vertex is supposed to intersect our receiving plane.<br><br>
             <div class="row">
                 <div class="one-third column category">
                     As shown in Figure 4, a light-ray passing through a vertex x<sub>S</sub> in our source mesh (mesh of the source surface) is ray-traced to find the intersection with the receiving plane in the source distribution x&#x303<sub>R</sub>.
                     The light-ray direction is hereby shown as d<sub>S</sub>.
                     We now apply the Natural Neighbor Interpolation to determine how much area the insertion of x<sub>R</sub> would steal from the neighboring cells.
-                    With the given areas (used as weights) we take a linear combination of the neighboring cells' centroid positions in the optimized power diagram to retrieve the desired intersection-point x<sub>R</sub>.
+                    With the given areas (used as weights) we take a linear combination of the positions of the neighboring cells' centroid's in the optimized power diagram to retrieve the desired intersection-point x<sub>R</sub>.
                 </div>
                 <div class="two-thirds column category">
                     <img src="images/natural_neighbor.png" class="u-max-full-width"/>
