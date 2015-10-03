@@ -36,6 +36,9 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                     <a class="navbar-link" href="#results">Results</a>
                 </li>
                 <li class="navbar-item">
+                    <a class="navbar-link" href="#discussion">Discussion</a>
+                </li>
+                <li class="navbar-item">
                     <a class="navbar-link" href="#misc">Misc</a>
                 </li>
                 <li class="navbar-item">
@@ -47,6 +50,12 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             </ul>
         </div>
     </nav>
+
+    <!--
+   ---------------------------------------------------
+   ... INTRO
+   ---------------------------------------------------
+   -->
     <section class="header" id="intro">
         <h2 class="title">Caustic Design</h2>
         <div class="row">
@@ -64,6 +73,11 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
         </div>
     </section>
 
+    <!--
+   ---------------------------------------------------
+   ... OVERVIEW
+   ---------------------------------------------------
+   -->
     <div class="docs-section" id="overview">
         <h3 class="section-heading">Overview</h3>
 
@@ -78,6 +92,12 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
         This brings us the final step, the Target Optimization. In this step, we calculate how the source surface needs to be modified to be as close to the desired normals as possible. The resulting surface is called the target surface.
     </div>
 
+
+    <!--
+   ---------------------------------------------------
+   ... ALGORITHM
+   ---------------------------------------------------
+   -->
     <div class="docs-section" id="algorithm">
         <h3 class="section-heading">Algorithm</h3>
         The algorithm comprises of three main parts we will describe here, namely:<br><br>
@@ -104,7 +124,7 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                     <!-- This gives us the information, were each light-ray in a cell needs to be redirected to, in order to form our desired image. -->
                 </div>
                 <div class="one-half column category" style="text-align: right;">
-                    <img class="u-max-full-width" src="images/otmcomputation.png">
+                    <img class="u-max-full-width" src="images/otm/otmcomputation.png">
                     Figure 2: OTM Steps. Source: <a href="#1">[1]</a>
                 </div>
             </div>
@@ -121,7 +141,7 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 This step is repeated several times until we reach our target level that we want to compute.
             </p>
 
-            <img src="images/weight_injection.png" class="u-max-full-width">
+            <img src="images/otm/weight_injection.png" class="u-max-full-width">
             <p style="text-align: right;">Figure 3: Weight-injection for Multi-Scale-Approach</p>
 
             <p>
@@ -190,17 +210,18 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                         For the calculation of n&#x303, we use the Fresnel Mapping Equation with d<sub>I</sub> being the incoming light direction:
                     </p>
 
-                    <img src="images/snell.png" width="150">
+                    <img src="images/target_opt/snell.png" width="150">
 
                 </div>
                 <div class="one-half column category">
-                    <img src="images/target_opt_overview.png" class="u-max-full-width"/>
+                    <img src="images/target_opt/target_opt_overview.png" class="u-max-full-width"/>
                     <p style="text-align: right;">Figure 5: Target Optimization Overview. Source: <a href="#1">[1]</a> </p>
                 </div>
             </div>
             <br>
-            The optimization of the 3D position is formulated as on optimization process that minimizes four geometric constraints.<br>
-            Those constraints are described in the following.<br>
+            The optimization of the 3D position is formulated as on optimization process that minimizes four geometric constraints.
+            Each of those constraints are described by an energy with an associated weight in order to adjust the importants of each energy.<br>
+            Those energies are described in the following.<br>
             <br>
 
             <!--
@@ -229,17 +250,17 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 </thead>
                 <tbody>
                 <tr>
-                    <td><img src="images/e_int.png" height="65"/></td>
+                    <td><img src="images/target_opt/e_int.png" height="65"/></td>
                     <td><p class="u-full-width">The integration energy aligns the desired normal n&#x303 with the normal n.</p></td>
-                    <td><img src="images/e_int_image.png" class="u-full-width"/></td>
+                    <td><img src="images/target_opt/e_int_image.png" class="u-full-width"/></td>
                 </tr>
                 <tr>
-                    <td><img src="images/e_dir.png" height="65"/></td>
+                    <td><img src="images/target_opt/e_dir.png" height="65"/></td>
                     <td><p class="u-full-width">The direction energy ensures that the vertex x is not moving too far away from the initial vertex position x<sub>S</sub> on the y-z-plane</p></td>
-                    <td><img src="images/e_dir_image.png" class="u-full-width"/></td>
+                    <td><img src="images/target_opt/e_dir_image.png" class="u-full-width"/></td>
                 </tr>
                 <tr>
-                    <td><img src="images/e_reg.png" height="40"/></td>
+                    <td><img src="images/target_opt/e_reg.png" height="40"/></td>
                     <td>
                         <p class="u-full-width">
                             The regularization energy is minimal if the triangles are well shaped and regular as given in the upper image.
@@ -247,12 +268,12 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                         </p>
                     </td>
                     <td>
-                        <img src="images/e_reg_image_1.png" class="u-full-width"/>
-                        <img src="images/e_reg_image_2.png" class="u-full-width"/>
+                        <img src="images/target_opt/e_reg_image_1.png" class="u-full-width"/>
+                        <img src="images/target_opt/e_reg_image_2.png" class="u-full-width"/>
                     </td>
                 </tr>
                 <tr>
-                    <td><img src="images/e_bar.png" height="80"/></td>
+                    <td><img src="images/target_opt/e_bar.png" height="80"/></td>
                     <td>
                         <p class="u-full-width">
                             The barrier energy prevents the vertices to move too far away from the receiving plane.
@@ -267,6 +288,11 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
 
     </div>
 
+    <!--
+   ---------------------------------------------------
+   ... FABRICATION
+   ---------------------------------------------------
+   -->
     <div class="docs-section" id="fabrication">
         <h3 class="section-heading">Fabrication</h3>
         We use a CNC milling machine to mill acrylic glass. The milling process includes several steps (roughing, z-level, planar finishing) with different tools (4mm/3mm, 1mm).<br><br>
@@ -274,7 +300,11 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             <div class="one-half column category">
                 <p class="u-max-full-width">
                     In Figure TODO, the milled object is shown.
-                    As can be seen, the object is so far not transparent. The creases on the object are the result of the planar finishing.
+                    As can be seen, the object is so far not transparent.
+                    The creases on the object are the result of the planar finishing.
+                    There also is a small surface that is very smooth and flat, this area was unfortunately not
+                    milled and is the raw acrylic glass.
+                    For more detailed discussion on artifacts and issues we refer to the section <a href="#discussion">Discussion</a>.
                 </p>
             </div>
             <div class="one-half column category">
@@ -324,12 +354,38 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
         </div>
     </div>
 
+    <!--
+   ---------------------------------------------------
+   ... RESULTS
+   ---------------------------------------------------
+   -->
     <div class="docs-section" id="results">
         <h3 class="section-heading">Results</h3>
-        <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
-edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-
+        <p class="section-description">In this section we will provide simulated and produced results of our implementation</p>
+        <p>next p und so</p>
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/checker_5e-3_1e-1_chopped.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>dir</sub> = 1 &middot; 10<sup>-1</sup></p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/checker_5e-3_9e-1_converged_chopped.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 9 &middot; 10<sup>-1</sup></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/checker_5e-3_1.1_chopped.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 1.1</p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/checker_5e-3_11_chopped.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 11</p>
+            </div>
+        </div>
     </div>
+
+
             <div class="docs-section" id="misc">
                 <h3 class="section-heading">Misc</h3>
                 <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
@@ -402,47 +458,52 @@ edge length ratios as they directly provide perfect discrete Laplace-Beltrami op
             </div>
 
 
-
-            <!--
-            ---------------------------------------------------
-            ... References
-            ---------------------------------------------------
-            -->
-            <div class="docs-section" id="references">
-                <h3 class="section-heading">References</h3>
-                <ul class="popover-list">
-                    <li class="popover-item" id="1">
-                        <!--
-                        A link to this may look like:
-                        <a href="#1">[1]</a>
-                        -->
-                        [1] SCHWARTZBURG, Y. et al., High-Contrast Computational Caustic Design, <i>ACM Transaction on Graphics (TOG) 33</i>, 4, 74.
-                    </li>
-                    <li class="popover-item" id="2">
-                        [2] DE GOES, F. et al., Blue noise through optimal transport. <i>ACM Transaction on Graphics (TOG) 31</i>, 5, 171.
-                    </li>
-                    <li class="popover-item" id="3">
-                        [3] ALEXANDER GESSLER AND OTHERS 2015, Open Asset Import Library, <a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>, last retrieved 09-2015
-                    </li>
-                    <li class="popover-item" id="4">
-                        [4] GRIMALDI, J.-P. et al., LuxRender, <a href="http://www.luxrender.net/">http://www.luxrender.net/</a>, last retrieved 09-205
-                    </li>
-                    <li class="popover-item" id="5">
-                        [5] YVINEC, M. 2013. 2D triangulations. In <i>CGAL User Reference Manual</i>, 4.3 ed. CGAL Editor Board
-                    </li>
-                    <li class="popover-item" id="6">
-                        [6] LIU, D. C. AND NOCEDAL, J., On the limited memory BFGS method for large scale optimization methods, <i>Mathematical Programming</i>, 45 (1989), pp. 503-528.
-                    </li>
-                    <li class="popover-item" id="7">
-                        [7] AGARWAL, S. AND MIERLE, K. AND OTHERS, Ceres Solver, <a href="http://ceres-solver.org/">http://ceres-solver.org/</a>, last retrieved 09-2015
-                    </li>
-                    <li class="popover-item" id="8">
-                        [8] ROOSENDAAL, T. AND OTHERS, Blender, <a href="http://www.blender.org/">http://www.blender.org/</a>, last retrieved 09-2015
-                    </li>
-                </ul>
-            </div>
-
-
-        </div>
+    <!--
+    ---------------------------------------------------
+    ... RESULTS
+    ---------------------------------------------------
+    -->
+    <div class="docs-section" id="discussion">
+        <h3 class="section-heading">Discussion</h3>
     </div>
+
+    <!--
+    ---------------------------------------------------
+    ... REFERENCES
+    ---------------------------------------------------
+    -->
+    <div class="docs-section" id="references">
+        <h3 class="section-heading">References</h3>
+        <ul class="popover-list">
+            <li class="popover-item" id="1">
+                <!--
+                A link to this may look like:
+                <a href="#1">[1]</a>
+                -->
+                [1] SCHWARTZBURG, Y. et al., High-Contrast Computational Caustic Design, <i>ACM Transaction on Graphics (TOG) 33</i>, 4, 74.
+            </li>
+            <li class="popover-item" id="2">
+                [2] DE GOES, F. et al., Blue noise through optimal transport. <i>ACM Transaction on Graphics (TOG) 31</i>, 5, 171.
+            </li>
+            <li class="popover-item" id="3">
+                [3] ALEXANDER GESSLER AND OTHERS 2015, Open Asset Import Library, <a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>, last retrieved 09-2015
+            </li>
+            <li class="popover-item" id="4">
+                [4] GRIMALDI, J.-P. et al., LuxRender, <a href="http://www.luxrender.net/">http://www.luxrender.net/</a>, last retrieved 09-205
+            </li>
+            <li class="popover-item" id="5">
+                [5] YVINEC, M. 2013. 2D triangulations. In <i>CGAL User Reference Manual</i>, 4.3 ed. CGAL Editor Board
+            </li>
+            <li class="popover-item" id="6">
+                [6] LIU, D. C. AND NOCEDAL, J., On the limited memory BFGS method for large scale optimization methods, <i>Mathematical Programming</i>, 45 (1989), pp. 503-528.
+            </li>
+            <li class="popover-item" id="7">
+                [7] AGARWAL, S. AND MIERLE, K. AND OTHERS, Ceres Solver, <a href="http://ceres-solver.org/">http://ceres-solver.org/</a>, last retrieved 09-2015
+            </li>
+            <li class="popover-item" id="8">
+                [8] ROOSENDAAL, T. AND OTHERS, Blender, <a href="http://www.blender.org/">http://www.blender.org/</a>, last retrieved 09-2015
+            </li>
+        </ul>
+    </div>
+</div> <!-- main-container -->
 </body>
