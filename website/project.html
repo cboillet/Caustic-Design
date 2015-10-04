@@ -299,17 +299,18 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
         <div class="row">
             <div class="one-half column category">
                 <p class="u-max-full-width">
-                    In Figure TODO, the milled object is shown.
+                    In Figure 5, the milled object is shown.
                     As can be seen, the object is so far not transparent.
                     The creases on the object are the result of the planar finishing.
-                    There also is a small surface that is very smooth and flat, this area was unfortunately not
+                    One can see a small area that is transparent already, this area was unfortunately not
                     milled and is the raw acrylic glass.
                     For more detailed discussion on artifacts and issues we refer to the section <a href="#discussion">Discussion</a>.
                 </p>
             </div>
             <div class="one-half column category">
-                <p class="one-half column category">
-                    INSERT IMAGE HERE
+                <img src="images/fabrication/milled.JPG" class="u-max-full-width"/>
+                <p style="text-align: right" class="u-max-full-width">
+                    Figure 5: Milled object.
                 </p>
             </div>
         </div>
@@ -321,21 +322,23 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 </p>
             </div>
             <div class="one-half column category">
-                <p class="one-half column category">
-                    INSERT IMAGE HERE
+                <img src="images/fabrication/sandpaper_1.JPG" class="u-max-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 6: After first round of sandpaper.
                 </p>
             </div>
         </div>
         <div class="row">
             <div class="one-half column category">
                 <p class="u-max-full-width">
-                    To come to an object with sufficient optical quality, we use 400 sandpaper and 1200 sanpaper. Again both with water.
+                    To come to an object with sufficient optical quality, we use 400 sandpaper and 1200 sandpaper. Again both with water.
                     The surface is now very smooth, but still is not transparent enough for our purposes.
                 </p>
             </div>
             <div class="one-half column category">
-                <p class="one-half column category">
-                    INSERT IMAGE HERE
+                <img src="images/fabrication/sandpaper_2.JPG" class="u-max-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 7: After second/third round of sandpaper
                 </p>
             </div>
         </div>
@@ -344,11 +347,13 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                 <p class="u-max-full-width">
                     The final step is to polish the surface using two different PMMA polish pastes (for heavy- and fine scratches).
                     It can be seen that the surface has become considerably clearer in this last step.
+                    In the polishing process, we also introduced another artifact that can be seen in Figure 8.
                 </p>
             </div>
             <div class="one-half column category">
-                <p class="one-half column category">
-                    INSERT IMAGE HERE
+                <img src="images/fabrication/final.JPG" class="u-max-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 8: After polishing
                 </p>
             </div>
         </div>
@@ -362,25 +367,108 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
     <div class="docs-section" id="results">
         <h3 class="section-heading">Results</h3>
         <p class="section-description">In this section we will provide simulated and produced results of our implementation</p>
-        <p>next p und so</p>
+        <div class="row">
+            <div class="one-third column category">
+                <img src="images/results/source.png" class="u-full-width"/>
+                <p>Figure 9: Source distribution.</p>
+            </div>
+            <div class="two-thirds column category">
+                <p>
+                    For all results in the following, we have set the weight of E<sub>int</sub> and E<sub>bar</sub> to 1.
+                    The other weights are given per image. The source distribution is given in Figure 9.
+                    It is equally distributed, which means that we assume parallel light.<br>
+                    The simulation results are produces using LuxRender <a href="#4">[4]</a>.
+                </p>
+            </div>
+        </div>
+
+
+        <h4 class="section-heading">Checker</h4>
+
+        <div class="row">
+            <div class="two-thirds column category">
+                <p class="column">
+                    The first target distribution we used is a simple checker-like image as given in Figure 10.<br>
+                    In Figure 11, one can see the impact of the weights for the regularization energy.
+                    In Figure 11.a, which has a relatively low weight for E<sub>reg</sub>, the edges are not sharp.
+                    Additionally, when having a look at the object in the image, one can see that the mesh is not very regular.
+                    With increasing weight for E<sub>reg</sub> from Figure 11.a to Figure 11.d, the edges become sharper and the mesh becomes visually more regular.
+                    When the weight is too high, as in Figure 11.d, there are new artifacts appearing on the receiver.
+                </p>
+            </div>
+            <div class="one-third column category">
+                <img src="images/results/checker.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 10: Checker target distribution.
+                </p>
+            </div>
+        </div>
         <div class="row">
             <div class="one-half column category">
                 <img src="images/results/checker_5e-3_1e-1_chopped.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>dir</sub> = 1 &middot; 10<sup>-1</sup></p>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.a: E<sub>dir</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>reg</sub> = 1 &middot; 10<sup>-1</sup></p>
             </div>
             <div class="one-half column category">
                 <img src="images/results/checker_5e-3_9e-1_converged_chopped.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 9 &middot; 10<sup>-1</sup></p>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.b: E<sub>dir</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>reg</sub> = 9 &middot; 10<sup>-1</sup></p>
             </div>
         </div>
         <div class="row">
             <div class="one-half column category">
                 <img src="images/results/checker_5e-3_1.1_chopped.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 1.1</p>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.c: E<sub>dir</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>reg</sub> = 1.1</p>
             </div>
             <div class="one-half column category">
                 <img src="images/results/checker_5e-3_11_chopped.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">E<sub>reg</sub> = 5 &middot; 10<sup>-3</sup>; E<sub>dir</sub> = 11</p>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.d: E<sub>dir</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>reg</sub> = 11</p>
+            </div>
+        </div>
+
+        The produces object for the checker target distribution is given in Figure
+
+
+        <h4 class="section-heading">Einstein</h4>
+
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/einstein_1_5e-1.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.a: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 5 &middot; 10<sup>-1</sup></p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/einstein_1_10.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.b: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 10</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/einstein_1000_5_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.c: E<sub>dir</sub> = 1 &middot; 10<sup>3</sup> &emsp; E<sub>reg</sub>= 5</p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/einstein_10000_15_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.d: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
+            </div>
+        </div>
+
+        <h4 class="section-heading">Circle</h4>
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/circle_1_10_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.c: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub>= 10</p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/circle_15_50_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.c: E<sub>dir</sub> = 1 &middot; 10<sup>3</sup> &emsp; E<sub>reg</sub>= 5</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column category">
+                <img src="images/results/circle_10_100_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">Figure 11.d: E<sub>dir</sub> = 10&emsp; E<sub>reg</sub> = 1 &middot; 10 <sup>2</sup></p>
+            </div>
+            <div class="one-half column category">
+                <img src="images/results/circle_10_100_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 11.d: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
             </div>
         </div>
     </div>
@@ -489,7 +577,7 @@ edge length ratios as they directly provide perfect discrete Laplace-Beltrami op
                 [3] ALEXANDER GESSLER AND OTHERS 2015, Open Asset Import Library, <a href="http://assimp.sourceforge.net/">http://assimp.sourceforge.net/</a>, last retrieved 09-2015
             </li>
             <li class="popover-item" id="4">
-                [4] GRIMALDI, J.-P. et al., LuxRender, <a href="http://www.luxrender.net/">http://www.luxrender.net/</a>, last retrieved 09-205
+                [4] GRIMALDI, J.-P. et al., LuxRender, <a href="http://www.luxrender.net/">http://www.luxrender.net/</a>, last retrieved 09-2015
             </li>
             <li class="popover-item" id="5">
                 [5] YVINEC, M. 2013. 2D triangulations. In <i>CGAL User Reference Manual</i>, 4.3 ed. CGAL Editor Board
