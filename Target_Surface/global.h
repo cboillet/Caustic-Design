@@ -36,11 +36,17 @@
 #define EBAR_DETH 39
 #define EINT_WEIGHT 1.0
 #define EBAR_WEIGHT 1.0
+<<<<<<< HEAD
+#define EDIR_WEIGHT 1e-4
+#define EDIR_EDGE_WEIGHT 1
+#define EREG_WEIGHT 2e-1
+=======
 #define EDIR_WEIGHT 1.0
 #define EREG_WEIGHT 10.0
+>>>>>>> cleanup
 #define MAX_Y 1
 #define MAX_Z 1
-
+#define RAY_SHOOT 50
 
 typedef float (array)[NORMALS];
 

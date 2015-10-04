@@ -14,7 +14,15 @@ using ceres::Solve;
 /************** TargetOptimization Class ****************/
 /********************************************************/
 
+<<<<<<< HEAD
+TargetOptimization::TargetOptimization()
+{
+    neighborsVersion=true;
+    //computeNormals.reserve(m.meshes[0].selectVerticesMeshFaceEdge().size());
+}
+=======
 TargetOptimization::TargetOptimization(){}
+>>>>>>> cleanup
 
 TargetOptimization::~TargetOptimization(){}
 
@@ -55,7 +63,7 @@ void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexInde
         {
             std::vector<int>::iterator it;
             it = std::find(neighborList.begin(), neighborList.end(), face[other[j]]);
-            if(it != neighborList.end()) {
+            if(it != neighborList.end() ) {
                 // push back index of the neighbor
                 neighborMap.push_back(it - neighborList.begin());
             } else {
@@ -71,6 +79,20 @@ void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexInde
     int row = mesh->vertexRowMap[vertexIndex];
     int col = mesh->vertexColMap[vertexIndex];
 
+<<<<<<< HEAD
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row][col-1]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row][col+1]);
+        eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col]);
+
+        if(!neighborsVersion){
+                    eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col-1]);
+                    eightNeighbors.push_back(mesh->frontFaceMatrix[row-1][col+1]);
+                    eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col-1]);
+                    eightNeighbors.push_back(mesh->frontFaceMatrix[row+1][col+1]);
+        }
+    }
+=======
     if(row > 0)
         gridNeighbors.push_back(mesh->frontFaceMatrix[row-1][col]);
 
@@ -81,6 +103,7 @@ void TargetOptimization::gatherVertexInformation(Vertex *vertex, uint vertexInde
 
     if((row+1) < mesh->frontFaceMatrix.size())
         gridNeighbors.push_back(mesh->frontFaceMatrix[row+1][col]);
+>>>>>>> cleanup
 
 
 }
@@ -111,10 +134,36 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
     float weightMult = 1.0;
     if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] == -1) // we have an edge. Set weight for edir extremely high
         weightMult = 10000;
+<<<<<<< HEAD
+//    else
+//    {
+//        CostFunction* cost_function_ereg8 =
+//            new AutoDiffCostFunction<CostFunctorEreg8Neighbors, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg8Neighbors(model, renderer, eightNeighbors));
+//        problem->AddResidualBlock(
+//            cost_function_ereg8,
+//            NULL,
+//            &vertices[vertexIndex*3], // vertex
+//            &vertices[eightNeighbors[0]*3], // and the neighbors..
+//            &vertices[eightNeighbors[1]*3],
+//            &vertices[eightNeighbors[2]*3],
+//            &vertices[eightNeighbors[3]*3],
+//            &vertices[eightNeighbors[4]*3],
+//            &vertices[eightNeighbors[5]*3],
+//            &vertices[eightNeighbors[6]*3],
+//            &vertices[eightNeighbors[7]*3]);
+//    }
+
+    // EDir depends on the original position
+    //glm::vec3 pos = glm::vec3(x_sources[vertexIndex]); // TODO get original position
+
+   CostFunction* cost_function_edir =
+            new AutoDiffCostFunction<CostFunctorEdir2, 1, 3>(new CostFunctorEdir2(&x_sources[vertexIndex], weightMult));
+=======
 
     // EDir depends on the original position
     CostFunction* cost_function_edir =
             new AutoDiffCostFunction<CostFunctorEdir2, 3, 3>(new CostFunctorEdir2(&x_sources[vertexIndex], weightMult));
+>>>>>>> cleanup
 
     problem->AddResidualBlock(
                 cost_function_edir,
@@ -122,14 +171,135 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                 &vertices[vertexIndex*3]
                 );
 
+<<<<<<< HEAD
+    if(neighborsVersion){
+        if(neighbors.size()==3){
+            CostFunction* cost_function_ereg2 = new AutoDiffCostFunction<CostFunctorEreg2Neighbors, 1, 3, 3, 3>(new CostFunctorEreg2Neighbors(model, renderer, neighbors));
+                    problem->AddResidualBlock(
+                            cost_function_ereg2,
+                            NULL,
+                            &vertices[vertexIndex*3], // vertex
+                            &vertices[eightNeighbors[0]*3], // and the neighbors..
+                            &vertices[eightNeighbors[1]*3]);
+        }
+        if(neighbors.size()==5){
+            CostFunction* cost_function_ereg4 =
+                                new AutoDiffCostFunction<CostFunctorEreg4Neighbors, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg4Neighbors(model, renderer, neighbors));
+                            problem->AddResidualBlock(
+                                    cost_function_ereg4,
+                                    NULL,
+                                    &vertices[vertexIndex*3], // vertex
+                                    &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                    &vertices[eightNeighbors[1]*3],
+                                    &vertices[eightNeighbors[2]*3],
+                                    &vertices[eightNeighbors[3]*3]);
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){ //not an edge we optimize the normals
+
+
+                    CostFunction* cost_function_eint4 =
+                    new AutoDiffCostFunction<CostFunctorEint4Neighbors, 1, 3, 3, 3, 3, 3>(new CostFunctorEint4Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                    problem->AddResidualBlock(cost_function_eint4, NULL,
+                                               &vertices[vertexIndex*3], // vertex
+                                               &vertices[neighbors[0]*3], // and the neighbors..
+                                               &vertices[neighbors[1]*3],
+                                               &vertices[neighbors[2]*3],
+                                               &vertices[neighbors[3]*3]);
+                }
+=======
 
     if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){ //not an edge we optimize the normals
+>>>>>>> cleanup
 
         // For eint we have several functors, each for a different amount of neighbors
         switch(neighbors.size()){
         case 4:
         {
 
+<<<<<<< HEAD
+        }
+    }
+
+    else if(!neighborsVersion){
+        for(uint i = 0; i<neighbors.size();i++){
+            std::cout<<"neighbors"<<i<<" "<<neighbors[i]<<std::endl;
+        }
+
+        switch(neighbors.size()){
+            case 2: {
+                CostFunction* cost_function_ereg2 = new AutoDiffCostFunction<CostFunctorEreg2Neighbors, 1, 3, 3, 3>(new CostFunctorEreg2Neighbors(model, renderer, neighbors));
+                        problem->AddResidualBlock(
+                                cost_function_ereg2,
+                                NULL,
+                                &vertices[vertexIndex*3], // vertex
+                                &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                &vertices[eightNeighbors[1]*3]);
+                break;
+            }
+
+        case 3: {
+            CostFunction* cost_function_ereg3 =
+                        new AutoDiffCostFunction<CostFunctorEreg3Neighbors, 1, 3, 3, 3, 3>(new CostFunctorEreg3Neighbors(model, renderer, neighbors));
+                        problem->AddResidualBlock(
+                                cost_function_ereg3,
+                                NULL,
+                                &vertices[vertexIndex*3], // vertex
+                                &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                &vertices[eightNeighbors[1]*3],
+                                &vertices[eightNeighbors[2]*3]);
+                break;
+            }
+
+        case 4: {
+            CostFunction* cost_function_ereg4 =
+                                new AutoDiffCostFunction<CostFunctorEreg4Neighbors, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg4Neighbors(model, renderer, neighbors));
+                            problem->AddResidualBlock(
+                                    cost_function_ereg4,
+                                    NULL,
+                                    &vertices[vertexIndex*3], // vertex
+                                    &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                    &vertices[eightNeighbors[1]*3],
+                                    &vertices[eightNeighbors[2]*3],
+                                    &vertices[eightNeighbors[3]*3]);
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){ //not an edge we optimize the normals
+
+
+                    CostFunction* cost_function_eint4 =
+                    new AutoDiffCostFunction<CostFunctorEint4Neighbors, 1, 3, 3, 3, 3, 3>(new CostFunctorEint4Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                    problem->AddResidualBlock(cost_function_eint4, NULL,
+                                               &vertices[vertexIndex*3], // vertex
+                                               &vertices[neighbors[0]*3], // and the neighbors..
+                                               &vertices[neighbors[1]*3],
+                                               &vertices[neighbors[2]*3],
+                                               &vertices[neighbors[3]*3]);
+                }
+
+                break;
+            }
+
+        case 5: {
+            CostFunction* cost_function_ereg5 =
+                                    new AutoDiffCostFunction<CostFunctorEreg5Neighbors, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg5Neighbors(model, renderer, neighbors));
+                                problem->AddResidualBlock(
+                                        cost_function_ereg5,
+                                        NULL,
+                                        &vertices[vertexIndex*3], // vertex
+                                        &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                        &vertices[eightNeighbors[1]*3],
+                                        &vertices[eightNeighbors[2]*3],
+                                        &vertices[eightNeighbors[3]*3],
+                                        &vertices[eightNeighbors[4]*3]);
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){
+                CostFunction* cost_function_eint5 =
+                        new AutoDiffCostFunction<CostFunctorEint5Neighbors, 1, 3, 3, 3, 3, 3, 3>(new CostFunctorEint5Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                    problem->AddResidualBlock(cost_function_eint5, NULL,
+                                       &vertices[vertexIndex*3], // vertex
+                                       &vertices[neighbors[0]*3], // and the neighbors..
+                                       &vertices[neighbors[1]*3],
+                                       &vertices[neighbors[2]*3],
+                                       &vertices[neighbors[3]*3],
+                                       &vertices[neighbors[4]*3]);
+            }
+=======
             CostFunction* cost_function_eint4 =
                 new AutoDiffCostFunction<CostFunctorEint4Neighbors, 3, 3, 3, 3, 3, 3>(new CostFunctorEint4Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
 
@@ -140,10 +310,118 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                                        &vertices[neighbors[2]*3],
                                        &vertices[neighbors[3]*3]);
 
+>>>>>>> cleanup
 
             break;
-        }
+            }
 
+<<<<<<< HEAD
+        case 6: {
+            CostFunction* cost_function_ereg6 =
+                                    new AutoDiffCostFunction<CostFunctorEreg6Neighbors, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6Neighbors(model, renderer, neighbors));
+                                problem->AddResidualBlock(
+                                        cost_function_ereg6,
+                                        NULL,
+                                        &vertices[vertexIndex*3], // vertex
+                                        &vertices[neighbors[0]*3], // and the neighbors..
+                                        &vertices[neighbors[1]*3],
+                                        &vertices[neighbors[2]*3],
+                                        &vertices[neighbors[3]*3],
+                                        &vertices[neighbors[4]*3],
+                                        &vertices[neighbors[5]*3]);
+
+//            CostFunction* cost_function_ereg6 =
+//                                new AutoDiffCostFunction<CostFunctorEreg6Neighbors, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg6Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+//                                problem->AddResidualBlock( cost_function_ereg6, NULL,
+//                                           &vertices[vertexIndex*3], // vertex
+//                                           &vertices[eightNeighbors[0]*3], // and the neighbors..
+//                                           &vertices[eightNeighbors[1]*3],
+//                                           &vertices[eightNeighbors[2]*3],
+//                                           &vertices[eightNeighbors[3]*3],
+//                                           &vertices[eightNeighbors[4]*3],
+//                                           &vertices[eightNeighbors[5]*3]);
+
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){
+                CostFunction* cost_function_eint6 =
+                        new AutoDiffCostFunction<CostFunctorEint6Neighbors, 1, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEint6Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                        problem->AddResidualBlock( cost_function_eint6, NULL,
+                                   &vertices[vertexIndex*3], // vertex
+                                   &vertices[neighbors[0]*3], // and the neighbors..
+                                   &vertices[neighbors[1]*3],
+                                   &vertices[neighbors[2]*3],
+                                   &vertices[neighbors[3]*3],
+                                   &vertices[neighbors[4]*3],
+                                   &vertices[neighbors[5]*3]);
+
+            }
+
+            break;
+            }
+
+        case 7: {
+            CostFunction* cost_function_ereg7 =
+                                new AutoDiffCostFunction<CostFunctorEreg7Neighbors, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg7Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                                problem->AddResidualBlock( cost_function_ereg7, NULL,
+                                           &vertices[vertexIndex*3], // vertex
+                                           &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                           &vertices[eightNeighbors[1]*3],
+                                           &vertices[eightNeighbors[2]*3],
+                                           &vertices[eightNeighbors[3]*3],
+                                           &vertices[eightNeighbors[4]*3],
+                                           &vertices[eightNeighbors[5]*3],
+                                           &vertices[eightNeighbors[6]*3]);
+
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){
+                CostFunction* cost_function_eint7 =
+                        new AutoDiffCostFunction<CostFunctorEint7Neighbors, 1, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEint7Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                        problem->AddResidualBlock( cost_function_eint7, NULL,
+                                   &vertices[vertexIndex*3], // vertex
+                                   &vertices[neighbors[0]*3], // and the neighbors..
+                                   &vertices[neighbors[1]*3],
+                                   &vertices[neighbors[2]*3],
+                                   &vertices[neighbors[3]*3],
+                                   &vertices[neighbors[4]*3],
+                                   &vertices[neighbors[5]*3],
+                                   &vertices[neighbors[6]*3]);
+
+            }
+
+            break;
+            }
+
+        case 8: {
+            CostFunction* cost_function_ereg8 =
+                            new AutoDiffCostFunction<CostFunctorEreg8Neighbors, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEreg8Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                            problem->AddResidualBlock( cost_function_ereg8, NULL,
+                                           &vertices[vertexIndex*3], // vertex
+                                           &vertices[eightNeighbors[0]*3], // and the neighbors..
+                                           &vertices[eightNeighbors[1]*3],
+                                           &vertices[eightNeighbors[2]*3],
+                                           &vertices[eightNeighbors[3]*3],
+                                           &vertices[eightNeighbors[4]*3],
+                                           &vertices[eightNeighbors[5]*3],
+                                           &vertices[eightNeighbors[6]*3],
+                                           &vertices[eightNeighbors[7]*3]);
+            if(model->meshes[0].edgeToNoEdgeMapping[vertexIndex] != -1){
+                CostFunction* cost_function_eint8 =
+                    new AutoDiffCostFunction<CostFunctorEint8Neighbors, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3>(new CostFunctorEint8Neighbors(&model->desiredNormals[model->meshes[0].edgeToNoEdgeMapping[vertexIndex]], neighborMap));
+                    problem->AddResidualBlock( cost_function_eint8, NULL,
+                                   &vertices[vertexIndex*3], // vertex
+                                   &vertices[neighbors[0]*3], // and the neighbors..
+                                   &vertices[neighbors[1]*3],
+                                   &vertices[neighbors[2]*3],
+                                   &vertices[neighbors[3]*3],
+                                   &vertices[neighbors[4]*3],
+                                   &vertices[neighbors[5]*3],
+                                   &vertices[neighbors[6]*3],
+                                   &vertices[neighbors[7]*3]);
+
+            }
+            break;
+
+            }
+        }
+=======
         case 5:
         {
             CostFunction* cost_function_eint5 =
@@ -263,6 +541,7 @@ void TargetOptimization::addResidualBlocks(Problem *problem, uint vertexIndex, v
                     &vertices[gridNeighbors[3]*3]
                     );
         break;
+>>>>>>> cleanup
     }
 
 }
@@ -333,11 +612,22 @@ void TargetOptimization::runOptimization(Model* m, Renderer* renderer){
 
         Solver::Options options;
         options.minimizer_progress_to_stdout = true;
+<<<<<<< HEAD
+        options.linear_solver_type = ceres::ITERATIVE_SCHUR; //large bundle adjustment problems
+        options.max_num_iterations = 200; //1000;
+        options.dense_linear_algebra_library_type = ceres::LAPACK;
+        options.num_threads = 4;
+        options.function_tolerance = 1e-10;
+        options.parameter_tolerance = 1e-13;
+        //options.visibility_clustering_type = ceres::SINGLE_LINKAGE;
+        //options.preconditioner_type = ceres::CLUSTER_TRIDIAGONAL; // fast preconditioner
+=======
         options.linear_solver_type = ceres::ITERATIVE_SCHUR;
         options.max_num_iterations = 200;
         options.dense_linear_algebra_library_type = ceres::LAPACK;
         options.num_threads = 4;
 
+>>>>>>> cleanup
         string error;
         if(!options.IsValid(&error))
         {

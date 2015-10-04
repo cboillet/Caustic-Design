@@ -93,7 +93,7 @@
      <x>0</x>
      <y>0</y>
      <width>607</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -130,6 +130,7 @@
     <addaction name="actionDesired_Normals"/>
     <addaction name="actionDesired_Ray_Directions"/>
     <addaction name="actionDesired_Rays"/>
+    <addaction name="actionShoot_Ray"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -241,6 +242,14 @@
    </property>
    <property name="text">
     <string>Desired Rays</string>
+   </property>
+  </action>
+  <action name="actionShoot_Ray">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shoot ray</string>
    </property>
   </action>
  </widget>

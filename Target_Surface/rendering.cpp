@@ -186,6 +186,9 @@ void ModelRendering::paintGL(){
     if(drawDesiredRayDirections)
         paintDesiredRayDirections();
 
+    if(drawRay)
+        paintRay();
+
     //paintNeighbors();
     //paintEdgeVertices();
     //paintVertex();
@@ -483,4 +486,32 @@ void ModelRendering::drawMesh(Mesh meshToDraw){
     glDrawElements(GL_TRIANGLES, meshToDraw.indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
+}
+
+void Renderer::setRay (vector<glm::highp_dvec3> & direction, vector<glm::highp_dvec3> & redirect, vector<glm::highp_dvec3> & endpoint){
+          this->rayDirection = direction;
+          this->rayRedirect = redirect;
+          this->rayEndPoint = endpoint;
+          drawRay = true;
+
+}
+
+void ModelRendering::paintRay(){
+    glm::vec3 startPos = glm::vec3(-10, 0, 0);
+    glBegin(GL_LINES);
+    glColor3f(1, 0.33, 0.9);
+
+    for (uint i=0; i<rayRedirect.size(); i++)
+    {
+        glVertex3f(startPos.x, startPos.y, startPos.z);
+        glVertex3f(rayRedirect[i].x, rayRedirect[i].y, rayRedirect[i].z);
+        glVertex3f(rayRedirect[i].x, rayRedirect[i].y, rayRedirect[i].z);
+        glVertex3f(rayEndPoint[i].x, rayEndPoint[i].y, rayEndPoint[i].z);
+    }
+
+
+
+
+
+    glEnd();
 }
