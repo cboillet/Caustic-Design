@@ -27,7 +27,6 @@ public:
     void toggleDrawAxis(){drawAxis=!drawAxis;}
     void toggleDrawDesiredRays(){drawDesiredRays = !drawDesiredRays;}
     void toggleDrawDesiredRayDirections(){drawDesiredRayDirections=!drawDesiredRayDirections;}
-    void setRay (vector<glm::highp_dvec3> & direction, vector<glm::highp_dvec3> & redirect, vector<glm::highp_dvec3> & endpoint);
     void setNeigbors(vector<int> neighbors, std::vector<int> neighborMapping){
         this->neighbors = neighbors;
         this->neighborMapping = neighborMapping;
@@ -52,14 +51,9 @@ protected:
     bool drawNormals;
     bool drawDesiredNormals;
     bool drawAxis;
-    bool drawRay;
 
     std::vector<int> neighbors;
     std::vector<int> neighborMapping;
-
-    vector<glm::highp_dvec3> rayDirection;
-    vector<glm::highp_dvec3> rayRedirect;
-    vector<glm::highp_dvec3> rayEndPoint;
 
 private:
     QTimer *t_Timer;
@@ -88,7 +82,6 @@ public:
     void paintNeighbors();
     void paintEdgeVertices();
     void paintVertex();
-    void paintRay();
 
     void setModel();
     void setUpMesh(Mesh meshToDraw);

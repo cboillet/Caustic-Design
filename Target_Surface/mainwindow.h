@@ -39,7 +39,6 @@ protected slots:
     void on_actionDesired_Normals_toggled();
     void on_actionDesired_Ray_Directions_toggled();
     void on_actionDesired_Rays_toggled();
-    void on_actionShoot_Ray_toggled();
 
     void on_actionAxis_toggled();
     /* line edit slots */

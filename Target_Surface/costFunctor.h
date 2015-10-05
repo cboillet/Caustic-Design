@@ -194,11 +194,7 @@ template<typename T> void evaluateReg(const T** const allVertices, const float* 
     }
 
     for (uint i=0; i<3; i++)
-<<<<<<< HEAD
-        res[i] = abs(res[i]) /* res[i] */* T(EREG_WEIGHT);
-=======
         res[i] = res[i] * T(EREG_WEIGHT);
->>>>>>> cleanup
 }
 
 
@@ -453,18 +449,6 @@ private:
 
 };
 
-
-
-/****/
-
-inline void printLaplacien(float* L, int size){
-    std::cout<<"|"<<std::endl;
-    for (uint i=0; i<size; i++){
-        std::cout<<L[i]<<std::endl;
-    }
-    std::cout<<"|"<<std::endl;
-};
-
 /********* EReg *********/
 
 class CostFunctorEreg8Neighbors{
@@ -478,7 +462,6 @@ public:
         {
             L[i] = 1;
         }
-        printLaplacien(L,8);
     }
 
     ~CostFunctorEreg8Neighbors()

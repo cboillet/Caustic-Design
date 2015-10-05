@@ -37,7 +37,6 @@ class Model {
         void setFocalLength(float newLength);
         void rescaleMeshes(float newScale);
         void modifyMesh();
-        void shootRay(vector<glm::highp_dvec3> & direction, vector<glm::highp_dvec3> & redirect, vector<glm::highp_dvec3> & endpoint);
         void setNormals(bool edge);
         void computeLightDirectionsScreenSurface();
         void fresnelMapping(); //compute the position on the surface to for the desired normals

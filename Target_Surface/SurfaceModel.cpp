@@ -72,7 +72,7 @@ void Model::exportModel(std::string filename)
     for (uint i=0; i<nVertices; i++)
     {
         glm::vec3 pos = verts[i].Position;// * scaling;
-        mesh->mVertices[i] = aiVector3D(pos.x/surfaceSize, pos.y/surfaceSize, pos.z/surfaceSize);//verts[i].Position.x, verts[i].Position.y, verts[i].Position.z);
+        mesh->mVertices[i] = aiVector3D(pos.x, pos.y, pos.z);//verts[i].Position.x, verts[i].Position.y, verts[i].Position.z);
         mesh->mNormals[i] = aiVector3D(verts[i].Normal.x, verts[i].Normal.y, verts[i].Normal.z);
     }
 
@@ -285,29 +285,6 @@ void Model::modifyMesh()
 
     // update normals
     meshes[0].calculateVertexNormals();
-}
-
-void Model::shootRay(vector<glm::highp_dvec3> & direction, vector<glm::highp_dvec3> & redirect, vector<glm::highp_dvec3> & endpoint){
-    double refraction = MATERIAL_REFRACTIV_INDEX;
-    std::cout<<"faceVerticesEdge size"<<meshes[0].faceVerticesEdge.size()<<std::endl;
-    //uint i = 0;
-    for(uint i=0; i<meshes[0].faceVerticesEdge.size(); i++){
-        //i=in*50;
-        glm::highp_dvec3 d = glm::highp_dvec3(1,0,0);
-        direction.push_back(d);
-        glm::highp_dvec3 redi =  glm::highp_dvec3(meshes[0].vertices[i].Position);
-        redirect.push_back(redi);
-        glm::highp_dvec3 pointNormal = glm::highp_dvec3(meshes[0].vertices[i].Normal);
-        double c = glm::dot(pointNormal, d);
-        glm::highp_dvec3 refractedRay = refraction * d + (refraction*c - sqrt(1 - refraction*refraction*(1-c*c))) * (-pointNormal);
-        refractedRay = glm::normalize(refractedRay);
-
-        //std::cerr << refractedRay.x << ", " << refractedRay.y << ", " << refractedRay.z << std::endl;
-
-        glm::highp_dvec3 ed = double(1.5*getFocalLength()) * refractedRay + redi;
-        endpoint.push_back(ed);
-        //std::cerr << endpoint.x << ", " << endpoint.y << ", " << endpoint.z << std::endl;
-    }
 }
 
 void Model::setFocalLength(float newLength)
