@@ -39,12 +39,6 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
                     <a class="navbar-link" href="#discussion">Discussion</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#misc">Misc</a>
-                </li>
-                <li class="navbar-item">
-                    <a class="navbar-link" href="#text">Text</a>
-                </li>
-                <li class="navbar-item">
                     <a class="navbar-link" href="#references">References</a>
                 </li>
             </ul>
@@ -135,7 +129,7 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             <p>
                 As calculating the OTM is a convex optimization, we can plug in an initial guess.
                 The quality of this initial guess has an significant impact on the duration of the optimization process.
-                Therefore, we calculate the OTM on different levels.
+                Therefore, we calculate the OTM on different levels as proposed in <a href="#9">[9]</a>.
                 We thereby start with fewer cells and a lower-resolution target distribution image on the lowest level.
                 We then use the result of that optimization as an initial guess for the next higher level.
                 This step is repeated several times until we reach our target level that we want to compute.
@@ -295,7 +289,9 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
    -->
     <div class="docs-section" id="fabrication">
         <h3 class="section-heading">Fabrication</h3>
-        We use a CNC milling machine to mill acrylic glass. The milling process includes several steps (roughing, z-level, planar finishing) with different tools (4mm/3mm, 1mm).<br><br>
+        We use a CNC milling machine to mill acrylic glass.
+        The milling process includes several steps (roughing, z-level, planar finishing) with different tools (4mm/3mm, 1mm).
+        All produced models where produced with an additional 1cm border on each side in order to overcome issues while milling (see <a href="#discussion">Discussion</a>).<br><br>
         <div class="row">
             <div class="one-half column category">
                 <p class="u-max-full-width">
@@ -389,7 +385,9 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             <div class="two-thirds column category">
                 <p class="column">
                     The first target distribution we used is a simple checker-like image as given in Figure 10.<br>
+                    We calculated the OTM with 16.500 cells and used a target surface resolution of 129x129 (=16.641 vertices).
                     In Figure 11, one can see the impact of the weights for the regularization energy.
+                    One may also recognize that the image is flipped, this happens during our model-processing.
                     In Figure 11.a, which has a relatively low weight for E<sub>reg</sub>, the edges are not sharp.
                     Additionally, when having a look at the object in the image, one can see that the mesh is not very regular.
                     With increasing weight for E<sub>reg</sub> from Figure 11.a to Figure 11.d, the edges become sharper and the mesh becomes visually more regular.
@@ -424,135 +422,167 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
             </div>
         </div>
 
-        The produces object for the checker target distribution is given in Figure
+
+        <div class="row">
+            <div class="one-half column category">
+                <p class="u-max-full-width">
+                    The produced object for the checker target distribution is given in Figure 12.
+                    There are clearly visible creases in the object.
+                    Those creases are again due to an issue with the milling machine (see <a href="#discussion">Discussion</a>).
+                    In the upper left- and lower right corners of the projected image, there are bright dots.
+                    Those dots are the result of an additional border we added for production.
+                </p>
+            </div>
+
+            <div class="one-half column category">
+                <img src="images/results/checker_real.png" class="u-max-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 12: Produced result Checker. E<sub>dir</sub> = 5 &middot; 10<sup>-3</sup> &emsp; E<sub>reg</sub> = 9 &middot; 10<sup>-1</sup></p>
+            </div>
+        </div>
 
 
         <h4 class="section-heading">Einstein</h4>
 
         <div class="row">
+            <div class="two-thirds column category">
+                <p class="column">
+                    The second target distribution is the Einstein image given in Figure 13.
+                    The OTM was calculated using 250.000 cells and the target surface has resolution of 641x641 (= 410.881 vertices).
+                    Again, the flipping of the image occurs during our model-processing.
+                    The results in Figure 14 again show the impact of the weights for E<sub>dir</sub> and E<sub>bar</sub>.
+                    Other than in the Checker results, the weights don't visually impact the results.
+                    The only visible impact is the occurrence of artifacts similar to the line-artifacts in the Checker results.
+                    Those lines can be seen left, right and below einstein in Figure 14.d.
+                </p>
+            </div>
+            <div class="one-third column category">
+                <img src="images/results/einstein.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 13: Einstein target distribution.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="one-half column category">
                 <img src="images/results/einstein_1_5e-1.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">Figure 11.a: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 5 &middot; 10<sup>-1</sup></p>
+                <p class="u-max-full-width" style="text-align: left">Figure 14.a: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 5 &middot; 10<sup>-1</sup></p>
             </div>
             <div class="one-half column category">
                 <img src="images/results/einstein_1_10.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">Figure 11.b: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 10</p>
+                <p class="u-max-full-width" style="text-align: right">Figure 14.b: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub> = 10</p>
             </div>
         </div>
         <div class="row">
             <div class="one-half column category">
                 <img src="images/results/einstein_1000_5_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">Figure 11.c: E<sub>dir</sub> = 1 &middot; 10<sup>3</sup> &emsp; E<sub>reg</sub>= 5</p>
+                <p class="u-max-full-width" style="text-align: left">Figure 14.c: E<sub>dir</sub> = 1 &middot; 10<sup>3</sup> &emsp; E<sub>reg</sub>= 5</p>
             </div>
             <div class="one-half column category">
                 <img src="images/results/einstein_10000_15_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">Figure 11.d: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
+                <p class="u-max-full-width" style="text-align: right">Figure 14.d: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="one-half column category">
+                <p class="u-max-full-width">
+                    The produced object for the Einstein target distribution is given in Figure 15.
+                    As in the Checker results, there are visual artifacts due to the border.
+                    The acrylic object is given in the Figures 5-8.
+                    One can see that the two artifacts (not milled area, artifact introduced in post-processing) produce artifacts in the projected image.
+                    The artifact at the forehead/hair of Einstein is caused by the not milled area.
+                    The post-process artifact is visible on the center-right as a very dark area (starting at the ear).
+                </p>
+            </div>
+
+            <div class="one-half column category">
+                <img src="images/results/einstein_produced_10000_15_v2.JPG" class="u-max-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 15: Produced result Einstein (sunlight).<br>E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
             </div>
         </div>
 
         <h4 class="section-heading">Circle</h4>
         <div class="row">
+            <div class="two-thirds column category">
+                <p class="column">
+                    The third target distribution is the Circle image given in Figure 16.
+                    The OTM was calculated using 250.000 cells and the target surface has resolution of 641x641 (= 410.881 vertices).
+                    For lower weights as in Figure 17.a, the inner edge does not seem to be sharp.
+                    When increasing the weights, we again can see artifacts on the outside of the circle for Figure 17.b Figure 17.c and Figure 17.d.
+                    For all given results, the line of the circle is thicker than in the target distribution.
+                </p>
+            </div>
+            <div class="one-third column category">
+                <img src="images/results/circle.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">
+                    Figure 16: Circle target distribution.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="one-half column category">
                 <img src="images/results/circle_1_10_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">Figure 11.c: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub>= 10</p>
+                <p class="u-max-full-width" style="text-align: left">Figure 17.a: E<sub>dir</sub> = 1 &emsp; E<sub>reg</sub>= 1 &middot; 10<sup>1</sup></p>
             </div>
             <div class="one-half column category">
-                <img src="images/results/circle_15_50_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">Figure 11.c: E<sub>dir</sub> = 1 &middot; 10<sup>3</sup> &emsp; E<sub>reg</sub>= 5</p>
+                <img src="images/results/circle_1e4_15.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: right">Figure 17.b: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub>= 1.5 &middot; 10<sup>1</sup></p>
             </div>
         </div>
         <div class="row">
             <div class="one-half column category">
-                <img src="images/results/circle_10_100_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: left">Figure 11.d: E<sub>dir</sub> = 10&emsp; E<sub>reg</sub> = 1 &middot; 10 <sup>2</sup></p>
+                <img src="images/results/circle_15_50_converged.png" class="u-full-width"/>
+                <p class="u-max-full-width" style="text-align: left">Figure 17.c: E<sub>dir</sub> = 1.5 &middot; 10<sup>1</sup> &emsp; E<sub>reg</sub>= 5 &middot; 10<sup>1</sup></p>
             </div>
             <div class="one-half column category">
                 <img src="images/results/circle_10_100_converged.png" class="u-full-width"/>
-                <p class="u-max-full-width" style="text-align: right">Figure 11.d: E<sub>dir</sub> = 1 &middot; 10<sup>4</sup> &emsp; E<sub>reg</sub> = 15</p>
+                <p class="u-max-full-width" style="text-align: right">Figure 17.d: E<sub>dir</sub> = 1 &middot; 10<sup>1</sup> &emsp; E<sub>reg</sub> = 1 &middot; 10 <sup>2</sup></p>
             </div>
         </div>
     </div>
 
-
-            <div class="docs-section" id="misc">
-                <h3 class="section-heading">Misc</h3>
-                <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal
-edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-                <div class="row">
-                    <div class="one-half column category" style="text-align: center;">
-                        <h5 class="docs-header">Table 1</h5>
-                        <table class="u-full-width">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Value</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Laplace</td>
-                                    <td>26</td>
-                                    <td>---</td>
-                                </tr>
-                                <tr>
-                                    <td>Beltrami</td>
-                                    <td>42</td>
-                                    <td>n/a</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="one-half column category" style="text-align: center;">
-                        <h5 class="docs-header">Table 2</h5>
-                        <table class="u-full-width">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Value</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Laplace</td>
-                                    <td>26</td>
-                                    <td>---</td>
-                                </tr>
-                                <tr>
-                                    <td>Beltrami</td>
-                                    <td>42</td>
-                                    <td>n/a</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="docs-section" id="text">
-                <h3 class="section-heading">Text</h3>
-                <p class="section-description">We consider general polygonal meshes in the plane that admit an orthogonal dual with prescribed dual/primal edge length ratios as they directly provide perfect discrete Laplace-Beltrami operators.</p>
-                <pre>
-                    <code>def load_image(nr, flat=True):
-    img = io.imread(get_path(nr), as_grey=True)
-    if flat:
-        # print(img.shape)
-        img = img.reshape(-1)
-        # print(np.amin(img), np.amax(img))
-    print("Loaded img " + str(nr))
-    return img
-</code>
-                </pre>
-            </div>
-
-
     <!--
     ---------------------------------------------------
-    ... RESULTS
+    ... DISCUSSION
     ---------------------------------------------------
     -->
     <div class="docs-section" id="discussion">
         <h3 class="section-heading">Discussion</h3>
+
+        <p class="section-description">
+            We will here shortly discuss the main issues we encountered and goals we did not achieve during the project.
+        </p>
+        <h4>Fabrication</h4>
+        In the fabrication process there were several issues.<br>
+        The first issue arising was that the acrylic swarf melted onto the CNC tool.
+        This is the main reason we added a border to our models before milling.
+        If not added, the tool (and the molten acrylic) wes applying damage at the border of the model.<br>
+        Another issue was the lack of precision of the CNC milling machine.
+        The results given in <a href="#1">[1]</a> outperform our results tremendously in simulation and production.
+        But even with our simulated results, the produced objects may have become better with higher precision.<br>
+        The third issue was that some parts were not milled at all.
+        Even though we instructed the milling machine to start milling a few millimetres above our model, the thickest part of our model was not touched.
+        This means that (despite the buffer we added) there were issues with the configuration of the milling machine.<br><br>
+        Before ending up with the post-production process we produces the final results with, we tried different approaches to post-process the acrylic object.
+        We tested a Bunsen burner and different polishing techniques.
+        All of them were causing damage to the object itself or the optical behaviour of the object.
+        In the end used a polishing wheel (Dremel) to polish the acrylic glass.
+        This worked fine most of the time, yet we also damaged the object with that technique once (artifact in Einstein result).<br><br>
+
+        <h4>Optimal Transport Map</h4>
+        We had to finish the optimization implementing a Gradient Descent approach.
+        The L-BFGS Solver threw errors when exceeding a certain amount of sites.
+        So far, we could not figure out, why this issue arises.<br><br>
+
+        <h4>Target Optimization</h4>
+        One of the hardest tasks in the Target Optimization was finding sufficient weights.
+        The values of the weights depend on the image itself.
+        The range of the weights (in what range at least acceptable results can be produced) depend on the amount of vertices in the target surface.
+        This leads to a time consuming task that makes it hard to come to a good result.
+        We are not even sure whether the presented results are the best achievable for used.
+        It could be possible, that we did not find the best weights so far.
     </div>
 
     <!--
@@ -590,6 +620,9 @@ edge length ratios as they directly provide perfect discrete Laplace-Beltrami op
             </li>
             <li class="popover-item" id="8">
                 [8] ROOSENDAAL, T. AND OTHERS, Blender, <a href="http://www.blender.org/">http://www.blender.org/</a>, last retrieved 09-2015
+            </li>
+            <li class="popover-item" id="9">
+                [9] MÉRIGOT, Q. 2011. A multiscale approach to optimal transport. In <i>Computer Graphics Forum</i>, vol. 30, Wiley Online Library, 1583-1592.
             </li>
         </ul>
     </div>
